@@ -1,17 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, Image, Switch } from "react-native";
-import { images, icons, COLORS, SIZES } from '../constants';
+import { COLORS, SIZES, icons } from '../constants';
 import { Feather } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
+import axios from "axios";
 
-const Setting = () => {
+const Setting = ({navigation}) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const auth = FIREBASE_AUTH;
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
+  const sinOut = async () => {
+     try{
+      await signOut(auth)
+     .then(() => {
+      alert("LogOut Successfull");
+     })
+     }
+     catch(error){
+      console.log(error)
+     }
+  };
+  useEffect(() => {
+    setIsLoading(true)
+    onAuthStateChanged(auth, (user) => {
+      if(user?.uid){
+        const email = user.email;
+        axios.get(`http://192.168.1.4:5000/signleUser/${email}`)
+        .then((res) => {
+          setUser(res.data)
+        })    
+      }
+      setIsLoading(false)
+    })
+  }, [])
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
-        <Pressable
+        <TouchableOpacity
+        onPress={() => navigation.navigate('ProfileDetails')}
           style={{
             backgroundColor: "white",
             borderRadius: 10,
@@ -27,15 +59,23 @@ const Setting = () => {
               justifyContent: "center",
             }}
           >
-            <Image
-              source={require("../assets/images/profile.jpg")}
+            {user?.userProfilePic ? <Image
+              source={{uri: user?.userProfilePic}}
               style={{
                 resizeMode: "cover",
                 width: 50,
                 height: 50,
                 borderRadius: 50,
               }}
-            />
+            /> : <Image
+            source={require("../assets/images/profile.jpg")}
+            style={{
+              resizeMode: "cover",
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+            }}
+          />}
             <View
               style={{
                 flex: 1,
@@ -45,10 +85,10 @@ const Setting = () => {
               }}
             >
               <Text style={{ fontWeight: 500, fontSize: 16 }} numberOfLines={2}>
-               Hossain Ahmed
+               {user?.userName}
               </Text>
               <Text style={{ fontSize: 12, color: "#6B7280" }}>
-                880 1850 563 626
+                {user?.userPhone}
               </Text>
             </View>
             <Image
@@ -56,7 +96,7 @@ const Setting = () => {
               style={{ tintColor: "#B0B0B0", width: 24, height: 24 }}
             />
           </View>
-        </Pressable>
+        </TouchableOpacity>
         <View
           style={{
             backgroundColor: "white",
@@ -64,7 +104,8 @@ const Setting = () => {
             marginBottom: 10,
           }}
         >
-          <Pressable
+          <TouchableOpacity
+          onPress={() => navigation.navigate('Device')}
             style={{
               paddingVertical: 13,
               paddingHorizontal: 15,
@@ -98,8 +139,9 @@ const Setting = () => {
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
+          onPress={() => navigation.navigate('AddReference')}
             style={{
               paddingVertical: 13,
               paddingHorizontal: 15,
@@ -124,7 +166,7 @@ const Setting = () => {
                 }}
               >
                 <Image
-                 source={icons.usersGroup}
+                 source={icons.Profile}
                   style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
                 />
                 <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
@@ -133,8 +175,9 @@ const Setting = () => {
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
+          onPress={() => navigation.navigate('ResetPassword')}
             style={{
               paddingVertical: 13,
               paddingHorizontal: 15,
@@ -168,8 +211,9 @@ const Setting = () => {
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
+          onPress={() => navigation.navigate('TokenPurchaseHistory')}
             style={{
               paddingVertical: 13,
               paddingHorizontal: 15,
@@ -201,7 +245,7 @@ const Setting = () => {
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -270,10 +314,10 @@ const Setting = () => {
                 }}
               >
                 <Image
-                  source={icons.star}
+                 source={icons.usersGroup}
                   style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
                 />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>Rate us</Text>
+                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>Community</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
@@ -323,6 +367,7 @@ const Setting = () => {
           style={{
             backgroundColor: "white",
             borderRadius: 10,
+            marginBottom: SIZES.small
           }}
         >
           <Pressable
@@ -428,6 +473,37 @@ const Setting = () => {
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
           </Pressable>
+        </View>
+        <View
+          style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            marginBottom: 80,
+            padding: 10,
+          }}
+        >
+          <TouchableOpacity
+          onPress={() => sinOut()}
+            style={{
+              paddingVertical: 13,
+              paddingHorizontal: 15,
+              backgroundColor: COLORS.red200,
+              borderRadius: SIZES.small
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+                justifyContent: "center",
+              }}
+            >
+            <Text style={{ fontSize: SIZES.medium, color:COLORS.red500, fontWeight: 600 }}>Log out</Text>
+            <Feather name="log-in" size={SIZES.large} color={COLORS.red500} />
+            </View>
+          </TouchableOpacity>
+          <Text style={{ fontSize: 14, color: "#5C5C5C", textAlign: "center", marginVertical: SIZES.xSmall }}>Version 0.0.1</Text>
         </View>
       </View>
     </ScrollView>

@@ -1,6 +1,6 @@
 import { View, Text, Image, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react';
-import { images, COLORS, SIZES } from '../../constants';
+import { COLORS, SIZES } from '../../constants';
 
 const DeviceCard = ({item}) => {
   const [randomNumber, setRandomNumber] = useState(0);

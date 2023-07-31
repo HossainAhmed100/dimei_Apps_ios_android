@@ -1,62 +1,32 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { COLORS, images, SIZES, icons } from '../constants';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import axios from 'axios';
+import { COLORS, SIZES, icons } from '../constants';
 import MyDeviceCrad from '../components/Crads/MyDeviceCrad';
 const AllDevice = () => {
-  const myPhoneList =   [
-    {
-        "deviceImg": images.iphoneImg,
-        "name": "iPhone 13 Pro max",
-        "deviceStatus": true,
-        "days": "75",
-        "ram": "4GB",
-        "rom": "64GB",
-        "brand": "Apple",
-        "color": "Selvet"
-    },
-    {
-        "deviceImg": images.samsungImg,
-        "name": "Samsung A13",
-        "deviceStatus": false,
-        "days": "315",
-        "ram": "6GB",
-        "rom": "128GB",
-        "brand": "Samsung",
-        "color": "Blue"
-    },
-    {
-        "deviceImg": images.xiaomiImg,
-        "name": "Xioami 13 Lite",
-        "deviceStatus": true,
-        "days": "21",
-        "ram": "8GB",
-        "rom": "128GB",
-        "brand": "Mi",
-        "color": "Black"
-    },
-    {
-        "deviceImg": images.oppoImg,
-        "name": "Oppo F21 Pro",
-        "deviceStatus": false,
-        "days": "75",
-        "ram": "8GB",
-        "rom": "256GB",
-        "brand": "Oppo",
-        "color": "Selvet"
-    },
-    {
-        "deviceImg": images.vivovImg,
-        "name": "Vivo F23",
-        "deviceStatus": true,
-        "days": "198",
-        "ram": "8GB",
-        "rom": "256GB",
-        "brand": "Vivo",
-        "color": "Silver"
-    }
-];
+
+const [myDevice, setMyDevice] = useState('');
+const [loading, setLoading] = useState(true)
+const loadData = () => {
+  setLoading(true);
+  axios.get('http://192.168.1.4:5000/mydevice')
+    .then(response => {
+      if (response.data) {
+        setMyDevice(response.data);
+        setLoading(false)
+      } else {
+        console.log('No Device found in response');
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+useEffect(() => {
+  loadData()
+}, []);
   return (
-  <View>
+  <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
      <View style={styles.searchContainer}>
         <View style={styles.searchWrapper}>
           {/* <Image source={icons.search} style={{width: 30, height: 30, tintColor: COLORS.slate200}}/> */}
@@ -66,9 +36,18 @@ const AllDevice = () => {
         <Image source={icons.search} style={styles.filterBtnImage}/>
         </TouchableOpacity>
       </View>
-  <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, paddingHorizontal: 10, paddingVertical: 10}}>
-    {myPhoneList.map((item, index) => <MyDeviceCrad key={index} item={item}/>)}
-  </ScrollView>
+      <View style={{paddingHorizontal: 10}}>
+        <FlatList 
+        style={{minHeight: "100%"}}
+          data={myDevice}
+          keyExtractor={item => item._id}
+          renderItem={({item}) => (
+            <MyDeviceCrad item={item}/>
+          )}
+          refreshing={loading}
+          onRefresh={loadData}
+        />
+        </View>
   </View>
   )
 }

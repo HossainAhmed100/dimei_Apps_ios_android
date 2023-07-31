@@ -24,14 +24,15 @@ const TabNavigator = () => {
           position: "absolute",
           overflow: "hidden",
         },
+        animation: "slide_from_right"
       }}
     >
       <Tab.Screen
         name="Home2"
         component={Home2}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Image source={icons.home} style={{width: size, height: size, tintColor: color}}/>
+          tabBarIcon: ({ color, size, focused }) => (
+            focused ? <Image source={icons.homeActive} style={{width: size, height: size}}/> : <Image source={icons.home} style={{width: size, height: size, tintColor: color}}/>
           ),
           headerShown: false,
         }}
@@ -40,8 +41,8 @@ const TabNavigator = () => {
         name="All Devices"
         component={Shop2}
         options={{
-          tabBarIcon: ({ color, size  }) => (
-            <Image source={icons.shop} style={{width: size, height: size, tintColor: color}}/>
+          tabBarIcon: ({ color, size, focused }) => (
+            focused ? <Image source={icons.shopActive} style={{width: size, height: size}}/> : <Image source={icons.shop} style={{width: size, height: size, tintColor: color}}/>
           ),
           headerShown: false,
         }}
@@ -50,17 +51,17 @@ const TabNavigator = () => {
         name="My Device"
         component={AllDevice2}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Image source={icons.search} style={{width: size, height: size, tintColor: color}}/>
-          )
+          tabBarIcon: ({ color, size, focused }) => (
+            focused ? <Image source={icons.searchActive} style={{width: size, height: size}}/> : <Image source={icons.search} style={{width: size, height: size, tintColor: color}}/>
+          ),
         }}
       />
       <Tab.Screen
         name="Settings"
         component={Setting}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Image source={icons.Profile} style={{width: size, height: size, tintColor: color}}/>
+          tabBarIcon: ({ color, size, focused }) => (
+            focused ? <Image source={icons.profileActive} style={{width: size, height: size}}/> : <Image source={icons.Profile} style={{width: size, height: size, tintColor: color}}/>
           ),
         }}
       />

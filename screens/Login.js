@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,29 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { icons, COLORS, SIZES } from '../constants';
+import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { KeyboardAvoidingView } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const auth = FIREBASE_AUTH;
+
+  const signIn = async () => {
+    setLoading(true);
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+        console.log(err.code);
+            alert(err.code);
+    } finally {
+        setLoading(false);
+    }
+};
+
   return (
     <View style={styles.container}>
       <View>
@@ -27,12 +48,16 @@ const Login = ({ navigation }) => {
             <Text style={{color: COLORS.slate300, fontSize: SIZES.medium}}>Please login now</Text>
           </View>
         </View>
+        <KeyboardAvoidingView behavior='padding'>
         <View style={{ gap: SIZES.medium }}>
           <View>
             <Text style={{color: COLORS.slate500}}>Email / Phone *</Text>
             <TextInput
               style={styles.inputBox}
-              placeholder="Email / Phone "
+              placeholder="Email / Phone"
+              autoCapitalize='none' 
+              onChangeText={(text) => setEmail(text)}
+              value={email}
             />
           </View>
           <View>
@@ -40,28 +65,24 @@ const Login = ({ navigation }) => {
             <TextInput
               style={styles.inputBox}
               placeholder="must be 8 characters"
+              onChangeText={(text) => setPassword(text)}
+              value={password}
             />
           </View>
         </View>
+        </KeyboardAvoidingView>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
-          <Pressable
-            onPress={() => navigation.navigate("Home")}
-            style={{
-              backgroundColor: COLORS.blue500,
-              width: 300,
-              paddingVertical: SIZES.small,
-              paddingHorizontal: SIZES.large,
-              borderRadius: SIZES.small,
-              alignItems: "center",
-              justifyContent: "center",
-              borderColor: COLORS.blue500,
-              borderWidth: 1,
-            }}
-          >
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
-              Log in
-            </Text>
-          </Pressable>
+        {
+        loading ? <ActivityIndicator size="large" color="#0000ff"/> : <Pressable
+        onPress={() => signIn()}
+        style={styles.loginBtn}
+      >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
+          Log in
+        </Text>
+      </Pressable>
+    }
+          
           <View
             style={{
               flexDirection: "row",
@@ -91,18 +112,7 @@ const Login = ({ navigation }) => {
           </View>
           <Pressable
             onPress={() => navigation.navigate("Register")}
-            style={{
-              backgroundColor: COLORS.white500,
-              width: 300,
-              paddingVertical: SIZES.small,
-              borderRadius: SIZES.xSmall,
-              flexDirection: "row",
-              gap: SIZES.small,
-              alignItems: "center",
-              justifyContent: "center",
-              borderColor: COLORS.slate200,
-              borderWidth: 1,
-            }}
+            style={styles.googleLoginBtn}
           >
             <Image
               source={icons.google}
@@ -158,6 +168,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.slate200,
   },
+  loginBtn: {
+    backgroundColor: COLORS.blue500,
+    width: 300,
+    paddingVertical: SIZES.small,
+    paddingHorizontal: SIZES.large,
+    borderRadius: SIZES.small,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.blue500,
+    borderWidth: 1,
+  },
+  googleLoginBtn: {
+    backgroundColor: COLORS.white500,
+    width: 300,
+    paddingVertical: SIZES.small,
+    borderRadius: SIZES.xSmall,
+    flexDirection: "row",
+    gap: SIZES.small,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.slate200,
+    borderWidth: 1,
+  }
 });
 
 export default Login;

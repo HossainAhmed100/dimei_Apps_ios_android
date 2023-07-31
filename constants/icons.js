@@ -31,22 +31,30 @@ import whatsapp from '../assets/icons/whatsapp.png';
 import google from '../assets/icons/google.png';
 import userPlus from '../assets/icons/userPlus.png';
 import shop from '../assets/icons/shop.png';
-import shopBold from '../assets/icons/shopBold.png';
+import shopActive from '../assets/icons/shopActive.png';
 import downArrow from '../assets/icons/downArrow.png';
 import location from '../assets/icons/location.png';
 import filter from '../assets/icons/Filter.png';
 import close from '../assets/icons/close.png';
 import plus from '../assets/icons/plusBig.png';
+import alert from '../assets/icons/alert.png';
+import homeActive from '../assets/icons/homeActive.png';
+import searchActive from '../assets/icons/searchActive.png';
+import profileActive from '../assets/icons/profileActive.png';
 
 
 export default {
+    searchActive,
+    profileActive,
+    alert,
+    homeActive,
     plus,
     close,
     filter,
  location,
  shop,
  downArrow,
- shopBold,
+ shopActive,
  reset,
  google,
  search,

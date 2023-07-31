@@ -7,10 +7,61 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { icons, COLORS, SIZES } from '../constants';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { ActivityIndicator } from "react-native";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
 
 const Register = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
+  const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {fullName: "", userEmail: "", userPassword: "", userPhone: ""},})
+  const auth = FIREBASE_AUTH;
+  const onSubmit = async (data) => {
+    console.log(data);
+    const userEmail = data.userEmail;
+    const userPassword = data.userPassword;
+    const userPhone = data.userPhone;
+    const userName = data.fullName;
+    const userProfilePic = "";
+    const userNikName = "";
+    const userAddress = "";
+    const verifyedStatus = [
+      {"smsverifyed": false},
+      {"phoneverifyed": false},
+      {"faceverifyed": false},
+      {"kycverifyed": false},
+      {"emailverifyed": false},
+    ]
+    const userInfo = {userEmail, userName, userPhone, userAddress, userNikName, userProfilePic, verifyedStatus};
+     setLoading(true);
+    try {
+        await createUserWithEmailAndPassword(auth, userEmail, userPassword)
+        .then((userCredential) => {
+          const users = userCredential.user;
+          if (users.uid){
+            const newuser = async () => {
+              await axios.post('http://192.168.1.4:5000/addNewUser', {userInfo})
+              .then((res) => {
+                if (res.data.acknowledged){
+                  alert('Check your email');
+                }
+              })
+            }
+            newuser();
+          }
+        })
+        
+    } catch (err) {
+        console.log(err);
+        alert('Sign in failed: ' + err.message);
+    } finally {
+        setLoading(false);
+    }
+
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -35,52 +86,96 @@ const Register = ({ navigation }) => {
         <View style={{ gap: SIZES.medium }}>
           <View>
             <Text>Name *</Text>
-            <TextInput
-              style={styles.inputBox}
-              placeholder="Enter your full name"
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="Enter your full name"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="fullName"
             />
+          {errors.fullName && <Text style={{color: COLORS.red500}}>Full name is required.</Text>}
           </View>
           <View>
             <Text>Email address *</Text>
-            <TextInput
-              style={styles.inputBox}
-              placeholder="Enter your email address"
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="Enter your email address"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="userEmail"
             />
+          {errors.userEmail && <Text style={{color: COLORS.red500}}>Email is required.</Text>}
           </View>
           <View>
             <Text>Phone *</Text>
-            <TextInput
-              style={styles.inputBox}
-              placeholder="Enter your phone number"
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="Enter your phone number"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="userPhone"
             />
+          {errors.userPhone && <Text style={{color: COLORS.red500}}>Phone Number is required.</Text>}
           </View>
           <View>
             <Text>Password *</Text>
-            <TextInput
-              style={styles.inputBox}
-              placeholder="must be 8 characters"
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="must be 8 characters"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="userPassword"
             />
+          {errors.userPassword && <Text style={{color: COLORS.red500}}>Password is required.</Text>}
           </View>
         </View>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
-          <Pressable
-            onPress={() => navigation.navigate("Home")}
-            style={{
-              backgroundColor: COLORS.blue500,
-              width: 300,
-              paddingVertical: SIZES.small,
-              paddingHorizontal: SIZES.large,
-              borderRadius: SIZES.small,
-              alignItems: "center",
-              justifyContent: "center",
-              borderColor: COLORS.blue500,
-              borderWidth: 1,
-            }}
-          >
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
-              Sign up
-            </Text>
-          </Pressable>
+        {
+        loading ? <ActivityIndicator size="large" color="#0000ff"/> : <Pressable
+        onPress={handleSubmit(onSubmit)} 
+        style={styles.loginBtn}
+      >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
+          Sign up
+        </Text>
+      </Pressable>
+    }
           <View
             style={{
               flexDirection: "row",
@@ -110,18 +205,7 @@ const Register = ({ navigation }) => {
           </View>
           <Pressable
             onPress={() => navigation.navigate("Register")}
-            style={{
-              backgroundColor: COLORS.white500,
-              width: 300,
-              paddingVertical: SIZES.small,
-              borderRadius: SIZES.xSmall,
-              flexDirection: "row",
-              gap: SIZES.small,
-              alignItems: "center",
-              justifyContent: "center",
-              borderColor: COLORS.slate200,
-              borderWidth: 1,
-            }}
+            style={styles.googleLoginBtn}
           >
             <Image
               source={icons.google}
@@ -177,6 +261,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.slate200,
   },
+  loginBtn: {
+    backgroundColor: COLORS.blue500,
+    width: 300,
+    paddingVertical: SIZES.small,
+    paddingHorizontal: SIZES.large,
+    borderRadius: SIZES.small,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.blue500,
+    borderWidth: 1,
+  },
+  googleLoginBtn: {
+    backgroundColor: COLORS.white500,
+    width: 300,
+    paddingVertical: SIZES.small,
+    borderRadius: SIZES.xSmall,
+    flexDirection: "row",
+    gap: SIZES.small,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.slate200,
+    borderWidth: 1,
+  }
 });
 
 export default Register;
