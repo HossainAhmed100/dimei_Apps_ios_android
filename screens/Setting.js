@@ -1,44 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, ScrollView, Pressable, Image, Switch } from "react-native";
 import { COLORS, SIZES, icons } from '../constants';
 import { Feather } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
-import axios from "axios";
+import { AuthContext } from "../context/AuthProvider";
 
 const Setting = ({navigation}) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const auth = FIREBASE_AUTH;
+  const { user, userLoding, logOut } = useContext(AuthContext);
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
-  const sinOut = async () => {
-     try{
-      await signOut(auth)
-     .then(() => {
-      alert("LogOut Successfull");
-     })
-     }
-     catch(error){
-      console.log(error)
-     }
-  };
-  useEffect(() => {
-    setIsLoading(true)
-    onAuthStateChanged(auth, (user) => {
-      if(user?.uid){
-        const email = user.email;
-        axios.get(`http://192.168.1.4:5000/signleUser/${email}`)
-        .then((res) => {
-          setUser(res.data)
-        })    
-      }
-      setIsLoading(false)
+  const sinOut = () => {
+    logOut()
+    .then(() => {
+      alert("Log out Successfull");
     })
-  }, [])
+    .catch((error) => {
+      console.log(error.message);
+    });
+  };
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>

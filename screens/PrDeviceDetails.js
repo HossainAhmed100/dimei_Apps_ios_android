@@ -1,74 +1,96 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, Modal, Animated, Easing } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet} from 'react-native';
+import React, { useCallback, useRef } from 'react';
 import { COLORS, SIZES } from '../constants';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Entypo, MaterialCommunityIcons  } from '@expo/vector-icons';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useFocusEffect } from '@react-navigation/native';
 
 const PrDeviceDetails = ({navigation, route}) => {
+  const queryClient = useQueryClient()
   const deviceId = route.params.deviceId ;
-  const [myDevice, setMyDevice] = useState('');
-  const [loading, setLoading] = useState(true)
+  const firstTimeRef = useRef(true)
+
+  const { isLoading, data: myDevice = [], refetch } = useQuery({ 
+    queryKey: ['myDevice', deviceId], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.6:5000/myDeviceDetails/${deviceId}`);
+      return res.data;
+    } 
+  })
+
+  const canselTransferDevice = async () => {
+    try {
+        await axios.put(`http://192.168.1.6:5000/devicetransferStatusUpdate/${deviceId}`)
+        .then((res) => {
+        if (res.data.modifiedCount === 1){
+          queryClient.invalidateQueries({ queryKey: ['myDevice'] })
+        }})
+    } catch (err) {
+        console.log(err);
+    } finally {
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      if (firstTimeRef.current) {
+         firstTimeRef.current = false;
+         return;
+      }
+      refetch()
+    }, [refetch])
+  )
+
   const transferDevice = (did) => {
     navigation.navigate('TransferDevice', {deviceId: did})
   }
-  useEffect(() => {
-    setLoading(true);
-    axios.get(`http://192.168.1.4:5000/myDeviceDetails/${deviceId}`)
-      .then(response => {
-        if (response.data) {
-          setMyDevice(response.data);
-          setLoading(false)
-        } else {
-          console.log('No Device found in response');
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, []);
+
 
   return (
     <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
     <View showsVerticalScrollIndicator={false}>
     <View style={{paddingVertical: SIZES.small, paddingHorizontal: SIZES.medium}}>
+    { myDevice?.deviceTransferStatus && 
+        <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, marginVertical: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
+            <Text style={{color: COLORS.white500}}>Device Security Code : </Text>
+            <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'center'}}> 
+            <Text style={{marginRight: 10, color: COLORS.white500}}>56351164</Text> 
+            <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
+            </View>
+          </View>
+        </View>
+        }
       <View>
       {
         myDevice?.devicePicture && <Image source={{uri: myDevice?.devicePicture}} style={{width: "100%", height: 200, borderRadius: SIZES.small, resizeMode: "contain", borderColor: COLORS.slate200, borderWidth: 1}}/>
       }
       </View>
-        { myDevice.deviceTransferStatus && 
-            <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.slate200, marginVertical: 10, borderRadius: 10}}>
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
-            <Text>Device Security Code : </Text>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'center'}}> 
-            <Text style={{marginRight: 10}}>56351164</Text> 
-            <MaterialCommunityIcons name="content-copy" size={18} color="black" />
-            </View>
-          </View>
-      </View>
-        }
       <View>
         {
-          loading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>
+          isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>
         }
       </View>
     {
-      !loading ? <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+      !isLoading ? <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
       {
-        myDevice.deviceTransferStatus ? <TouchableOpacity onPress={() => transferDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, flex: 1, backgroundColor: COLORS.red500}}>
+        myDevice.deviceTransferStatus ? <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, flex: 1, backgroundColor: COLORS.red500}}>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Cencel Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-      </TouchableOpacity> : <TouchableOpacity onPress={() => transferDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, flex: 1, backgroundColor: COLORS.blue500}}>
+      </TouchableOpacity> : <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+      <TouchableOpacity onPress={() => transferDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, flex: 1, backgroundColor: COLORS.blue500}}>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
       </TouchableOpacity>
-      }
-        <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, backgroundColor: COLORS.white500, flex: 1, backgroundColor: COLORS.blue200}}>
+      <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, backgroundColor: COLORS.white500, flex: 1, backgroundColor: COLORS.blue200}}>
           <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
           <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
         </TouchableOpacity>
+      </View>
+      }
+        
       </View> : <ActivityIndicator />
     }
     </View>
@@ -123,11 +145,6 @@ const PhoneDetailsList = ({item}) => (
     <View style={styles.listItem}>
     <Text>Listing Date :</Text>
     <Text>{item.listingDate}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Device Status :</Text>
-    <Text>{item.deviceStatus ? "GOOD" : "BLOCK"}</Text>
     </View>
     <Divider />
   </View>

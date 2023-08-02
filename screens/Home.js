@@ -1,56 +1,43 @@
 import {
   View,
   Text,
-  ScrollView,
   Image,
   ImageBackground,
   StyleSheet,
   Pressable,
   TouchableOpacity,
-  ActivityIndicator,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useContext, useRef } from "react";
 import { images, icons, COLORS, SIZES } from '../constants';
 import MyDeviceCrad from "../components/Crads/MyDeviceCrad";
 import axios from "axios";
-import { onAuthStateChanged } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { useQuery } from "@tanstack/react-query";
+import { AuthContext } from "../context/AuthProvider";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Home = ({navigation}) => {
-  const [myDevice, setMyDevice] = useState('');
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    setIsLoading(true)
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      if(user){
-        const email = user.email;
-        axios.get(`http://192.168.1.4:5000/signleUser/${email}`)
-        .then((res) => {
-          setUser(res.data)
-          loadData(email)
-        })    
+  const { user, userLoding } = useContext(AuthContext);
+  const firstTimeRef = useRef(true)
+  const { isLoading, isError, data: myDevice = [], refetch } = useQuery({ 
+    queryKey: ['myDevice', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.6:5000/mydevice/${user?.userEmail}`);
+      return res.data;
+    } 
+  })
+
+  useFocusEffect(
+    useCallback(() => {
+      if (firstTimeRef.current) {
+         firstTimeRef.current = false;
+         return;
       }
-      setIsLoading(false)
-    })
-  }, [])
-  const loadData = async (email) => {
-      setLoading(true);
-   await axios.get(`http://192.168.1.4:5000/mydevice/${email}`)
-      .then(response => {
-        if (response.data) {
-          setMyDevice(response.data);
-          setLoading(false)
-        } else {
-          console.log('No Device found in response');
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    }
+      refetch()
+    }, [refetch])
+  )
+
 const viewDeviceDetails = (did) => {
   navigation.navigate('MyDeviceDetails', {deviceId: did})
 }
@@ -60,7 +47,7 @@ const viewDeviceDetails = (did) => {
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.small, backgroundColor: COLORS.white500, paddingHorizontal: SIZES.small}}>
         <View style={{flexDirection: "column", justifyContent: "center", gap: 2}}>
           <Text style={{color: COLORS.slate300, fontSize: SIZES.medium}}>Welcome</Text>
-          <Text style={{color: COLORS.slate500, fontSize: SIZES.xLarge, fontWeight: 600}}>Hossain Ahmed</Text>
+          <Text style={{color: COLORS.slate500, fontSize: SIZES.xLarge, fontWeight: 600}}>{user?.userName}</Text>
         </View>
         <View style={{flexDirection: "row", alignItems: "center", gap: SIZES.xSmall}}>
           <View style={{borderRadius: 6, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.slate200, padding: 10}}>
@@ -72,23 +59,23 @@ const viewDeviceDetails = (did) => {
         </View>
       </View>
 
-      <View style={{paddingVertical: SIZES.small, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
-        <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.xSmall}}>
-          <View style={{ borderRadius: SIZES.xSmall}}>
+      <View style={{paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
+      <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
+          <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.tokenQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.diamond} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Token</Text>
             <Text style={styles.balanceValue}>{user?.tokenQuantity}</Text>
             </ImageBackground>
           </View>
-          <View style={{ borderRadius: SIZES.xSmall}}>
+          <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.deviceQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.chip} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Device</Text>
             <Text style={styles.balanceValue}>{user?.deviceQuantity}</Text>
             </ImageBackground>
           </View>
-          <View style={{ borderRadius: SIZES.xSmall}}>
+          <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.referenceQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.usersGroup} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Reference</Text>          
@@ -96,7 +83,10 @@ const viewDeviceDetails = (did) => {
             </ImageBackground>
           </View>
         </View>
-        <View style={styles.btnContainer}>
+        </View>
+
+      <View style={{padding: SIZES.small, backgroundColor: COLORS.white500}}>
+      <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
           <Pressable style={styles.button} onPress={() => navigation.navigate('BuyToken')}>
           <Text style={styles.buttonText}>By Token</Text>
           <Image source={icons.shoppingCart} style={styles.buttonIcons}/>
@@ -111,7 +101,6 @@ const viewDeviceDetails = (did) => {
           </Pressable>
         </View>
       </View>
-      
       <View style={{paddingBottom: SIZES.xLarge, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>My Device list</Text> 
@@ -121,14 +110,16 @@ const viewDeviceDetails = (did) => {
         </TouchableOpacity>
         </View>
         <View style={{paddingVertical: 20}}>
-        {myDevice ? <FlatList 
+        {
+          isLoading ? <View><ActivityIndicator /></View> : <View>
+            {myDevice.length !== 0 ? <FlatList 
           data={myDevice}
           keyExtractor={item => item._id}
           renderItem={({item}) => (
             <MyDeviceCrad viewDeviceDetails={viewDeviceDetails} item={item}/>
           )}
-          refreshing={loading}
-          onRefresh={loadData}
+          refreshing={isLoading}
+          // onRefresh={loadData}
         /> : <FlatList 
         data={[1]}
         keyExtractor={item => item}
@@ -137,9 +128,11 @@ const viewDeviceDetails = (did) => {
             <Text>Not Device Found</Text>
           </View>
         )}
-        refreshing={loading}
-        onRefresh={loadData}
+        refreshing={isLoading}
+        // onRefresh={loadData}
       />}
+          </View>
+        }
         </View>
       </View>
 
@@ -162,7 +155,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 10, 
     height: 105,
-    width: 105,
     padding: SIZES.xSmall,
     overflow: "hidden",
   },
@@ -177,7 +169,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2
+    gap: 2,
+    flex: 1
   },
   buttonText: {
     color: 'white',
@@ -186,12 +179,7 @@ const styles = StyleSheet.create({
   },
   buttonIcons: {
     width: 17, height: 17, tintColor: COLORS.white500
-  },
-  btnContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-  },
+  }
 })
 
 export default Home;

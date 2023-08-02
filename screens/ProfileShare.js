@@ -1,27 +1,11 @@
 import { View, Text, Image, Pressable,ImageBackground } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { COLORS, SIZES, icons, images } from '../constants';
+import React, { useContext } from 'react';
+import { COLORS, SIZES, images } from '../constants';
 import { Feather } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
-import axios from 'axios';
-import { onAuthStateChanged } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../FirebaseConfig';
+import { AuthContext } from '../context/AuthProvider';
 const ProfileShare = () => {
-    const [user, setUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-      setIsLoading(true)
-      onAuthStateChanged(FIREBASE_AUTH, (user) => {
-        if(user){
-          const email = user.email;
-          axios.get(`http://192.168.1.4:5000/signleUser/${email}`)
-          .then((res) => {
-            setUser(res.data)
-          })    
-        }
-        setIsLoading(false)
-      })
-    }, [])
+  const { user, userLoding } = useContext(AuthContext);
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
       <ImageBackground source={images.patterns} style={{flex: 1, resizeMode: 'cover', justifyContent: "center"}}>

@@ -78,7 +78,7 @@ const BuyToken = () => {
         ))
         }
       </View>
-      <View style={{paddingHorizontal: SIZES.small, paddingVertical: SIZES.medium}}>
+      <View style={{paddingHorizontal: SIZES.small}}>
         <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Enter Token You want to buy</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.slate100, borderRadius: SIZES.xSmall, justifyContent: "center"}}>
         <SimpleLineIcons style={{borderRightWidth: 2, borderRightColor: COLORS.white500,paddingVertical: SIZES.small, paddingHorizontal: SIZES.small}} name="diamond" size={24} color={COLORS.slate500} />

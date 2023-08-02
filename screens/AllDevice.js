@@ -1,55 +1,124 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+
+import React, { useCallback, useContext, useRef, useState } from 'react';
+import { FlatList, Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Tab, TabView } from '@rneui/themed';
 import axios from 'axios';
 import { COLORS, SIZES, icons } from '../constants';
 import MyDeviceCrad from '../components/Crads/MyDeviceCrad';
-const AllDevice = () => {
+import DeviceAcceptCard from '../components/Crads/DeviceAcceptCard';
+import { AuthContext } from '../context/AuthProvider';
+import { useQuery } from '@tanstack/react-query';
+import { useFocusEffect } from '@react-navigation/native';
 
-const [myDevice, setMyDevice] = useState('');
-const [loading, setLoading] = useState(true)
-const loadData = () => {
-  setLoading(true);
-  axios.get('http://192.168.1.4:5000/mydevice')
-    .then(response => {
-      if (response.data) {
-        setMyDevice(response.data);
-        setLoading(false)
-      } else {
-        console.log('No Device found in response');
+const AllDevice = ({navigation}) => {
+  const [index, setIndex] = useState(0);
+  const { user, userLoding } = useContext(AuthContext);
+  const firstTimeRef = useRef(true)
+
+  const { isLoading, isError, data: myDevice = [], refetch: refetchMyDevice } = useQuery({ 
+    queryKey: ['myDevice', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.6:5000/mydevice/${user?.userEmail}`);
+      return res.data;
+    } 
+  })
+
+  const { isLoading: reciveDeviceLoad, data: reciveDevice = [], refetch } = useQuery({ 
+    queryKey: ['reciveDevice', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.6:5000/reciveTransferDevice/${user?.userEmail}`);
+      return res.data;
+    } 
+  })
+
+  useFocusEffect(
+    useCallback(() => {
+      if (firstTimeRef.current) {
+         firstTimeRef.current = false;
+         return;
       }
-    })
-    .catch(error => {
-      console.log(error);
-    });
-}
-useEffect(() => {
-  loadData()
-}, []);
-  return (
-  <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
-     <View style={styles.searchContainer}>
-        <View style={styles.searchWrapper}>
-          {/* <Image source={icons.search} style={{width: 30, height: 30, tintColor: COLORS.slate200}}/> */}
-          <TextInput style={styles.searchInput} placeholder="Search UniId, Name, Brand. . . "/>
-        </View>
-        <TouchableOpacity style={styles.filterBtn}>
-        <Image source={icons.search} style={styles.filterBtnImage}/>
-        </TouchableOpacity>
-      </View>
-      <View style={{paddingHorizontal: 10}}>
-        <FlatList 
-        style={{minHeight: "100%"}}
-          data={myDevice}
-          keyExtractor={item => item._id}
-          renderItem={({item}) => (
-            <MyDeviceCrad item={item}/>
-          )}
-          refreshing={loading}
-          onRefresh={loadData}
-        />
-        </View>
-  </View>
+      refetch()
+      refetchMyDevice()
+    }, [refetch, refetchMyDevice])
   )
+
+    const viewDeviceDetails = (did) => {
+      navigation.navigate('MyDeviceDetails', {deviceId: did})
+    }
+    return (
+      <>
+      <Tab
+        value={index}
+        onChange={(e) => setIndex(e)}
+        containerStyle={(active) => ({
+          backgroundColor: active ? COLORS.blue500 : COLORS.slate100,
+        })}
+        indicatorStyle={{
+          backgroundColor: COLORS.blue200,
+          height: 3,
+        }}
+      >
+        <Tab.Item
+          title="All Device"
+          titleStyle={(active) => ({
+              color: active ? COLORS.white500 : COLORS.slate500,
+              fontSize: 12
+          })}
+        />
+        <Tab.Item
+          title="Recive Device"
+          titleStyle={(active) => ({
+              color: active ? COLORS.white500 : COLORS.slate500,
+              fontSize: 12
+          })}
+        />
+      </Tab>
+  
+      <TabView value={index} onChange={setIndex} animationType="spring">
+        <TabView.Item style={{ backgroundColor: 'red', width: '100%' }}>
+        <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
+          <View style={styles.searchContainer}>
+              <View style={styles.searchWrapper}>
+              {/* <Image source={icons.search} style={{width: 30, height: 30, tintColor: COLORS.slate200}}/> */}
+              <TextInput style={styles.searchInput} placeholder="Search UniId, Name, Brand. . . "/>
+              </View>
+              <TouchableOpacity style={styles.filterBtn}>
+              <Image source={icons.search} style={styles.filterBtnImage}/>
+              </TouchableOpacity>
+          </View>
+          {
+            !userLoding && <View style={{paddingHorizontal: SIZES.small}}>
+            <FlatList 
+            style={{minHeight: "100%"}}
+            data={myDevice}
+            keyExtractor={item => item._id}
+            renderItem={({item}) => (
+                <MyDeviceCrad viewDeviceDetails={viewDeviceDetails} item={item}/>
+            )}
+            refreshing={isLoading}
+            />
+          </View>
+          }
+        </View>
+        </TabView.Item>
+        <TabView.Item style={{ backgroundColor: 'red', width: '100%' }}>
+        <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
+          <View style={{padding: SIZES.small}}>
+            <FlatList 
+              style={{minHeight: "100%"}}
+              data={reciveDevice}
+              keyExtractor={item => item._id}
+              renderItem={({item}) => (
+                  <DeviceAcceptCard item={item}/>
+              )}
+              refreshing={reciveDeviceLoad}
+              />
+            </View>
+        </View>
+        </TabView.Item>
+      </TabView>
+    </>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -57,8 +126,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     backgroundColor: COLORS.white500,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    padding: SIZES.small,
     justifyContent: "space-between",
   },
   searchWrapper: {
@@ -91,28 +159,7 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: "contain",
     tintColor: COLORS.white500,
-  },
-  tabContainer:{
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "space-between", 
-    gap: 5, 
-    backgroundColor: COLORS.white500, 
-    paddingVertical: 5, 
-    paddingHorizontal: 10
-  },
-  tabBtn:{
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "center", 
-    gap: 5, 
-    paddingHorizontal: 10, 
-    paddingVertical: 7,
-    borderRadius: SIZES.xSmall, borderWidth: 1, 
-    borderColor: COLORS.slate200, marginRight: 10
-  },
-  tabBtnText:{fontSize: SIZES.small, color: COLORS.slate500},
-  tabBtnIcon:{width: 15, height: 15, resizeMode: "cover", tintColor: COLORS.slate500},
+  }
 })
 
 export default AllDevice

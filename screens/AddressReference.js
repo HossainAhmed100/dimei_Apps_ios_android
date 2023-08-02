@@ -1,36 +1,25 @@
 import { View, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, FlatList } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { COLORS, SIZES, icons } from '../constants';
 import AddReferenceCard from '../components/Crads/AddReferenceCard';
-import { onAuthStateChanged } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../FirebaseConfig';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthProvider';
+import { useQuery } from '@tanstack/react-query';
 
 
 
 
 const AddressReference = () => {
-  const [user, setUser] = useState(null);
-  const [trsnData, setTrnsData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const fetchData = async () => {
-    setIsLoading(true)
-    await axios.get(`http://192.168.1.4:5000/userReference/`)
-    .then((res) => {
-      setTrnsData(res.data)
-      setIsLoading(false)
-    }) 
-  }
-  useEffect(() => {
-    setIsLoading(true)
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      if(user?.uid){
-        const email = user.email; 
-        setUser(user)
-      }
-    })
-    fetchData()
-  }, [])
+  const { user, userLoding } = useContext(AuthContext);
+
+  const { isLoading, isError, data: trsnData = [], error } = useQuery({ 
+    queryKey: ['trsnData', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.6:5000/userReference/`);
+      return res.data;
+    } 
+  })
+
   return (
     <View style={styles.container}>
       <View style={{padding: SIZES.small}}>
@@ -50,9 +39,8 @@ const AddressReference = () => {
         renderItem={({item}) => (
           <AddReferenceCard item={item}/>
         )}
-        refreshing={isLoading}
-        onRefresh={fetchData}
         contentContainerStyle={{ rowGap: 10 }}
+        refreshing={isLoading}
       />
       </View>
       </View>

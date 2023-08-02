@@ -1,28 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { COLORS, SIZES } from '../constants';
 import { Entypo, MaterialCommunityIcons, Feather  } from '@expo/vector-icons';
-import { onAuthStateChanged } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../FirebaseConfig';
-import axios from 'axios';
+import { AuthContext } from '../context/AuthProvider';
 
 const ProfileDetails = ({ navigation })  => {
-    const [user, setUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-      setIsLoading(true)
-      onAuthStateChanged(FIREBASE_AUTH, (user) => {
-        if(user){
-          const email = user.email;
-          axios.get(`http://192.168.1.4:5000/signleUser/${email}`)
-          .then((res) => {
-            setUser(res.data)
-            // console.log(res.data)
-          })    
-        }
-        setIsLoading(false)
-      })
-    }, [])
+  const { user, userLoding } = useContext(AuthContext);
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, flex: 1, minHeight: "100%"}}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from "react";  
+import React, { useContext, useEffect, useState } from "react";  
 import { COLORS, SIZES, images } from '../constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView } from "react-native";
@@ -8,49 +8,65 @@ import { CheckBox } from '@rneui/themed';
 import { useForm, Controller } from "react-hook-form";
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../FirebaseConfig';
+import auth from "../FirebaseConfig";
+import { useQuery } from '@tanstack/react-query';
+import { AuthContext } from '../context/AuthProvider';
 
 const TransferDevice =  ({navigation, route}) => {
     const deviceId = route.params.deviceId ;
     const [checked, setChecked] = React.useState(true);
     const toggleCheckbox = () => setChecked(!checked);
-    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountId: "", transferDate: "7/26/2023"}})
-    const [loading, setLoading] = useState(false);
-    const [myDevice, setMyDevice] = useState('');
-    const [user, setUser] = useState(null);
-    useEffect(() => {
-        setLoading(true)
-        onAuthStateChanged(FIREBASE_AUTH, (user) => {
-        if(user){
-            const email = user.email;
-            axios.get(`http://192.168.1.4:5000/signleUser/${email}`)
-            .then((res) => {
-            setUser(res.data)
-            loadData(email)
-            })    
-        }
-        setLoading(false)
-        })
-    }, [])
-    const loadData = async (email) => {
-        setLoading(true);
-    await axios.get(`http://192.168.1.4:5000/getSingleDevice/${deviceId}`)
-        .then(response => {
-            if (response.data) {
-            setMyDevice(response.data);
-            setLoading(false)
-            } else {
-            console.log('No Device found in response');
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        });
-        };
+    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "654654", transferDate: "1/7/2023"}})
 
-        const onSubmit = (data) => {
-            console.log(data)
+    const { user, userLoding } = useContext(AuthContext);
+
+    const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
+        queryKey: ['myDevice', user?.userEmail, deviceId], 
+        queryFn: async () => {
+        const res = await axios.get(`http://192.168.1.6:5000/getSingleDevice/${deviceId}`);
+        return res.data;
+        } 
+    })
+
+     const onSubmit = async (data) => {
+        const ownerEmail = user?.userEmail;
+        const ownerPicture = user?.userProfilePic;
+        const ownerName = user?.userName;
+        const reciverAccountEmail = data.reciverAccountEmail;
+        const transferDate = data.transferDate;
+        const deviceModelName =  myDevice?.modelName;
+        const brand = myDevice?.brand;
+        const colorVarient = myDevice?.colorVarient;
+        const ram = myDevice?.ram;
+        const storage = myDevice?.storage;
+        const devicePicture = myDevice?.devicePicture;
+        const deviceId = myDevice?._id;
+        const deviceStatus = "OwnerShip Transfer";
+        const secretCode = 565656;
+        const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode}
+
+        if(user){
+        await axios.put(`http://192.168.1.6:5000/devicetransferStatusUpdate/${deviceId}`)
+        .then((res) => {
+        if (res.data.modifiedCount === 1){
+            try{
+              axios.post(`http://192.168.1.6:5000/reciveTransferDevice/`, {transferDeviceInfo})
+              .then((res) => {
+                if (res.data.acknowledged){
+                navigation.navigate('Device', {deviceId: deviceId})
+                alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
+                }
+            })
+            }catch (err) {
+                console.log(err);
+                alert('Device Added Feild');
+            } finally {}
+        }})
         }
+     }
+
+
+
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
         <View style={{padding: SIZES.small}}>
@@ -65,36 +81,28 @@ const TransferDevice =  ({navigation, route}) => {
                 </View>
             </View>
         <View style={styles.container}>
-        <View>
+       
         <KeyboardAvoidingView behavior='padding'>
         <View style={{ gap: SIZES.medium }}>
-            <View style={{marginTop: 10}}>
+            <View>
             <Text style={{color: COLORS.slate500}}>Device Receiver Account ID *</Text>
-            <View style={styles.searchContainer}>
-            <View style={styles.searchWrapper}>
             <Controller
               control={control}
               rules={{
                 required: true,
-                maxLength: 10,
-                minLength: 10
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput 
-                style={styles.searchInput} 
-                placeholder="Write Device receiver Account ID"
+                style={styles.inputBox}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
                 />
                 )}
-                name="reciverAccountId"
+                name="reciverAccountEmail"
             />
-            <TouchableOpacity><MaterialCommunityIcons name="line-scan" size={24} color={COLORS.slate600} /></TouchableOpacity>
-            </View>
-          {errors.reciverAccountId && <Text style={{color: COLORS.red500}}>Receiver Account ID is required</Text>}
-                
-            </View>
+            {errors.reciverAccountEmail && <Text style={{color: COLORS.red500}}>Receiver Account Email is required</Text>}
+            
             </View>
             <View>
             <Text style={{color: COLORS.slate500}}>Date</Text>
@@ -117,7 +125,6 @@ const TransferDevice =  ({navigation, route}) => {
             
             </View>
             <View>
-            <View>
                 <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Device Transfer Fee</Text>
                 <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
                 <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
@@ -131,34 +138,32 @@ const TransferDevice =  ({navigation, route}) => {
                 </View>
                 </View>
             </View>
-            </View>
             <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-             <CheckBox
-           checked={checked}
-           onPress={toggleCheckbox}
-           iconType="material-community"
-           checkedIcon="checkbox-marked"
-           uncheckedIcon="checkbox-blank-outline"
-           checkedColor={COLORS.blue500}
-         />
+            <CheckBox
+            checked={checked}
+            onPress={toggleCheckbox}
+            iconType="material-community"
+            checkedIcon="checkbox-marked"
+            uncheckedIcon="checkbox-blank-outline"
+            checkedColor={COLORS.blue500}
+            />
             <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500}}>terms</Text> and <Text style={{color: COLORS.blue500}}>condition</Text></Text>
             </View>
         </View>
         </KeyboardAvoidingView>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
         {
-        loading ? <Pressable style={styles.loginBtn}> 
+        isLoading ? <Pressable style={styles.loginBtn}> 
         <ActivityIndicator size="large" color={COLORS.white500}/> 
-        </Pressable> : <Pressable onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
+        </Pressable> : <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
-        </Pressable>
+        </TouchableOpacity>
         }
             
        
         </View>
         </View>
     </View>
-        </View>
     </View>
   )
 }

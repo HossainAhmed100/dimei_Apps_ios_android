@@ -1,33 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ImageBackground, TouchableOpacity, Image, ScrollView, FlatList } from "react-native";
+import React, { useContext } from "react";
+import { View, Text, ImageBackground, TouchableOpacity, Image, FlatList } from "react-native";
 import { COLORS, SIZES, images } from "../constants";
 import { Feather } from '@expo/vector-icons';
 import axios from "axios";
-import { onAuthStateChanged } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { useQuery } from "@tanstack/react-query";
+import { AuthContext } from "../context/AuthProvider";
 
 const PurchaseHistory = ({navigation}) => {
-  const [user, setUser] = useState(null);
-  const [trsnData, setTrnsData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const fetchData = async (email) => {
-    setIsLoading(true)
-    await axios.get(`http://192.168.1.4:5000/userTranstion/`)
-    .then((res) => {
-      setTrnsData(res.data)
-      setIsLoading(false)
-    }) 
-  }
-  useEffect(() => {
-    setIsLoading(true)
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      if(user?.uid){
-        const email = user.email; 
-        setUser(user)
-        fetchData(email)
-      }
-    })
-  }, [])
+  const { user, userLoding } = useContext(AuthContext);
+
+  const { isLoading, isError, data: trsnData = [], error } = useQuery({ 
+    queryKey: ['trsnData', user?.userEmail],
+    queryFn: async () => {
+      const res =  await axios.get(`http://192.168.1.6:5000/userTranstion/`);
+      return res.data;
+    } 
+  })
 
  return(
   <View>
@@ -74,7 +62,6 @@ const PurchaseHistory = ({navigation}) => {
           <ListBox item={item}/>
         )}
         refreshing={isLoading}
-        onRefresh={fetchData}
         contentContainerStyle={{ rowGap: 10 }}
       />
       </View>

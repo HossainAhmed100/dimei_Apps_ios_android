@@ -7,7 +7,7 @@ import {
     Pressable,
 } from "react-native";
 import { COLORS, SIZES } from '../constants';
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import auth from "../FirebaseConfig";
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 
@@ -15,7 +15,6 @@ const ResetPassword = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const auth = FIREBASE_AUTH;
 
     const signIn = async () => {
     console.log(email, password)

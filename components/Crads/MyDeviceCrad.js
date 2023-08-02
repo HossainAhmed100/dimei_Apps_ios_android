@@ -4,7 +4,7 @@ import { COLORS, SIZES } from '../../constants';
 
 const MyDeviceCrad = ({item, viewDeviceDetails}) => {
   return (
-    <Pressable onPress={() => viewDeviceDetails(item._id)} style={style.cardContainer}>
+    <Pressable onPress={() => viewDeviceDetails(item._id)} style={[style.cardContainer, {borderColor: item?.deviceTransferStatus ? COLORS.red200 : COLORS.slate100}]}>
     {item?.devicePicture &&  <Image
       source={{ uri: item.devicePicture }}
       width={120}
@@ -16,6 +16,10 @@ const MyDeviceCrad = ({item, viewDeviceDetails}) => {
       }}
     />}
       <View>
+        {item?.deviceTransferStatus &&  <View style={{position: "absolute", top: -17, right: -75, backgroundColor: COLORS.red200, padding: 5, borderBottomLeftRadius: 10}}>
+        <Text style={{color: COLORS.red500}}>Transfaring</Text>
+        </View>}
+       
           <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item.modelName}</Text>
           <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4}}>
           {item.deviceStatus ? <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.green200, borderRadius: 4}}>
@@ -41,13 +45,13 @@ const MyDeviceCrad = ({item, viewDeviceDetails}) => {
 const style = StyleSheet.create({
     cardContainer:{
         borderWidth: 1, 
-        borderColor: COLORS.slate100, 
         borderRadius: SIZES.xSmall, 
         flexDirection: "row", 
         alignItems: "center", 
         justifyContent: "flex-start", 
         marginBottom: SIZES.xSmall, 
-        padding: 10
+        padding: 10,
+        overflow: "hidden"
     },
 })
 

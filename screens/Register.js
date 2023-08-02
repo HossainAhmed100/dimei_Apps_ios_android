@@ -11,16 +11,14 @@ import React, { useState } from "react";
 import { icons, COLORS, SIZES } from '../constants';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ActivityIndicator } from "react-native";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import auth from "../FirebaseConfig";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 
 const Register = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {fullName: "", userEmail: "", userPassword: "", userPhone: ""},})
-  const auth = FIREBASE_AUTH;
   const onSubmit = async (data) => {
-    console.log(data);
     const userEmail = data.userEmail;
     const userPassword = data.userPassword;
     const userPhone = data.userPhone;
@@ -43,7 +41,7 @@ const Register = ({ navigation }) => {
           const users = userCredential.user;
           if (users.uid){
             const newuser = async () => {
-              await axios.post('http://192.168.1.4:5000/addNewUser', {userInfo})
+              await axios.post('http://192.168.1.6:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                   alert('Check your email');
@@ -190,7 +188,7 @@ const Register = ({ navigation }) => {
                 borderWidth: 0.5,
                 borderColor: COLORS.slate200,
                 borderStyle: "solid",
-                width: "25%",
+                flex: 1
               }}
             ></View>
             <Text style={{ color: COLORS.slate300 }}>Or Login with</Text>
@@ -199,7 +197,7 @@ const Register = ({ navigation }) => {
                 borderWidth: 0.5,
                 borderColor: COLORS.slate200,
                 borderStyle: "solid",
-                width: "25%",
+                flex: 1
               }}
             ></View>
           </View>
