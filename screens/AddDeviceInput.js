@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
-import React, { useState } from "react";  
+import React, { useContext, useState } from "react";  
 import { COLORS, SIZES, images } from '../constants';
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
@@ -7,17 +7,18 @@ import DropDownPicker from 'react-native-dropdown-picker';
 // import CheckBox from 'react-native-check-box';
 import { CheckBox } from '@rneui/themed';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthProvider';
 
 const AddDeviceInput = ({ navigation }) => {
     const [checked, setChecked] = React.useState(true);
     const toggleCheckbox = () => setChecked(!checked);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isChecked, setIsChecked] = useState(false);
+    const [deviceImei, setDeviceImei] = useState('');
+    const [listingDate, setListingDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
     const [items, setItems] = useState([]);
+    const { user, userLoding } = useContext(AuthContext);
     const addDevice = async () => {
     const modelName =  "Iphone 13 Pro";
     const brand = "Apple";
@@ -38,18 +39,22 @@ const AddDeviceInput = ({ navigation }) => {
     const daysUsed = "0";
     const deviceImei = "4658925796458359";
     const devicePicture = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
-    const ownerEmail = "dinislam@gmail.com";
-    const devcieOrigin = "New Device";
+    const ownerEmail = user?.userEmail;
+    const devcieOrigin = value;
     const haveBoxde = false;
+    const secretCode = "";
     const batteryRemovable = false;
+    const deviceTransferStatus = false;
+    const deviceSellingStatus = false;
     
-    const devcieInfo = {modelName, brand, colorVarient, ram, storage, battery, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail};
+    const devcieInfo = {modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus};
      setLoading(true);
     try {
-        await axios.post('http://192.168.1.6:5000/addNewDevice', {devcieInfo})
+        await axios.post('http://192.168.1.3:5000/addNewDevice', {devcieInfo})
         .then((res) => {
         if (res.data.acknowledged){
             alert('Check your email');
+            navigation.navigate('Home')
         }
         })
     } catch (err) {
@@ -60,8 +65,8 @@ const AddDeviceInput = ({ navigation }) => {
     }
   }; 
 const itemsSelect = [
-    {label: "My New Phone", value: "My Device"},
-    {label: "I Find This Device", value: "finddevice"}
+    {label: "I Bought this Devcie new", value: "mynewDevice"},
+    {label: "I Found This Device", value: "finddevice"}
 ]
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
@@ -81,31 +86,21 @@ const itemsSelect = [
         <KeyboardAvoidingView behavior='padding'>
         <View style={{ gap: SIZES.medium }}>
             <View>
-            <Text style={{color: COLORS.slate500}}>Device IMEI</Text>
+            <Text style={{color: COLORS.slate500}}>Device IMEI *</Text>
             <TextInput
                 style={styles.inputBox}
                 placeholder="Old Password"
                 autoCapitalize='none' 
-                onChangeText={(text) => setEmail(text)}
+                onChangeText={(text) => setDeviceImei(text)}
                 value={"4658925796458359"}
             />
             </View>
             <View>
-            <Text style={{color: COLORS.slate500}}>Brand</Text>
-            <TextInput
-                style={styles.inputBox}
-                placeholder="New Password"
-                autoCapitalize='none' 
-                onChangeText={(text) => setEmail(text)}
-                value={"Apple"}
-            />
-            </View>
-            <View>
-            <Text style={{color: COLORS.slate500}}>Date</Text>
+            <Text style={{color: COLORS.slate500}}>Listing Date *</Text>
             <TextInput
                 style={styles.inputBox}
                 placeholder="Confirm Password"
-                onChangeText={(text) => setPassword(text)}
+                onChangeText={(text) => setListingDate(text)}
                 value={"7/26/2023"}
             />
             
@@ -142,7 +137,7 @@ const itemsSelect = [
             </View>
             </View>
             </View> */}
-            <View>
+            <View style={{zIndex: 100}}>
             <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device origin *</Text>
             <DropDownPicker
             open={open}

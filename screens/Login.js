@@ -48,7 +48,6 @@ const Login = ({ navigation }) => {
             <Text style={{color: COLORS.slate300, fontSize: SIZES.medium}}>Please login now</Text>
           </View>
         </View>
-        <KeyboardAvoidingView behavior='padding'>
         <View style={{ gap: SIZES.medium }}>
         <View>
             <Text>Email address *</Text>
@@ -91,7 +90,6 @@ const Login = ({ navigation }) => {
           {errors.userPassword && <Text style={{color: COLORS.red500}}>Password is required.</Text>}
           </View>
         </View>
-        </KeyboardAvoidingView>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 20 }}>
         {
           loading ? <ActivityIndicator size="large" color="#0000ff"/> : <Pressable

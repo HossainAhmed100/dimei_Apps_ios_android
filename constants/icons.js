@@ -41,9 +41,19 @@ import alert from '../assets/icons/alert.png';
 import homeActive from '../assets/icons/homeActive.png';
 import searchActive from '../assets/icons/searchActive.png';
 import profileActive from '../assets/icons/profileActive.png';
+import mobile from '../assets/icons/mobile.png';
+import chipActive from '../assets/icons/chipActive.png';
+import chat from '../assets/icons/chat.png';
+import chatActive from '../assets/icons/chatActive.png';
+import deviceChip from '../assets/icons/deviceChip.png';
 
 
 export default {
+    chipActive,
+    deviceChip,
+    chat,
+    chatActive,
+    mobile,
     searchActive,
     profileActive,
     alert,

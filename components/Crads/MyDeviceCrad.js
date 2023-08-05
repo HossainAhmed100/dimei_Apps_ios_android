@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
+import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
 import { COLORS, SIZES } from '../../constants';
 
 const MyDeviceCrad = ({item, viewDeviceDetails}) => {
   return (
-    <Pressable onPress={() => viewDeviceDetails(item._id)} style={[style.cardContainer, {borderColor: item?.deviceTransferStatus ? COLORS.red200 : COLORS.slate100}]}>
+    <Pressable onPress={() => viewDeviceDetails(item?._id)} style={[style.cardContainer, {borderColor: item?.deviceTransferStatus ? COLORS.red200 : COLORS.slate100}]}>
     {item?.devicePicture &&  <Image
       source={{ uri: item.devicePicture }}
       width={120}

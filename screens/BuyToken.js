@@ -64,7 +64,7 @@ const BuyToken = () => {
 
   return (
       <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-    <ScrollView style={{backgroundColor: COLORS.white500}}>
+    <ScrollView style={{backgroundColor: COLORS.white500, marginBottom: 100}}>
       <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, paddingVertical: 10, paddingHorizontal: 10, alignItems: "center", justifyContent: "center"}}>
         {
         tokenPriceList.map((token, i) => (

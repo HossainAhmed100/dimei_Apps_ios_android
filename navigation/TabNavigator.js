@@ -6,6 +6,7 @@ import { icons, COLORS, SIZES } from '../constants';
 import { Image } from "react-native";
 import Shop2 from "../screens/Shop";
 import AllDevice2 from "../screens/AllDevice";
+import Chat from "../screens/Chat";
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +39,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="All Devices"
+        name="AllDevices"
         component={Shop2}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
@@ -48,11 +49,20 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="My Device"
+        name="Message"
+        component={Chat}
+        options={{
+          tabBarIcon: ({ color, size, focused }) => (
+            focused ? <Image source={icons.chatActive} style={{width: size, height: size}}/> : <Image source={icons.chat} style={{width: size, height: size, tintColor: color}}/>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MyDevice"
         component={AllDevice2}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
-            focused ? <Image source={icons.searchActive} style={{width: size, height: size}}/> : <Image source={icons.search} style={{width: size, height: size, tintColor: color}}/>
+            focused ? <Image source={icons.chipActive} style={{width: size, height: size}}/> : <Image source={icons.chip} style={{width: size, height: size, tintColor: color}}/>
           ),
         }}
       />

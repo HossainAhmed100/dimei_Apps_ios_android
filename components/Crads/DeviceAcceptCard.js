@@ -4,7 +4,7 @@ import { COLORS, SIZES } from '../../constants';
 import { Divider } from '@rneui/themed';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const DeviceAcceptCard = ({item}) => {
+const DeviceAcceptCard = ({item, acceotDevice}) => {
   return (
     <View style={styles.cardContainer}>
      <View style={{alignItems: "center", justifyContent: "center", width: "100%"}}>
@@ -20,7 +20,7 @@ const DeviceAcceptCard = ({item}) => {
      </View>
       <View>
       <PhoneDetailsList item={item}/>
-      <TransferDeviceAction item={item}/>
+      <TransferDeviceAction acceotDevice={acceotDevice} item={item}/>
       </View>
   </View>
   )
@@ -67,9 +67,9 @@ const PhoneDetailsList = ({item}) => (
       <Divider />
     </View>
   )
-const TransferDeviceAction = ({item}) => (
+const TransferDeviceAction = ({item, acceotDevice}) => (
     <View style={{flexDirection: "row", width: "100%", alignItems: "center", padding: 10, gap: 10}}>
-     <TouchableOpacity style={[styles.deviceActionButton, {backgroundColor: COLORS.blue500}]}>
+     <TouchableOpacity onPress={() => acceotDevice(item?._id)} style={[styles.deviceActionButton, {backgroundColor: COLORS.blue500}]}>
         <Text style={{color: COLORS.white500, fontWeight: 600}}>Accept</Text>
         <MaterialCommunityIcons name="checkbox-marked-circle-outline" size={SIZES.large} color={COLORS.white500} />
      </TouchableOpacity>

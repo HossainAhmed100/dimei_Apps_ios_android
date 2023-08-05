@@ -23,6 +23,8 @@ import TabNavigator from './TabNavigator';
 import Home from '../screens/Home';
 import ScreenHeaderBtn from '../components/Button/ScreenHeaderBtn';
 import { icons } from '../constants';
+import VerifyDeviceAcceft from '../screens/VerifyDeviceAcceft';
+import AddDeviceIntoSellingList from '../screens/AddDeviceIntoSellingList';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -35,6 +37,26 @@ const HomeNavigation = () => {
               component={TabNavigator}
               options={{ headerShown: false }}
         />
+        <HomeNav.Screen
+              name="SellDevice"
+              component={AddDeviceIntoSellingList}
+              options={{ 
+                headerBackVisible: false,
+                headerBackTitleVisible: false,
+                title: 'Sell This Device',
+                headerLeft: () => (
+                  <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />
+                ),
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  headerStyle: {
+                    shadowColor: 'transparent', // this covers iOS
+                    elevation: 0, // this covers Android
+                  }
+                }
+                
+              }}
+            />
         <HomeNav.Screen
               name="TransferDevice"
               component={TransferDevice}
@@ -212,6 +234,26 @@ const HomeNavigation = () => {
               name="Device"
               component={AllDevice}
               options={{ headerShown: false }}
+            />
+          <HomeNav.Screen
+              name="VerifyDeviceAccept"
+              component={VerifyDeviceAcceft}
+              options={{ 
+                headerBackVisible: false,
+                headerBackTitleVisible: false,
+                title: 'Accept Device',
+                headerLeft: () => (
+                  <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />
+                ),
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  headerStyle: {
+                    shadowColor: 'transparent', // this covers iOS
+                    elevation: 0, // this covers Android
+                  }
+                }
+                
+              }}
             />
           <HomeNav.Screen
               name="BuyToken"

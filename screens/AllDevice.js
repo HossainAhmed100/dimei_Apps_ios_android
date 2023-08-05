@@ -18,7 +18,7 @@ const AllDevice = ({navigation}) => {
   const { isLoading, isError, data: myDevice = [], refetch: refetchMyDevice } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.6:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.3:5000/mydevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -26,7 +26,7 @@ const AllDevice = ({navigation}) => {
   const { isLoading: reciveDeviceLoad, data: reciveDevice = [], refetch } = useQuery({ 
     queryKey: ['reciveDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.6:5000/reciveTransferDevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.3:5000/reciveTransferDevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -44,6 +44,10 @@ const AllDevice = ({navigation}) => {
 
     const viewDeviceDetails = (did) => {
       navigation.navigate('MyDeviceDetails', {deviceId: did})
+    }
+
+    const acceotDevice = (did) => {
+      navigation.navigate('VerifyDeviceAccept', {transferDeviceId: did})
     }
     return (
       <>
@@ -109,7 +113,7 @@ const AllDevice = ({navigation}) => {
               data={reciveDevice}
               keyExtractor={item => item._id}
               renderItem={({item}) => (
-                  <DeviceAcceptCard item={item}/>
+                  <DeviceAcceptCard acceotDevice={acceotDevice} item={item}/>
               )}
               refreshing={reciveDeviceLoad}
               />

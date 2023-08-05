@@ -4,7 +4,6 @@ import {
   Image,
   ImageBackground,
   StyleSheet,
-  Pressable,
   TouchableOpacity,
   FlatList,
   ActivityIndicator
@@ -23,7 +22,7 @@ const Home = ({navigation}) => {
   const { isLoading, isError, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.6:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.3:5000/mydevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -70,7 +69,7 @@ const viewDeviceDetails = (did) => {
           </View>
           <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.deviceQuantityBg} style={styles.backgroundImage}>
-            <Image source={icons.chip} style={styles.boxIcosn}/>
+            <Image source={icons.deviceChip} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Device</Text>
             <Text style={styles.balanceValue}>{user?.deviceQuantity}</Text>
             </ImageBackground>
@@ -87,25 +86,24 @@ const viewDeviceDetails = (did) => {
 
       <View style={{padding: SIZES.small, backgroundColor: COLORS.white500}}>
       <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
-          <Pressable style={styles.button} onPress={() => navigation.navigate('BuyToken')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BuyToken')}>
           <Text style={styles.buttonText}>By Token</Text>
           <Image source={icons.shoppingCart} style={styles.buttonIcons}/>
-          </Pressable>
-          <Pressable style={styles.button} onPress={() => navigation.navigate('AddNewDevice')}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddNewDevice')}>
           <Text style={styles.buttonText}>Add Device</Text>
           <Image source={icons.plus} style={styles.buttonIcons}/>
-          </Pressable>
-          <Pressable style={styles.button} onPress={() => navigation.navigate('AddReference')}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddReference')}>
           <Text style={styles.buttonText}>Add Ref</Text>
           <Image source={icons.userPlus} style={styles.buttonIcons}/>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={{paddingBottom: SIZES.xLarge, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>My Device list</Text> 
-        <TouchableOpacity
-        onPress={() => navigation.navigate('Device')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Device')}>
         <Image source={icons.downArrow} style={{width: 18, height: 18, transform: [{ rotate: '-90deg' }], tintColor: COLORS.slate300}}/>
         </TouchableOpacity>
         </View>

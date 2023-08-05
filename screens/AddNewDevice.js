@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white500,
     paddingVertical: 10,
     justifyContent: "space-between",
-    marginVertical: SIZES.small
+    marginVertical: SIZES.small   
   },
   searchWrapper: {
     borderWidth: 1,

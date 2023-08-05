@@ -1,14 +1,11 @@
-import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity } from 'react-native';
-import React, { useContext, useEffect, useState } from "react";  
-import { COLORS, SIZES, images } from '../constants';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useContext } from "react";  
+import { COLORS, SIZES } from '../constants';
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { CheckBox } from '@rneui/themed';
 import { useForm, Controller } from "react-hook-form";
 import axios from 'axios';
-import { onAuthStateChanged } from 'firebase/auth';
-import auth from "../FirebaseConfig";
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../context/AuthProvider';
 
@@ -16,14 +13,14 @@ const TransferDevice =  ({navigation, route}) => {
     const deviceId = route.params.deviceId ;
     const [checked, setChecked] = React.useState(true);
     const toggleCheckbox = () => setChecked(!checked);
-    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "654654", transferDate: "1/7/2023"}})
+    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: "1/7/2023"}})
 
     const { user, userLoding } = useContext(AuthContext);
 
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.6:5000/getSingleDevice/${deviceId}`);
+        const res = await axios.get(`http://192.168.1.3:5000/getSingleDevice/${deviceId}`);
         return res.data;
         } 
     })
@@ -40,20 +37,19 @@ const TransferDevice =  ({navigation, route}) => {
         const ram = myDevice?.ram;
         const storage = myDevice?.storage;
         const devicePicture = myDevice?.devicePicture;
-        const deviceId = myDevice?._id;
         const deviceStatus = "OwnerShip Transfer";
-        const secretCode = 565656;
-        const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode}
-
+        const secretCode = Math.floor(100000 + Math.random() * 900000);
+        const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId}
+        const infoData = {deviceId, secretCode}
         if(user){
-        await axios.put(`http://192.168.1.6:5000/devicetransferStatusUpdate/${deviceId}`)
+        await axios.put(`http://192.168.1.3:5000/devicetransferStatusUpdate/`,{infoData})
         .then((res) => {
         if (res.data.modifiedCount === 1){
             try{
-              axios.post(`http://192.168.1.6:5000/reciveTransferDevice/`, {transferDeviceInfo})
+              axios.post(`http://192.168.1.3:5000/reciveTransferDevice/`, {transferDeviceInfo})
               .then((res) => {
                 if (res.data.acknowledged){
-                navigation.navigate('Device', {deviceId: deviceId})
+                navigation.navigate('Home')
                 alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
                 }
             })
@@ -68,7 +64,7 @@ const TransferDevice =  ({navigation, route}) => {
 
 
   return (
-    <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
+    <ScrollView style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
         <View style={{padding: SIZES.small}}>
             <View style={styles.cardContainer}>
                 {myDevice?.devicePicture && <Image source={{uri: myDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
@@ -131,7 +127,7 @@ const TransferDevice =  ({navigation, route}) => {
                 <Text style={{color: COLORS.slate500}}>Total Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{user?.tokenQuantity} Token</Text>
                 </View>
                 <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Trnsfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
+                <Text style={{color: COLORS.slate500}}>Transfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
                 </View>
                 <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
                 <Text style={{color: COLORS.slate500}}>Available Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{user?.tokenQuantity && user?.tokenQuantity - 1} Token</Text>
@@ -164,7 +160,7 @@ const TransferDevice =  ({navigation, route}) => {
         </View>
         </View>
     </View>
-    </View>
+    </ScrollView>
   )
 }
 

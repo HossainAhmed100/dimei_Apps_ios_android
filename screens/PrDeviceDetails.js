@@ -15,17 +15,19 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.6:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.3:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
 
   const canselTransferDevice = async () => {
+    const secretCode = "";
+    const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.6:5000/devicetransferStatusUpdate/${deviceId}`)
+        await axios.put(`http://192.168.1.3:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
-        if (res.data.modifiedCount === 1){
-          queryClient.invalidateQueries({ queryKey: ['myDevice'] })
+          if(res.data.transferSuccess){
+            queryClient.invalidateQueries({ queryKey: ['myDevice'] })
         }})
     } catch (err) {
         console.log(err);
@@ -47,6 +49,10 @@ const PrDeviceDetails = ({navigation, route}) => {
     navigation.navigate('TransferDevice', {deviceId: did})
   }
 
+  const sellDevice = (did) => {
+    navigation.navigate('SellDevice', {deviceId: did})
+  }
+
 
   return (
     <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
@@ -57,7 +63,7 @@ const PrDeviceDetails = ({navigation, route}) => {
           <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
             <Text style={{color: COLORS.white500}}>Device Security Code : </Text>
             <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'center'}}> 
-            <Text style={{marginRight: 10, color: COLORS.white500}}>56351164</Text> 
+            <Text style={{marginRight: 10, color: COLORS.white500}}>{myDevice?.secretCode}</Text> 
             <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
             </View>
           </View>
@@ -84,7 +90,7 @@ const PrDeviceDetails = ({navigation, route}) => {
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
       </TouchableOpacity>
-      <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, backgroundColor: COLORS.white500, flex: 1, backgroundColor: COLORS.blue200}}>
+      <TouchableOpacity onPress={() => sellDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, backgroundColor: COLORS.white500, flex: 1, backgroundColor: COLORS.blue200}}>
           <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
           <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
         </TouchableOpacity>
