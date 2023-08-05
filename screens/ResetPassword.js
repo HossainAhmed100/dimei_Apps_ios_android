@@ -7,7 +7,7 @@ import {
     Pressable,
 } from "react-native";
 import { COLORS, SIZES } from '../constants';
-import auth from "../FirebaseConfig";
+import { auth } from "../FirebaseConfig";
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 

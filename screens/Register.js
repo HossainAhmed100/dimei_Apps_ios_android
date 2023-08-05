@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { icons, COLORS, SIZES } from '../constants';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ActivityIndicator } from "react-native";
-import auth from "../FirebaseConfig";
+import { auth } from "../FirebaseConfig";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 

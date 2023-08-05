@@ -10,8 +10,8 @@ import {
     signOut,
     updateProfile,
   } from "firebase/auth";
-import auth from "../FirebaseConfig";
 import axios from "axios";
+import { auth } from "../FirebaseConfig";
 
 export const AuthContext = createContext();
 
