@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
-import { View, Text, ScrollView, Pressable, Image, Switch } from "react-native";
+import { View, Text, ScrollView, Pressable, Image, Switch, StyleSheet } from "react-native";
 import { COLORS, SIZES, icons } from '../constants';
 import { Feather } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { AuthContext } from "../context/AuthProvider";
+import { Divider } from "@rneui/themed";
 
 const Setting = ({navigation}) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -80,261 +81,60 @@ const Setting = ({navigation}) => {
             />
           </View>
         </TouchableOpacity>
-        <View
-          style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            marginBottom: 10,
-          }}
-        >
-          <TouchableOpacity
-          onPress={() => navigation.navigate('Device')}
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.chip}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  All Devices
-                </Text>
+        <View style={styles.navigationBoxContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('Device')} style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.chip} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>All Devices</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
           </TouchableOpacity>
-          <TouchableOpacity
-          onPress={() => navigation.navigate('AddReference')}
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                 source={icons.Profile}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Reference
-                </Text>
+          <Divider />
+          <TouchableOpacity onPress={() => navigation.navigate('AddReference')} style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.Profile} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Reference</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
           </TouchableOpacity>
-          <TouchableOpacity
-          onPress={() => navigation.navigate('ResetPassword')}
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.reset}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Reset Password
-                </Text>
+          <Divider />
+          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')} style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.reset} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Reset Password</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
           </TouchableOpacity>
-          <TouchableOpacity
-          onPress={() => navigation.navigate('TokenPurchaseHistory')}
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.cart}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Token Purchase History
-                </Text>
+          <Divider />
+          <TouchableOpacity onPress={() => navigation.navigate('TokenPurchaseHistory')} style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.cart} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Token Purchase History</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            marginBottom: 10,
-          }}
-        >
-          <Pressable
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.share}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Share this app
-                </Text>
+        <View style={styles.navigationBoxContainer}>
+          <TouchableOpacity style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.share} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Share this app</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
-          </Pressable>
-          <Pressable
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                 source={icons.usersGroup}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>Community</Text>
+          </TouchableOpacity>
+          <Divider />
+          <TouchableOpacity style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.usersGroup} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Community</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
-          </Pressable>
-          <Pressable
-            onPress={toggleTheme}
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                 source={icons.moon}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Dark Mode
-                </Text>
+          </TouchableOpacity>
+          <Divider />
+          <TouchableOpacity onPress={toggleTheme} style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.moon} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Dark Mode</Text>
               </View>
               <Switch
                 style={{ height: 30 }}
@@ -343,119 +143,32 @@ const Setting = ({navigation}) => {
                 onValueChange={toggleTheme}
                 value={isDarkMode}
               />
-            </View>
-          </Pressable>
+          </TouchableOpacity>
         </View>
-        <View
-          style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            marginBottom: SIZES.small
-          }}
-        >
-          <Pressable
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.reportFlag}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Help and Support
-                </Text>
+        <View style={styles.navigationBoxContainer}>
+          <TouchableOpacity style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.reportFlag} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Help and Support</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
-          </Pressable>
-          <Pressable
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              borderBottomColor: "#E9E9E9",
-              borderBottomWidth: 1,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.chart}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Report Problem
-                </Text>
+          </TouchableOpacity>
+          <Divider />
+          <TouchableOpacity style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.chart} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Report Problem</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
-          </Pressable>
-          <Pressable
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={icons.document}
-                  style={{ tintColor: "#5C5C5C", width: 20, height: 20 }}
-                />
-                <Text style={{ fontSize: 14, color: "#5C5C5C" }}>
-                  Terms & Conditions
-                </Text>
+          </TouchableOpacity>
+          <Divider />
+          <TouchableOpacity style={styles.navigationItem}>
+              <View style={styles.navigationItemTextandIcon}>
+                <Image source={icons.document} style={styles.navigationItemIcon}/>
+                <Text style={styles.navigationItemText}>Terms & Conditions</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
-            </View>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -492,5 +205,29 @@ const Setting = ({navigation}) => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  navigationItem: {
+    gap: 10,
+    paddingVertical: 13,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    justifyContent: "space-between",
+  },
+  navigationItemTextandIcon: {
+    gap: 10,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  navigationBoxContainer:{
+    borderRadius: 10,
+    backgroundColor: "white",
+    marginBottom: SIZES.small
+  },
+  navigationItemText:{fontSize: 14, color: "#5C5C5C"},
+  navigationItemIcon:{tintColor: "#5C5C5C", width: 20, height: 20},
+})
 
 export default Setting;

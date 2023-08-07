@@ -6,6 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import { COLORS, SIZES } from '../constants';
 import { AuthContext } from '../context/AuthProvider';
 import { CheckBox } from '@rneui/themed';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const AddDeviceIntoSellingList = ({navigation, route}) => {
   const deviceId = route.params.deviceId ;
@@ -50,6 +51,12 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   return (
     <ScrollView style={{minHeight: "100%", backgroundColor: COLORS.white500}} showsVerticalScrollIndicator={false}>
     <View style={{padding: 16}}>
+    <View style={{paddingVertical: SIZES.small}}>
+      <View style={{backgroundColor: COLORS.white500, borderWidth: 1, borderColor: COLORS.slate200, alignItems: "center", justifyContent: "center", flexDirection: "column", borderRadius: SIZES.small, paddingVertical: SIZES.xLarge}}>
+      <MaterialIcons name="add-photo-alternate" size={SIZES.xLarge} color={COLORS.slate300} />
+      <Text style={{color: COLORS.slate300}}>Add Photos</Text>
+      </View>
+    </View>
     <View style={{ gap: SIZES.medium }}>
       <View>
       <Text style={{color: COLORS.slate500}}>Brand</Text>

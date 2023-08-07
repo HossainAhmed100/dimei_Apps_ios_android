@@ -2,6 +2,7 @@ import { View, Text, ScrollView, Image, Pressable, TextInput, StyleSheet, Toucha
 import React, { useEffect, useState } from 'react';
 import { SimpleLineIcons  } from '@expo/vector-icons';
 import { COLORS, SIZES, icons, images } from '../constants';
+import { Divider } from '@rneui/themed';
 const BuyToken = () => {
   const tokenPriceList = [
     {
@@ -81,7 +82,8 @@ const BuyToken = () => {
       <View style={{paddingHorizontal: SIZES.small}}>
         <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Enter Token You want to buy</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.slate100, borderRadius: SIZES.xSmall, justifyContent: "center"}}>
-        <SimpleLineIcons style={{borderRightWidth: 2, borderRightColor: COLORS.white500,paddingVertical: SIZES.small, paddingHorizontal: SIZES.small}} name="diamond" size={24} color={COLORS.slate500} />
+        <SimpleLineIcons style={{paddingVertical: SIZES.small, paddingHorizontal: SIZES.small}} name="diamond" size={24} color={COLORS.slate500} />
+        <Divider orientation="vertical" color={COLORS.white500} width={2}/>
         <TextInput
           style={{ marginLeft: SIZES.small, flex: 1, height: "100%", fontSize: SIZES.medium, color: COLORS.slate500 }}
           placeholder="Enter token quantity"
@@ -89,18 +91,21 @@ const BuyToken = () => {
           value={tokenQuantity}
           onChangeText={handleTokenQuantityChange}
         />
-        <Text style={{fontSize: SIZES.medium, color: COLORS.slate500, paddingHorizontal: SIZES.small, borderLeftWidth: 2, borderLeftColor: COLORS.white500, height: "100%", fontWeight: 600, paddingVertical: SIZES.small}}>৳{totalPrice}</Text>
+        <Divider orientation="vertical" color={COLORS.white500} width={2}/>
+        <Text style={{fontSize: SIZES.medium, color: COLORS.slate500, paddingHorizontal: SIZES.small, height: "100%", fontWeight: 600, paddingVertical: SIZES.small}}>৳{totalPrice}</Text>
       </View>
       </View>
       <View style={{paddingHorizontal: SIZES.small, paddingVertical: SIZES.small}}>
         <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Select Payment Method</Text>
         <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
-        <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
+        <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
           <Text style={{color: COLORS.slate500}}>Token Price</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>৳{totalPrice} Taka</Text>
         </View>
-        <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
+        <Divider />
+        <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
           <Text style={{color: COLORS.slate500}}>Vat</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>৳{0} Taka</Text>
         </View>
+        <Divider />
         <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
           <Text style={{color: COLORS.slate500}}>Total Pay Price</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>৳{totalPrice} Taka</Text>
         </View>

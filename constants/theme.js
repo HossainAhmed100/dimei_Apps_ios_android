@@ -16,10 +16,10 @@ const COLORS = {
 
 
   slate100: '#F1F5F9',
-  slate200: '#e2e8f0',
-  slate300: '#94a3b8',
-  slate600: '#1E293B',
+  slate200: '#CACACA',
+  slate300: '#66676B',
   slate500: '#334155',
+  slate600: '#1E293B',
 
   white500: '#FFFFFF'
 

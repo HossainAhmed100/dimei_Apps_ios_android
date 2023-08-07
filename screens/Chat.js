@@ -86,21 +86,20 @@ const Chat = () => {
 
 
   return (
-    <View style={{flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: SIZES.medium}}>
+    <View style={{flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: SIZES.medium, backgroundColor: COLORS.white500}}>
       {!image ? (<>
-      <TouchableOpacity onPress={pickImage} style={{width: "100%", height: 256, backgroundColor: COLORS.slate200, borderRadius: 10, borderWidth: 1, borderStyle: "dashed", borderColor: COLORS.slate300, alignItems: "center", justifyContent: "center"}}>
-        {isLoading ? (
-          <ActivityIndicator size={"large"} color={COLORS.blue500} animating/>
-        ) : (
-          <Text style={{fontSize: 16, fontWeight: "400", color: COLORS.slate500}}>Pick an image</Text>
-        )}
+      <TouchableOpacity onPress={pickImage} style={{width: "100%", height: 256, backgroundColor: COLORS.slate100, borderRadius: 10, borderWidth: 1, borderStyle: "dashed", borderColor: COLORS.slate200, alignItems: "center", justifyContent: "center"}}>
+        {isLoading ? ( <ActivityIndicator size={"large"} color={COLORS.blue500} animating/>) : 
+        ( <Text style={{fontSize: 16, fontWeight: "400", color: COLORS.slate500}}>Pick an image</Text> )}
       </TouchableOpacity>
-      </>) : (<View style={{width: "100%", height: 256, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center"}}>
+      </>) : 
+      (<View style={{width: "100%", height: 256, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center"}}>
         <Image source={{ uri: image }} style={{ width: "100%", height: "100%" }} />
       </View>)}
-      <Button title="Delete This Photo" onPress={deleteImage} buttonStyle={{backgroundColor: 'rgba(78, 116, 289, 1)',borderRadius: 3,}}
-              containerStyle={{width: 200,marginHorizontal: 50,marginVertical: 10,}}
-              />
+      <Button title="Delete This Photo" onPress={deleteImage} 
+      buttonStyle={{backgroundColor: 'rgba(78, 116, 289, 1)',borderRadius: 3,}}
+      containerStyle={{width: 200,marginHorizontal: 50,marginVertical: 10,}}
+      />
     </View>
   )
 }

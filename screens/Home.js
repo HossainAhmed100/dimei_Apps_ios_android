@@ -50,7 +50,7 @@ const viewDeviceDetails = (did) => {
         </View>
         <View style={{flexDirection: "row", alignItems: "center", gap: SIZES.xSmall}}>
           <View style={{borderRadius: 6, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.slate200, padding: 10}}>
-            <Image source={icons.notification} style={{width: SIZES.xLarge, height: SIZES.xLarge}}/>
+            <Image source={icons.notification} style={{width: SIZES.xLarge, height: SIZES.xLarge, tintColor: COLORS.slate300}}/>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate("ProfileShare")} style={{alignItems: "center", justifyContent: "center"}}>
             {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{borderRadius: 6, width: 45, height: 45}}/> : <Image source={images.profile} style={{borderRadius: 6, width: 45, height: 45}}/>}
