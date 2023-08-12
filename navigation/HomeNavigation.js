@@ -24,6 +24,8 @@ import TokenTransferInput from '../screens/TokenTransferInput';
 import ScreenHeaderBtn from '../components/Button/ScreenHeaderBtn';
 import AddDeviceIntoSellingList from '../screens/AddDeviceIntoSellingList';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SellingDeviceAction from '../screens/SellingDeviceAction';
+import SellingDeviceDetails from '../screens/SellingDeviceDetails';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -46,6 +48,28 @@ const HomeNavigation = () => {
             headerBackVisible: false,
             headerBackTitleVisible: false,
             title: 'Write Device info',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="SellingDeviceDetails" component={SellingDeviceDetails}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Device info',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="SellDeviceAction" component={SellingDeviceAction}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Select Device Photo',
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
             headerTitleAlign: 'center',
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}

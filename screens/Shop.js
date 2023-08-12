@@ -11,52 +11,27 @@ import {
 import React, { useEffect, useState } from 'react';
 import { icons, COLORS, SIZES } from '../constants';
 import DeviceCard from "../components/Crads/DeviceCard";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-const Shop = () => {
+const Shop = ({navigation, route}) => {
 
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("iphone");
   const [refreshing, setRefreshing] = useState(false);
-  const url = `https://openapi.programming-hero.com/api/phones?search=${searchInput}`;
+  const url = `http://192.168.1.5:5000/getAllSellingDevice`;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
-    setRefreshing(true);
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const shuffledData = shuffleArray(data.data);
-        setData(shuffledData);
-        setIsLoading(false);
-        setRefreshing(false);
-      })
-      .catch(error => {
-        console.log(error);
-        setRefreshing(false);
-      });
-  };
-
-  const handleRefresh = () => {
-    if (!refreshing) {
-      fetchData();
-    }
-  };
-
-  const shuffleArray = (array) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
+  const { isLoading, data: sellingDeviceList = [], refetch } = useQuery({ 
+    queryKey: ['sellingDeviceList', refreshing], 
+    queryFn: async () => {
+      const res = await axios.get(url);
+      return res.data;
+    } 
+  })
+  const viewDeviceDetails = (did) => {
+    navigation.navigate('SellingDeviceDetails', {deviceId: did})
+  }
   return (
-    <View style={{backgroundColor: COLORS.white500}}>
+    <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
       <View  style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 5, backgroundColor: COLORS.white500, borderColor: COLORS.slate200, borderBottomWidth: 1, borderTopWidth: 1, paddingVertical: 15, paddingHorizontal: 10}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5}}>
           <Image source={icons.location} style={{width: 20, height: 20, resizeMode: "cover", tintColor: COLORS.blue500}}/>
@@ -93,26 +68,17 @@ const Shop = () => {
       </View>
     <View style={{paddingVertical: 10, paddingHorizontal: 10}}>
         {isLoading ? (
-          <FlatList
-          key={2}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          data={[1, 2, 3, 4]}
-          renderItem={({ item }) => <DeviceCard key={item} />}
-          contentContainerStyle={{ columnGap: 12 }}
-         
-          />
+         <View>
+          <Text>Data is Loading....</Text>
+         </View>
         ) : (
           <FlatList
-          key={2}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          data={data}
-          keyExtractor={(item, index) => item.slug.toString()}
-          renderItem={({ item }) => <DeviceCard item={item} />}
+          data={sellingDeviceList}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <DeviceCard viewDeviceDetails={viewDeviceDetails} item={item} />}
           contentContainerStyle={{ rowGap: 12, columnGap: 12 }}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
         />
         )}
       </View>
