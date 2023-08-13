@@ -22,7 +22,7 @@ const TokenTransferInput = () => {
     <Text style={{color: COLORS.slate500}}>Account ID</Text>
     <View style={styles.searchContainer}>
         <View style={styles.searchWrapper}>
-            <TextInput style={styles.searchInput} placeholder="Write Tooken receber Account ID"/>
+            <TextInput style={styles.searchInput} placeholder="Write Tooken receiver Account ID"/>
             <TouchableOpacity><MaterialCommunityIcons name="line-scan" size={24} color={COLORS.slate600} /></TouchableOpacity>
         </View>
     </View>
@@ -74,6 +74,9 @@ const TokenTransferInput = () => {
     </Pressable>
     </View>
     <View style={{flexDirection: 'row', alignItems: "center", justifyContent: "center"}}>
+    <Pressable style={({pressed}) => [{backgroundColor: pressed ? COLORS.blue100 : 'transparent',}, styles.keypadClickAction,]}>
+        <Text style={{color: COLORS.slate500}}>00</Text>
+    </Pressable>
     <Pressable style={({pressed}) => [{backgroundColor: pressed ? COLORS.blue100 : 'transparent',}, styles.keypadClickAction,]}>
         <Text style={{color: COLORS.slate500}}>0</Text>
     </Pressable>

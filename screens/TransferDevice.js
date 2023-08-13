@@ -20,7 +20,7 @@ const TransferDevice =  ({navigation, route}) => {
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.5:5000/getSingleDevice/${deviceId}`);
+        const res = await axios.get(`http://192.168.1.2:5000/getSingleDevice/${deviceId}`);
         return res.data;
         } 
     })
@@ -42,11 +42,11 @@ const TransferDevice =  ({navigation, route}) => {
         const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId}
         const infoData = {deviceId, secretCode}
         if(user){
-        await axios.put(`http://192.168.1.5:5000/devicetransferStatusUpdate/`,{infoData})
+        await axios.put(`http://192.168.1.2:5000/devicetransferStatusUpdate/`,{infoData})
         .then((res) => {
         if (res.data.modifiedCount === 1){
             try{
-              axios.post(`http://192.168.1.5:5000/reciveTransferDevice/`, {transferDeviceInfo})
+              axios.post(`http://192.168.1.2:5000/reciveTransferDevice/`, {transferDeviceInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                 navigation.navigate('Home')

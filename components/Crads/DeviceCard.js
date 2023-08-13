@@ -7,19 +7,19 @@ const DeviceCard = ({item, viewDeviceDetails}) => {
   return (
     <Pressable onPress={() => viewDeviceDetails(item?._id)} style={style.cardContainer}>
       <Image source={{uri: item?.deviceIamges[0].uploadUrl}} style={{width: "100%", height: 160, resizeMode: "cover"}}/>
-        <View style={{ paddingVertical: 8}}>
-            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item?.deviceModelName}</Text>
-            {/* <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4}}>
-               <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.blue200, borderRadius: 4}}>
-                <Text style={{color: COLORS.blue500, fontSize: SIZES.xSmall}}>VERIFIED SELLER</Text>
-                </View> 
-            </View> */}
-            <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4, justifyContent: "space-between"}}>
-            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>{format(new Date(item?.createdAt), 'hh:mm a')}</Text>
-            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}> {item?.ram} / {item?.storage}</Text>
-            </View>
-            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>৳{item?.devciePrice}</Text>
-        </View>
+      <View style={{ padding: 8}}>
+          <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item?.deviceModelName}</Text>
+          {/* <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4}}>
+              <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.blue200, borderRadius: 4}}>
+              <Text style={{color: COLORS.blue500, fontSize: SIZES.xSmall}}>VERIFIED SELLER</Text>
+              </View> 
+          </View> */}
+          <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4, justifyContent: "space-between"}}>
+          <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>{format(new Date(item?.createdAt), 'hh:mm a')}</Text>
+          <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}> {item?.ram} / {item?.storage}</Text>
+          </View>
+          <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>৳{item?.devciePrice}</Text>
+      </View>
     </Pressable>
   )
 }
@@ -30,7 +30,7 @@ const style = StyleSheet.create({
         borderColor: COLORS.slate100, 
         borderRadius: SIZES.xSmall, 
         flexDirection: "column", 
-        alignItems: "center", 
+        alignItems: "flex-start", 
         overflow: "hidden",
         width: "48%",
         margin: "1%",

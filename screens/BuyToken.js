@@ -116,7 +116,7 @@ const BuyToken = () => {
       </View>
     </ScrollView>
     
-    <View style={{position: "absolute", bottom: 0, width: "100%"}}>
+      <View style={{position: "absolute", bottom: 0, width: "100%"}}>
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
         <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}>
         <Text style={{color: COLORS.blue200, fontSize: SIZES.xSmall}}>Total Pay</Text>

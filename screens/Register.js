@@ -41,7 +41,7 @@ const Register = ({ navigation }) => {
           const users = userCredential.user;
           if (users.uid){
             const newuser = async () => {
-              await axios.post('http://192.168.1.5:5000/addNewUser', {userInfo})
+              await axios.post('http://192.168.1.2:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                   alert('Check your email');
