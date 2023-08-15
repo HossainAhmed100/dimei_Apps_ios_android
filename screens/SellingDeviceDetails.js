@@ -3,7 +3,7 @@ import React, { useCallback, useRef } from 'react';
 import { COLORS, SIZES } from '../constants';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -16,7 +16,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.7:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });
@@ -35,7 +35,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
 
   return (
     <View>
-    <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
     {myDevice?.deviceIamges &&  <Image source={{uri: myDevice?.deviceIamges[0].uploadUrl}} style={{width: "100%", height: 250, resizeMode: "contain"}}/>}
     <Divider />
     <View>

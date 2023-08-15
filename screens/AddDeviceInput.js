@@ -50,7 +50,7 @@ const AddDeviceInput = ({ navigation }) => {
     const devcieInfo = {modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus};
      setLoading(true);
     try {
-        await axios.post('http://192.168.1.2:5000/addNewDevice', {devcieInfo})
+        await axios.post('http://192.168.1.7:5000/addNewDevice', {devcieInfo})
         .then((res) => {
         if (res.data.acknowledged){
             alert('Check your email');
