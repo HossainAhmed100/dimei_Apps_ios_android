@@ -18,7 +18,7 @@ const AllDevice = ({navigation}) => {
   const { isLoading, isError, data: myDevice = [], refetch: refetchMyDevice } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.9:5000/mydevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -26,7 +26,7 @@ const AllDevice = ({navigation}) => {
   const { isLoading: reciveDeviceLoad, data: reciveDevice = [], refetch } = useQuery({ 
     queryKey: ['reciveDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/reciveTransferDevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.9:5000/reciveTransferDevice/${user?.userEmail}`);
       return res.data;
     } 
   })

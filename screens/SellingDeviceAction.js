@@ -1,5 +1,5 @@
 import React, { useState } from "react";  
-import { Image, StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { Image, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import 'react-native-get-random-values';
 import axios from 'axios';
 import { COLORS, SIZES } from '../constants';
@@ -17,8 +17,10 @@ const SellingDeviceAction = ({navigation, route}) => {
       setLoading(true);
         try {
           const uploadPromises = selectedImages.map(async (uri) => {
-            const uploadUrl = await uploadImageAsync(uri);
-            return { uploadUrl };
+            return await uploadImageAsync(uri);
+            // const uploadUrl = await uploadImageAsync(uri);
+            // console.log(uploadUrl)
+            // return { uploadUrl };
           });
       
           const newFirebaseImages = await Promise.all(uploadPromises);
@@ -58,7 +60,7 @@ const SellingDeviceAction = ({navigation, route}) => {
         newArray.deviceIamges = deviceIamges;
         try {
           const sellingDevInfo = newArray;
-          const response = await axios.post('http://192.168.1.7:5000/addDevcieSellingList', {sellingDevInfo});
+          const response = await axios.post('http://192.168.1.9:5000/addDevcieSellingList', {sellingDevInfo});
       
           if (response.data.acknowledged) {
             alert('Check your email');

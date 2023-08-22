@@ -1,22 +1,22 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, Pressable} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, Pressable, FlatList, useWindowDimensions, Linking} from 'react-native';
 import React, { useCallback, useRef } from 'react';
 import { COLORS, SIZES } from '../constants';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
-import { Feather, AntDesign } from '@expo/vector-icons';
+import { Feather, AntDesign, Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 
 const SellingDeviceDetails = ({navigation, route}) => {
-    const queryClient = useQueryClient()
+    const {width} = useWindowDimensions()
   const deviceId = route.params.deviceId ;
   const firstTimeRef = useRef(true)
 
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.9:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });
@@ -30,13 +30,23 @@ const SellingDeviceDetails = ({navigation, route}) => {
       refetch()
     }, [refetch])
   );
-  
 
+
+  const clickToPhoneCall = (phoneNumber) => {
+
+    Linking.openURL(`tel:${phoneNumber}`)
+
+  }
+  
 
   return (
     <View>
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-    {myDevice?.deviceIamges &&  <Image source={{uri: myDevice?.deviceIamges[0].uploadUrl}} style={{width: "100%", height: 250, resizeMode: "contain"}}/>}
+    
+    {
+    myDevice?.deviceIamges && 
+    <ImageSilderShow myDevice={myDevice} width={width}/>
+    }
     <Divider />
     <View>
     <View style={{padding: 10, gap: 4, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
@@ -83,9 +93,9 @@ const SellingDeviceDetails = ({navigation, route}) => {
         <Text style={{color: COLORS.blue200, fontSize: SIZES.xSmall}}>Price</Text>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 700}}>৳{myDevice?.devciePrice} Taka</Text>
         </View>
-        <View style={{flexDirection: "row", gap: 10}}>
-        <TouchableOpacity style={styles.bottonActionBtn}>
-          <AntDesign name="wechat" size={SIZES.large} color={COLORS.blue500} />
+        <View style={{flexDirection: "row", gap: 10, marginRight: 10}}>
+        <TouchableOpacity onPress={() => clickToPhoneCall("01850563626")} style={styles.bottonActionBtn}>
+        <Ionicons name="call" size={SIZES.large} color={COLORS.blue500} />
           <Text style={styles.bottonActionBtnText}>Call</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottonActionBtn}>
@@ -130,13 +140,47 @@ const PhoneDetailsList = ({item}) => (
       </View>
     </View>
   )
+
+const ImageSilderShow = ({myDevice, width}) => (
+  <FlatList
+      horizontal
+      data={myDevice?.deviceIamges}
+      keyExtractor={(item, index) => `${index}`}
+      renderItem={({ item }) => (
+        <Image source={{ uri: item }} style={{ width: width, height: 230, resizeMode: "contain"}} />
+      )}
+      pagingEnabled
+      bounces={false}
+    /> 
+)
   
   const styles = StyleSheet.create({
-    listItem: {flexDirection: "row", alignItems: "center", justifyContent: 'space-between'},
-    listItemText: {color: COLORS.slate500, fontWeight: 500},
-    listItemTextTitle: {color: COLORS.slate300},
-    bottonActionBtn: {alignItems: "center", justifyContent: "center", flexDirection: "row", paddingHorizontal: SIZES.small, paddingVertical: SIZES.medium, backgroundColor: COLORS.white500, borderRadius: 4, gap: 5},
-    bottonActionBtnText: {color: COLORS.blue500, fontSize: SIZES.medium}
+    listItem: {
+      flexDirection: "row", 
+      alignItems: "center", 
+      justifyContent: 'space-between'
+    },
+    listItemText: {
+      color: COLORS.slate500, 
+      fontWeight: 500
+    },
+    listItemTextTitle: {
+      color: COLORS.slate300
+    },
+    bottonActionBtn: {
+      alignItems: "center", 
+      justifyContent: "center", 
+      flexDirection: "row", 
+      paddingHorizontal: SIZES.large, 
+      paddingVertical: SIZES.xSmall, 
+      backgroundColor: COLORS.white500, 
+      borderRadius: 4, 
+      gap: 5
+    },
+    bottonActionBtnText: {
+      color: COLORS.blue500, 
+      fontSize: SIZES.medium
+    }
   })
 
 export default SellingDeviceDetails

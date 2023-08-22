@@ -26,6 +26,7 @@ import AddDeviceIntoSellingList from '../screens/AddDeviceIntoSellingList';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SellingDeviceAction from '../screens/SellingDeviceAction';
 import SellingDeviceDetails from '../screens/SellingDeviceDetails';
+import ViewOwnerDetails from '../screens/ViewOwnerDetails';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -42,6 +43,17 @@ const HomeNavigation = () => {
         <HomeNav.Screen name="Home2" component={Home} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Search" component={Search} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
+
+        <HomeNav.Screen name="ViewOwnerDetails" component={ViewOwnerDetails}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Device Owner',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
 
         <HomeNav.Screen name="SellDevice" component={AddDeviceIntoSellingList}
           options={{ 

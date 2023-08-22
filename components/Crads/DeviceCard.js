@@ -1,12 +1,12 @@
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { COLORS, SIZES } from '../../constants';
 import { format } from 'date-fns';
 
 const DeviceCard = ({item, viewDeviceDetails}) => {
   return (
     <Pressable onPress={() => viewDeviceDetails(item?._id)} style={style.cardContainer}>
-      <Image source={{uri: item?.deviceIamges[0].uploadUrl}} style={{width: "100%", height: 160, resizeMode: "cover"}}/>
+      <Image source={{uri: item?.deviceIamges[0]}} style={{width: "100%", height: 160, resizeMode: "cover"}}/>
       <View style={{ padding: 8}}>
           <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item?.deviceModelName}</Text>
           {/* <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4}}>

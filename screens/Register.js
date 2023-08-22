@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity} from "react-native";
 import React, { useState } from "react";
 import { icons, COLORS, SIZES } from '../constants';
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -26,13 +18,7 @@ const Register = ({ navigation }) => {
     const userProfilePic = "";
     const userNikName = "";
     const userAddress = "";
-    const verifyedStatus = [
-      {"smsverifyed": false},
-      {"phoneverifyed": false},
-      {"faceverifyed": false},
-      {"kycverifyed": false},
-      {"emailverifyed": false},
-    ]
+    const verifyedStatus = [{"smsverifyed": false},{"phoneverifyed": false},{"faceverifyed": false},{"kycverifyed": false},{"emailverifyed": false},]
     const userInfo = {userEmail, userName, userPhone, userAddress, userNikName, userProfilePic, verifyedStatus};
      setLoading(true);
     try {
@@ -41,7 +27,7 @@ const Register = ({ navigation }) => {
           const users = userCredential.user;
           if (users.uid){
             const newuser = async () => {
-              await axios.post('http://192.168.1.7:5000/addNewUser', {userInfo})
+              await axios.post('http://192.168.1.9:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                   alert('Check your email');
@@ -64,39 +50,15 @@ const Register = ({ navigation }) => {
     <View style={styles.container}>
       <View>
         <View style={{ textAlign: "center" }}>
-          <Text
-            style={{
-              fontWeight: "bold",
-              fontSize: SIZES.xxLarge,
-            }}
-          >
-            Register now
-          </Text>
-          <Text
-            style={{
-              color: "gray",
-              marginBottom: SIZES.medium
-            }}
-          >
-            Create a new Account
-          </Text>
+          <Text style={{fontWeight: "bold",fontSize: SIZES.xxLarge,}}>Register now</Text>
+          <Text style={{color: "gray",marginBottom: SIZES.medium}}>Create a new Account</Text>
         </View>
         <View style={{ gap: SIZES.medium }}>
           <View>
             <Text>Name *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.inputBox}
-                  placeholder="Enter your full name"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TextInput style={styles.inputBox} placeholder="Enter your full name" onBlur={onBlur} onChangeText={onChange} value={value} />
               )}
               name="fullName"
             />
@@ -104,19 +66,9 @@ const Register = ({ navigation }) => {
           </View>
           <View>
             <Text>Email address *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.inputBox}
-                  placeholder="Enter your email address"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TextInput style={styles.inputBox} placeholder="Enter your email address" onBlur={onBlur} onChangeText={onChange} value={value}/>
               )}
               name="userEmail"
             />
@@ -124,19 +76,9 @@ const Register = ({ navigation }) => {
           </View>
           <View>
             <Text>Phone *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.inputBox}
-                  placeholder="Enter your phone number"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TextInput style={styles.inputBox} placeholder="Enter your phone number" onBlur={onBlur} onChangeText={onChange}value={value}/>
               )}
               name="userPhone"
             />
@@ -144,19 +86,9 @@ const Register = ({ navigation }) => {
           </View>
           <View>
             <Text>Password *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.inputBox}
-                  placeholder="must be 8 characters"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TextInput style={styles.inputBox} placeholder="must be 8 characters" onBlur={onBlur} onChangeText={onChange} value={value} />
               )}
               name="userPassword"
             />
@@ -165,77 +97,25 @@ const Register = ({ navigation }) => {
         </View>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
         {
-        loading ? <ActivityIndicator size="large" color="#0000ff"/> : <Pressable
-        onPress={handleSubmit(onSubmit)} 
-        style={styles.loginBtn}
-      >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
-          Sign up
-        </Text>
-      </Pressable>
-    }
-          <View
-            style={{
-              flexDirection: "row",
-              gap: SIZES.xSmall,
-              justifyContent: "center",
-              alignItems: "center",
-              paddingVertical: SIZES.xSmall - 2,
-            }}
-          >
-            <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: COLORS.slate200,
-                borderStyle: "solid",
-                flex: 1
-              }}
-            ></View>
+        loading ? <ActivityIndicator size="large" color="#0000ff"/> : 
+        <Pressable onPress={handleSubmit(onSubmit)} style={styles.loginBtn}>
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>Sign up</Text>
+        </Pressable>
+      }
+        <View style={{flexDirection: "row",gap: SIZES.xSmall,justifyContent: "center",alignItems: "center",paddingVertical: SIZES.xSmall - 2,}}>
+            <View style={{borderWidth: 0.5,borderColor: COLORS.slate200,borderStyle: "solid",flex: 1}}></View>
             <Text style={{ color: COLORS.slate300 }}>Or Login with</Text>
-            <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: COLORS.slate200,
-                borderStyle: "solid",
-                flex: 1
-              }}
-            ></View>
+            <View style={{borderWidth: 0.5,borderColor: COLORS.slate200,borderStyle: "solid",flex: 1}}></View>
           </View>
-          <Pressable
-            onPress={() => navigation.navigate("Register")}
-            style={styles.googleLoginBtn}
-          >
-            <Image
-              source={icons.google}
-              style={{ width: SIZES.medium, height: SIZES.medium }}
-            />
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500 }}>
-              Sign up with Google
-            </Text>
+          <Pressable onPress={() => navigation.navigate("Register")} style={styles.googleLoginBtn} >
+            <Image source={icons.google} style={{ width: SIZES.medium, height: SIZES.medium }} />
+            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500 }}> Sign up with Google </Text>
           </Pressable>
         </View>
-        <View
-          style={{
-            marginTop: SIZES.medium,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 4,
-          }}
-        >
-          <Text style={{ fontSize: SIZES.small, color: COLORS.slate300 }}>
-           Alredy have an account?
-          </Text>
+        <View style={{marginTop: SIZES.medium,flexDirection: "row",alignItems: "center",justifyContent: "center",gap: 4,}}>
+          <Text style={{ fontSize: SIZES.small, color: COLORS.slate300 }}>Alredy have an account?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text
-              style={{
-                color:  COLORS.slate500,
-                fontWeight: 700,
-                textDecorationLine: "underline",
-              }}
-            >
-              Login now
-            </Text>
+            <Text style={{color:  COLORS.slate500,fontWeight: 700,textDecorationLine: "underline",}}>Login now</Text>
           </TouchableOpacity>
         </View>
       </View>

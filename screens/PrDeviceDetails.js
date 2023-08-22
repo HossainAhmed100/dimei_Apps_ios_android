@@ -15,7 +15,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.9:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -24,7 +24,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.7:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.1.9:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })
@@ -52,6 +52,9 @@ const PrDeviceDetails = ({navigation, route}) => {
   const sellDevice = (did) => {
     navigation.navigate('SellDevice', {deviceId: did})
   }
+  const viewOwnerDetails = (did) => {
+    navigation.navigate('ViewOwnerDetails', {deviceId: did})
+  }
 
 
   return (
@@ -70,34 +73,41 @@ const PrDeviceDetails = ({navigation, route}) => {
         </View>
         }
       <View>
-      {
-        myDevice?.devicePicture && <Image source={{uri: myDevice?.devicePicture}} style={{width: "100%", height: 200, borderRadius: SIZES.small, resizeMode: "contain", borderColor: COLORS.slate200, borderWidth: 1}}/>
-      }
+      {myDevice?.devicePicture && 
+      <Image source={{uri: myDevice?.devicePicture}} 
+      style={{width: "100%", height: 200, borderRadius: SIZES.small, resizeMode: "contain", borderColor: COLORS.slate200, borderWidth: 1}}
+      />}
       </View>
-      <View>
-        {
-          isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>
-        }
-      </View>
-    {
-      !isLoading ? <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
-      {
-        myDevice.deviceTransferStatus ? <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, flex: 1, backgroundColor: COLORS.red500}}>
+    <View>
+      {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>}
+    </View>
+    {!isLoading ? 
+    <View style={{flexDirection: "column", gap: SIZES.small}}>
+     
+      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Cencel Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-      </TouchableOpacity> : <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
-      <TouchableOpacity onPress={() => transferDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, flex: 1, backgroundColor: COLORS.blue500}}>
+      </TouchableOpacity>
+
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+      {myDevice.deviceTransferStatus ? 
+      <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
+        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Cencel Transfer </Text>
+        <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
+      </TouchableOpacity> : 
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+      <TouchableOpacity onPress={() => transferDevice(deviceId)}  style={[styles.button,{ backgroundColor: COLORS.blue500 }]}>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => sellDevice(deviceId)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.xSmall, borderWidth: 1, borderColor: COLORS.white500, flexDirection: "row", gap: 4, borderRadius: SIZES.small, backgroundColor: COLORS.white500, flex: 1, backgroundColor: COLORS.blue200}}>
-          <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
-          <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => sellDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.blue200 }]}>
+        <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
+        <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
+      </TouchableOpacity>
       </View>
       }
-        
-      </View> : <ActivityIndicator />
+      </View>
+    </View> : <ActivityIndicator />
     }
     </View>
     </View>
@@ -157,7 +167,23 @@ const PhoneDetailsList = ({item}) => (
 )
 
 const styles = StyleSheet.create({
-  listItem: {flexDirection: "row", alignItems: "center", justifyContent: 'space-between', paddingVertical: 10}
+  listItem: {
+    paddingVertical: 10,
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: 'space-between', 
+  },
+  button:{
+    flex: 1, 
+    borderWidth: 1, 
+    alignItems: "center", 
+    justifyContent: "center", 
+    borderRadius: SIZES.small, 
+    flexDirection: "row", gap: 4, 
+    borderColor: COLORS.white500,
+    paddingVertical: SIZES.xSmall, 
+    paddingHorizontal: SIZES.large, 
+  }
 })
 
 export default PrDeviceDetails

@@ -15,7 +15,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const { isLoading, isError, data: accevtDevice = [], error } = useQuery({ 
         queryKey: ['accevtDevice', transferDeviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.7:5000/getTransferDeviceDetails/${transferDeviceId}`);
+        const res = await axios.get(`http://192.168.1.9:5000/getTransferDeviceDetails/${transferDeviceId}`);
         return res.data;
         } 
     })
@@ -27,7 +27,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         const devicereciverEmail = user?.userEmail;
         const deviceTestInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId};
         if(user){
-        await axios.put(`http://192.168.1.7:5000/devicesecretCodetst/`, {deviceTestInfo})
+        await axios.put(`http://192.168.1.9:5000/devicesecretCodetst/`, {deviceTestInfo})
         .then((res) => {
             if(res.data.transferSuccess){
                 navigation.navigate('Home')

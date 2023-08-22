@@ -22,7 +22,7 @@ const Home = ({navigation}) => {
   const { isLoading, isError, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.9:5000/mydevice/${user?.userEmail}`);
       return res.data;
     } 
   })

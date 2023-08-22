@@ -22,7 +22,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.9:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -39,11 +39,11 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
     const sim_slot = sellingDevice?.sim_slot;
     const gpu = sellingDevice?.gpu;
     const Announced = sellingDevice?.Announced;
-    const listingAddress = sellingDevice?.deviceAddress;
     const haveOriginalBox = haveABox;
     const daysUsed = sellingDevice?.daysUsed;
     const deviceId = sellingDevice?._id;
     const ownerEmail = user?.userEmail;
+    const listingAddress = data?.deviceAddress;
     const devciePrice = data.devicesellingPrice;
     const sellingTitle = data.sellingTitle;
     const ownerName = user?.userName;

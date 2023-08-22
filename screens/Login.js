@@ -1,16 +1,7 @@
 import React, { useContext, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity,} from "react-native";
 import { icons, COLORS, SIZES } from '../constants';
 import { useForm, Controller } from "react-hook-form";
-import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { AuthContext } from "../context/AuthProvider";
 
@@ -36,14 +27,7 @@ const Login = ({ navigation }) => {
     <View style={styles.container}>
    
         <View style={{ textAlign: "center" }}>
-          <View
-            style={{
-              marginBottom: 40,
-              flexDirection: "column",
-              alignItems: "center",
-              gap: SIZES.xSmall
-            }}
-          >
+          <View style={{marginBottom: 40,flexDirection: "column",alignItems: "center",gap: SIZES.xSmall}}>
             <Text style={{color: COLORS.slate500, fontSize: SIZES.xLarge, fontWeight: 600}}>Welcoeme to back</Text>
             <Text style={{color: COLORS.slate300, fontSize: SIZES.medium}}>Please login now</Text>
           </View>
@@ -51,19 +35,9 @@ const Login = ({ navigation }) => {
         <View style={{ gap: SIZES.medium }}>
         <View>
             <Text>Email address *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.inputBox}
-                  placeholder="Enter your email address"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TextInput style={styles.inputBox} placeholder="Enter your email address" onBlur={onBlur} onChangeText={onChange} value={value} />
               )}
               name="userEmail"
             />
@@ -71,19 +45,9 @@ const Login = ({ navigation }) => {
           </View>
           <View>
             <Text>Password *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.inputBox}
-                  placeholder="must be 8 characters"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TextInput style={styles.inputBox} placeholder="must be 8 characters" onBlur={onBlur} onChangeText={onChange} value={value} />
               )}
               name="userPassword"
             />
@@ -92,78 +56,26 @@ const Login = ({ navigation }) => {
         </View>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 20 }}>
         {
-          loading ? <ActivityIndicator size="large" color="#0000ff"/> : <Pressable
-            onPress={handleSubmit(onSubmit)} 
-            style={styles.loginBtn}
-          >
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
-              Log in
-            </Text>
+          loading ? <ActivityIndicator size="large" color="#0000ff"/> : 
+          <Pressable onPress={handleSubmit(onSubmit)}  style={styles.loginBtn} >
+            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>Log in</Text>
           </Pressable>
         }
           
-          <View
-            style={{
-              flexDirection: "row",
-              gap: SIZES.xSmall,
-              justifyContent: "center",
-              alignItems: "center",
-              paddingVertical: SIZES.xSmall - 2,
-            }}
-          >
-            <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: COLORS.slate200,
-                borderStyle: "solid",
-                flex: 1
-              }}
-            ></View>
+          <View style={{flexDirection: "row",gap: SIZES.xSmall,justifyContent: "center",alignItems: "center",paddingVertical: SIZES.xSmall - 2,}}>
+           <View style={{borderWidth: 0.5,borderColor: COLORS.slate200,borderStyle: "solid",flex: 1}}></View>
             <Text style={{ color: COLORS.slate300 }}>Or Login with</Text>
-            <View
-              style={{
-                borderWidth: 0.5,
-                borderColor: COLORS.slate200,
-                borderStyle: "solid",
-                flex: 1
-              }}
-            ></View>
+            <View style={{borderWidth: 0.5,borderColor: COLORS.slate200,borderStyle: "solid",flex: 1}}></View>
           </View>
-          <Pressable
-            onPress={() => signinGooglePopup()}
-            style={styles.googleLoginBtn}
-          >
-            <Image
-              source={icons.google}
-              style={{ width: SIZES.medium, height: SIZES.medium }}
-            />
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500 }}>
-              Log in with Google
-            </Text>
+          <Pressable onPress={() => signinGooglePopup()} style={styles.googleLoginBtn} >
+            <Image source={icons.google} style={{ width: SIZES.medium, height: SIZES.medium }} />
+            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500 }}>Log in with Google</Text>
           </Pressable>
         </View>
-        <View
-          style={{
-            marginTop: SIZES.medium,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 4,
-          }}
-        >
-          <Text style={{ fontSize: SIZES.small, color: COLORS.slate300 }}>
-            Don't have an account?
-          </Text>
+        <View style={{marginTop: SIZES.medium,flexDirection: "row",alignItems: "center",justifyContent: "center",gap: 4,}}>
+          <Text style={{ fontSize: SIZES.small, color: COLORS.slate300 }}>Don't have an account?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text
-              style={{
-                color:  COLORS.slate500,
-                fontWeight: 700,
-                textDecorationLine: "underline",
-              }}
-            >
-              Register now
-            </Text>
+            <Text style={{color:  COLORS.slate500,fontWeight: 700,textDecorationLine: "underline",}}>Register now</Text>
           </TouchableOpacity>
         </View>
       </View>

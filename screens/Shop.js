@@ -1,6 +1,7 @@
 import {
   FlatList,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { icons, COLORS, SIZES } from '../constants';
 import DeviceCard from "../components/Crads/DeviceCard";
 import axios from "axios";
@@ -18,7 +19,7 @@ const Shop = ({navigation, route}) => {
 
   const [searchInput, setSearchInput] = useState("iphone");
   const [refreshing, setRefreshing] = useState(false);
-  const url = `http://192.168.1.7:5000/getAllSellingDevice`;
+  const url = `http://192.168.1.9:5000/getAllSellingDevice`;
 
   const { isLoading, data: sellingDeviceList = [], refetch } = useQuery({ 
     queryKey: ['sellingDeviceList', refreshing], 
@@ -27,9 +28,16 @@ const Shop = ({navigation, route}) => {
       return res.data;
     } 
   })
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch(); // Refresh the data
+    setRefreshing(false);
+  };
+
   const viewDeviceDetails = (did) => {
     navigation.navigate('SellingDeviceDetails', {deviceId: did})
   }
+
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
       <View  style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 5, backgroundColor: COLORS.white500, borderColor: COLORS.slate200, borderBottomWidth: 1, borderTopWidth: 1, paddingVertical: 15, paddingHorizontal: 10}}>
@@ -68,9 +76,25 @@ const Shop = ({navigation, route}) => {
       </View>
     <View style={{paddingVertical: 10, paddingHorizontal: 10}}>
         {isLoading ? (
-         <View>
-          <Text>Data is Loading....</Text>
-         </View>
+         <FlatList
+         numColumns={2}
+         showsVerticalScrollIndicator={false}
+         data={[1,2,3,4]}
+         keyExtractor={(item) => item}
+         renderItem={({ item }) => (
+          <View style={styles.loadingCardContainer}>
+           <View style={{padding: 6,width: "100%", gap: 4 }}>
+           <View style={{width: "100%", backgroundColor: COLORS.slate100, height: 150, borderRadius: 6}}></View>
+           <View style={{backgroundColor: COLORS.slate100, height: 15, borderRadius: 4}}></View>
+           <View style={{backgroundColor: COLORS.slate100, height: 15, borderRadius: 4}}></View>
+           </View>
+           </View>
+         )}
+         contentContainerStyle={{ rowGap: 12, columnGap: 12 }}
+         refreshControl={
+           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+         }
+       />
         ) : (
           <FlatList
           numColumns={2}
@@ -79,6 +103,9 @@ const Shop = ({navigation, route}) => {
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => <DeviceCard viewDeviceDetails={viewDeviceDetails} item={item} />}
           contentContainerStyle={{ rowGap: 12, columnGap: 12 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
         )}
       </View>
@@ -87,6 +114,16 @@ const Shop = ({navigation, route}) => {
 }
 
 const styles = StyleSheet.create({
+  loadingCardContainer:{
+    borderWidth: 1, 
+    borderColor: COLORS.slate100, 
+    borderRadius: SIZES.xSmall, 
+    flexDirection: "column", 
+    alignItems: "flex-start", 
+    overflow: "hidden",
+    width: "48%",
+    margin: "1%",
+},
   searchContainer: {
     alignItems: "center",
     flexDirection: "row",
