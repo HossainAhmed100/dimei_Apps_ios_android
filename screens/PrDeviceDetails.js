@@ -15,7 +15,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.9:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.4:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -24,7 +24,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.9:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.1.4:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })
@@ -84,9 +84,14 @@ const PrDeviceDetails = ({navigation, route}) => {
     {!isLoading ? 
     <View style={{flexDirection: "column", gap: SIZES.small}}>
      
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Cencel Transfer </Text>
-        <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
+      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
+        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info </Text>
+        <MaterialCommunityIcons name="arrow-right"  size={SIZES.large} color={COLORS.slate500} />
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
+        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Lost This Device </Text>
+        <MaterialCommunityIcons name="arrow-right"  size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
 
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
@@ -178,6 +183,17 @@ const styles = StyleSheet.create({
     borderWidth: 1, 
     alignItems: "center", 
     justifyContent: "center", 
+    borderRadius: SIZES.small, 
+    flexDirection: "row", gap: 4, 
+    borderColor: COLORS.white500,
+    paddingVertical: SIZES.xSmall, 
+    paddingHorizontal: SIZES.large, 
+  },
+  actionButton:{
+    flex: 1, 
+    borderWidth: 1, 
+    alignItems: "center", 
+    justifyContent: "space-between", 
     borderRadius: SIZES.small, 
     flexDirection: "row", gap: 4, 
     borderColor: COLORS.white500,

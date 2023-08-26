@@ -15,6 +15,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../context/AuthProvider";
 import { useFocusEffect } from "@react-navigation/native";
+import { Feather } from '@expo/vector-icons';
 
 const Home = ({navigation}) => {
   const { user, userLoding } = useContext(AuthContext);
@@ -22,7 +23,7 @@ const Home = ({navigation}) => {
   const { isLoading, isError, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.9:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.4:5000/mydevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -36,6 +37,10 @@ const Home = ({navigation}) => {
       refetch()
     }, [refetch])
   )
+
+  // if(!user?.verifyedStatus?.kycverifyed){
+  //   navigation.navigate('ProfileDetails')
+  // }
 
 const viewDeviceDetails = (did) => {
   navigation.navigate('MyDeviceDetails', {deviceId: did})
@@ -57,35 +62,32 @@ const viewDeviceDetails = (did) => {
           </TouchableOpacity>
         </View>
       </View>
-
-      <View style={{paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
+      <View style={{paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500, gap: 10}}>
       <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
           <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.tokenQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.diamond} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Token</Text>
-            <Text style={styles.balanceValue}>{user?.tokenQuantity}</Text>
+            <Text style={styles.balanceValue}>{user?.tokenQuantity ? user?.tokenQuantity : "0"}</Text>
             </ImageBackground>
           </View>
           <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.deviceQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.deviceChip} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Device</Text>
-            <Text style={styles.balanceValue}>{user?.deviceQuantity}</Text>
+            <Text style={styles.balanceValue}>{myDevice ? myDevice.length : "0"}</Text>
             </ImageBackground>
           </View>
           <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
             <ImageBackground source={images.referenceQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.usersGroup} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Reference</Text>          
-            <Text style={styles.balanceValue}>{user?.referenceQuantity}</Text>
+            <Text style={styles.balanceValue}>{user?.referenceQuantity ? user?.referenceQuantity : "0"}</Text>
             </ImageBackground>
           </View>
         </View>
-        </View>
 
-      <View style={{padding: SIZES.small, backgroundColor: COLORS.white500}}>
-      <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
+        <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BuyToken')}>
           <Text style={styles.buttonText}>By Token</Text>
           <Image source={icons.shoppingCart} style={styles.buttonIcons}/>
@@ -100,7 +102,15 @@ const viewDeviceDetails = (did) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{paddingBottom: SIZES.xLarge, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
+      {!user?.verifyedStatus?.kycverifyed && 
+        <View style={{paddingHorizontal: SIZES.small}}>
+          <View style={{padding: 10, marginVertical: 10, borderRadius: 6, backgroundColor: COLORS.red200, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+          <Text style={{color: COLORS.red500}}>Please Verify Your KYC First</Text>
+          <Feather name="alert-triangle" size={18} color={COLORS.red500} />
+        </View>
+        </View>
+        }
+      <View style={{paddingVertical: SIZES.xLarge, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>My Device list</Text> 
         <TouchableOpacity onPress={() => navigation.navigate('Device')}>

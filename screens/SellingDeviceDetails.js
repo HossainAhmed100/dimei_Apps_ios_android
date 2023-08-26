@@ -16,7 +16,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.9:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.4:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });
@@ -174,7 +174,7 @@ const ImageSilderShow = ({myDevice, width}) => (
       paddingHorizontal: SIZES.large, 
       paddingVertical: SIZES.xSmall, 
       backgroundColor: COLORS.white500, 
-      borderRadius: 4, 
+      borderRadius: 10, 
       gap: 5
     },
     bottonActionBtnText: {

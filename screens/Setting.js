@@ -26,59 +26,15 @@ const Setting = ({navigation}) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
-        <TouchableOpacity
-        onPress={() => navigation.navigate('ProfileDetails')}
-          style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: 10,
-            marginBottom: 10,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              justifyContent: "center",
-            }}
-          >
-            {user?.userProfilePic ? <Image
-              source={{uri: user?.userProfilePic}}
-              style={{
-                resizeMode: "cover",
-                width: 50,
-                height: 50,
-                borderRadius: 50,
-              }}
-            /> : <Image
-            source={require("../assets/images/profile.jpg")}
-            style={{
-              resizeMode: "cover",
-              width: 50,
-              height: 50,
-              borderRadius: 50,
-            }}
-          />}
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "column",
-                alignItems: "flex-start",
-                gap: 1,
-              }}
-            >
-              <Text style={{ fontWeight: 500, fontSize: 16 }} numberOfLines={2}>
-               {user?.userName}
-              </Text>
-              <Text style={{ fontSize: 12, color: "#6B7280" }}>
-                {user?.userPhone}
-              </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetails')} style={{backgroundColor: "white",borderRadius: 10,padding: 10,marginBottom: 10,}}>
+          <View style={{flexDirection: "row",alignItems: "center",gap: 10,justifyContent: "center",}}>
+            {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/> : <Image
+            source={require("../assets/images/profile.jpg")} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/>}
+            <View style={{flex: 1,flexDirection: "column",alignItems: "flex-start",gap: 1,}}>
+              <Text style={{ fontWeight: 500, fontSize: 16 }} numberOfLines={2}>{user?.userName}</Text>
+              <Text style={{ fontSize: 12, color: "#6B7280" }}>{user?.userPhone}</Text>
             </View>
-            <Image
-              source={require("../assets/icons/edit.png")}
-              style={{ tintColor: "#B0B0B0", width: 24, height: 24 }}
-            />
+            <Image source={require("../assets/icons/edit.png")} style={{ tintColor: "#B0B0B0", width: 24, height: 24 }}/>
           </View>
         </TouchableOpacity>
         <View style={styles.navigationBoxContainer}>
@@ -170,37 +126,15 @@ const Setting = ({navigation}) => {
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            marginBottom: 80,
-            padding: 10,
-          }}
-        >
-          <TouchableOpacity
-          onPress={() => sinOut()}
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 15,
-              backgroundColor: COLORS.red200,
-              borderRadius: SIZES.small
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "center",
-              }}
-            >
-            <Text style={{ fontSize: SIZES.medium, color:COLORS.red500, fontWeight: 600 }}>Log out</Text>
-            <Feather name="log-in" size={SIZES.large} color={COLORS.red500} />
-            </View>
-          </TouchableOpacity>
-          <Text style={{ fontSize: 14, color: "#5C5C5C", textAlign: "center", marginVertical: SIZES.xSmall }}>Version 0.0.1</Text>
-        </View>
+      <View style={{backgroundColor: "white",borderRadius: 10,marginBottom: 80,padding: 10,}}>
+        <TouchableOpacity onPress={() => sinOut()} style={{paddingVertical: 13,paddingHorizontal: 15,backgroundColor: COLORS.red200,borderRadius: SIZES.small}}>
+          <View style={{flexDirection: "row",alignItems: "center",gap: 10,justifyContent: "center",}}>
+          <Text style={{ fontSize: SIZES.medium, color:COLORS.red500, fontWeight: 600 }}>Log out</Text>
+          <Feather name="log-in" size={SIZES.large} color={COLORS.red500} />
+          </View>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 14, color: "#5C5C5C", textAlign: "center", marginVertical: SIZES.xSmall }}>Version 0.0.1</Text>
+      </View>
       </View>
     </ScrollView>
   );

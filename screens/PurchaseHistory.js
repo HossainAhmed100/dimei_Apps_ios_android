@@ -12,7 +12,7 @@ const PurchaseHistory = ({navigation}) => {
   const { isLoading, isError, data: trsnData = [], error } = useQuery({ 
     queryKey: ['trsnData', user?.userEmail],
     queryFn: async () => {
-      const res =  await axios.get(`http://192.168.1.9:5000/userTranstion/`);
+      const res =  await axios.get(`http://192.168.1.4:5000/userTranstion/`);
       return res.data;
     } 
   })

@@ -1,51 +1,57 @@
 import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity} from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { icons, COLORS, SIZES } from '../constants';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ActivityIndicator } from "react-native";
 import { auth } from "../FirebaseConfig";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
+import { AuthContext } from "../context/AuthProvider";
 
 const Register = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {fullName: "", userEmail: "", userPassword: "", userPhone: ""},})
   const onSubmit = async (data) => {
     const userEmail = data.userEmail;
-    const userPassword = data.userPassword;
-    const userPhone = data.userPhone;
     const userName = data.fullName;
-    const userProfilePic = "";
-    const userNikName = "";
-    const userAddress = "";
-    const verifyedStatus = [{"smsverifyed": false},{"phoneverifyed": false},{"faceverifyed": false},{"kycverifyed": false},{"emailverifyed": false},]
-    const userInfo = {userEmail, userName, userPhone, userAddress, userNikName, userProfilePic, verifyedStatus};
-     setLoading(true);
-    try {
-        await createUserWithEmailAndPassword(auth, userEmail, userPassword)
-        .then((userCredential) => {
-          const users = userCredential.user;
-          if (users.uid){
-            const newuser = async () => {
-              await axios.post('http://192.168.1.9:5000/addNewUser', {userInfo})
-              .then((res) => {
-                if (res.data.acknowledged){
-                  alert('Check your email');
-                }
-              })
-            }
-            newuser();
-          }
-        })
+    const userPhone = data.userPhone;
+    const userPassword = data.userPassword;
+    // const userNikName = "";
+    // const userAddress = "";
+    // const userProfilePic = "";
+    // const userAccountId = "";
+    // const verifyedStatus = { "kycverifyed": false, "smsverifyed": false, "phoneverifyed": false, "emailverifyed": false };
+    const userInfo = {userEmail, userName, userPhone, userPassword};
+    
+    navigation.navigate('NidPhotoUpload', {userInfo})
+    //  setLoading(true);
+    // try {
+    //     await createUserWithEmailAndPassword(auth, userEmail, userPassword)
+    //     .then((userCredential) => {
+    //       const users = userCredential.user;
+    //       if (users.uid){
+    //         const newuser = async () => {
+    //           await axios.post('http://192.168.1.4:5000/addNewUser', {userInfo})
+    //           .then((res) => {
+    //             if (res.data.acknowledged){
+    //               alert('Please Login Now');
+    //               navigation.navigate('Login')
+    //             }
+    //           })
+    //         }
+    //         newuser();
+    //       }
+    //     })
         
-    } catch (err) {
-        console.log(err);
-        alert('Sign in failed: ' + err.message);
-    } finally {
-        setLoading(false);
-    }
+    // } catch (err) {
+    //     console.log(err);
+    //     alert('Sign in failed: ' + err.message);
+    // } finally {
+    //     setLoading(false);
+    // }
 
   };
+  
   return (
     <View style={styles.container}>
       <View>
