@@ -41,7 +41,7 @@ const ProfileDetails = ({ navigation })  => {
             </View>
             <View>
             <Text style={{color: COLORS.slate500}}>Address</Text>
-            <TextInput style={styles.inputBox} autoCapitalize='none'  onChangeText={(text) => setAddress(text)} value={user?.userAddress} editable={false} />
+            <TextInput multiline={true} style={styles.inputBox} autoCapitalize='none'  onChangeText={(text) => setAddress(text)} value={user?.userAddress} editable={false} />
             </View>
         </View>
         <View style={{backgroundColor: COLORS.slate100,borderRadius: 10,marginVertical: 10, width: "100%"}}>

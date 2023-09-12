@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, FlatList, useWindowDimensions} from 'react-native';
 import React, { useCallback, useRef } from 'react';
 import { COLORS, SIZES } from '../constants';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
 
 const PrDeviceDetails = ({navigation, route}) => {
+  const {width} = useWindowDimensions()
   const queryClient = useQueryClient()
   const deviceId = route.params.deviceId ;
   const firstTimeRef = useRef(true)
@@ -35,6 +36,10 @@ const PrDeviceDetails = ({navigation, route}) => {
     }
   }
 
+  const updateSellingPost = async (did) => {
+    navigation.navigate('UpdateSellingPost', {deviceId: did})
+  }
+
   useFocusEffect(
     useCallback(() => {
       if (firstTimeRef.current) {
@@ -58,9 +63,9 @@ const PrDeviceDetails = ({navigation, route}) => {
 
 
   return (
-    <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
+    <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}} showsVerticalScrollIndicator={false}>
     <View showsVerticalScrollIndicator={false}>
-    <View style={{paddingVertical: SIZES.small, paddingHorizontal: SIZES.medium}}>
+    <View>
     { myDevice?.deviceTransferStatus && 
         <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, marginVertical: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
           <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
@@ -72,47 +77,56 @@ const PrDeviceDetails = ({navigation, route}) => {
           </View>
         </View>
         }
-      <View>
-      {myDevice?.devicePicture && 
-      <Image source={{uri: myDevice?.devicePicture}} 
-      style={{width: "100%", height: 200, borderRadius: SIZES.small, resizeMode: "contain", borderColor: COLORS.slate200, borderWidth: 1}}
-      />}
+      <View style={{backgroundColor: COLORS.slate100}}>
+      {
+      myDevice?.deviceIamges && 
+      <ImageSilderShow myDevice={myDevice} width={width}/>
+      }
+      <Divider />
       </View>
     <View>
       {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>}
     </View>
-    {!isLoading ? 
-    <View style={{flexDirection: "column", gap: SIZES.small}}>
+    {!isLoading && 
+    <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
      
       <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
         <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info </Text>
         <MaterialCommunityIcons name="arrow-right"  size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
+      {
+        !myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell && 
+        <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
         <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Lost This Device </Text>
         <MaterialCommunityIcons name="arrow-right"  size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
+      }
+      
 
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
       {myDevice.deviceTransferStatus ? 
       <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Cencel Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-      </TouchableOpacity> : 
+      </TouchableOpacity> : myDevice?.isDeviceSell ? 
+      <TouchableOpacity onPress={() => updateSellingPost(deviceId)} style={[styles.button,{ backgroundColor: COLORS.green500 }]}>
+        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Update Selling Post </Text>
+        <MaterialCommunityIcons name="square-edit-outline"  size={SIZES.large} color={COLORS.white500} />
+      </TouchableOpacity> :
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
       <TouchableOpacity onPress={() => transferDevice(deviceId)}  style={[styles.button,{ backgroundColor: COLORS.blue500 }]}>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Transfer </Text>
         <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => sellDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.blue200 }]}>
-        <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
-        <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
+      <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
+      <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
       </TouchableOpacity>
       </View>
       }
       </View>
-    </View> : <ActivityIndicator />
+    </View> 
     }
     </View>
     </View>
@@ -120,9 +134,23 @@ const PrDeviceDetails = ({navigation, route}) => {
   )
 }
 
+
+const ImageSilderShow = ({myDevice, width}) => (
+  <FlatList
+      horizontal
+      data={myDevice?.deviceIamges}
+      keyExtractor={(item, index) => `${index}`}
+      renderItem={({ item }) => (
+        <Image source={{ uri: item }} style={{ width: width, height: 230, resizeMode: "contain"}} />
+      )}
+      pagingEnabled
+      bounces={false}
+    /> 
+)
+  
+
 const PhoneDetailsList = ({item}) => (
-  <View style={{paddingVertical: SIZES.small, flexDirection: "column"}}>
-    <Divider />
+  <View style={{paddingHorizontal: SIZES.small, flexDirection: "column"}}>
     <View style={styles.listItem}>
     <Text>Model Name :</Text>
     <Text>{item.modelName}</Text>

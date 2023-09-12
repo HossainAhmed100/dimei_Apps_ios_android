@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Platform } from 'react-native'
+import { Text, View, ActivityIndicator, TouchableOpacity, Image } from 'react-native'
 import React,{ useState } from 'react';
 import { COLORS, SIZES } from '../constants/theme';
 import * as ImagePicker from 'expo-image-picker';
-import { Image } from 'react-native';
 import { Button } from '@rneui/themed';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,6 +21,7 @@ const Chat = () => {
     aspect: [4, 3],
     quality: 1,
   });
+
   if (!result.canceled) {
     const uploadUrl = await uploadImageAsync(result.assets[0].uri);
     setImage(uploadUrl);
@@ -34,6 +34,7 @@ const Chat = () => {
       setisLoading(false)
     }, 2000);
   }
+  
   };
 
   

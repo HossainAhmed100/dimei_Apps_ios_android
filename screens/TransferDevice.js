@@ -151,10 +151,17 @@ const TransferDevice =  ({navigation, route}) => {
         {
         isLoading ? <Pressable style={styles.loginBtn}> 
         <ActivityIndicator size="large" color={COLORS.white500}/> 
-        </Pressable> : <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
-        </TouchableOpacity>
+        </Pressable> : <View>
+        {
+            user?.tokenQuantity === 0 ? <TouchableOpacity style={styles.disableBtn} >
+            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
+            </TouchableOpacity> : <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
+            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
+            </TouchableOpacity>
+            }
+        </View>
         }
+            
             
        
         </View>
@@ -225,6 +232,18 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderColor: COLORS.blue500,
         borderWidth: 1,
+        },
+        disableBtn: {
+        backgroundColor: COLORS.blue500,
+        width: "100%",
+        paddingVertical: SIZES.small,
+        paddingHorizontal: SIZES.large,
+        borderRadius: SIZES.small,
+        alignItems: "center",
+        justifyContent: "center",
+        borderColor: COLORS.blue500,
+        borderWidth: 1,
+        opacity: 0.5,
         },
         googleLoginBtn: {
         backgroundColor: COLORS.white500,

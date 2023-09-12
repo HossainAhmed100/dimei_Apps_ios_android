@@ -104,9 +104,9 @@ const Register = ({ navigation }) => {
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
         {
         loading ? <ActivityIndicator size="large" color="#0000ff"/> : 
-        <Pressable onPress={handleSubmit(onSubmit)} style={styles.loginBtn}>
+        <TouchableOpacity activeOpacity={.7} onPress={handleSubmit(onSubmit)} style={styles.loginBtn}>
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>Sign up</Text>
-        </Pressable>
+        </TouchableOpacity>
       }
         <View style={{flexDirection: "row",gap: SIZES.xSmall,justifyContent: "center",alignItems: "center",paddingVertical: SIZES.xSmall - 2,}}>
             <View style={{borderWidth: 0.5,borderColor: COLORS.slate200,borderStyle: "solid",flex: 1}}></View>

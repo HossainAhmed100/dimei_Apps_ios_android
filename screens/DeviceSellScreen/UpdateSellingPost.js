@@ -1,26 +1,26 @@
 import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, Pressable, FlatList, useWindowDimensions, Linking} from 'react-native';
 import React, { useCallback, useRef } from 'react';
-import { COLORS, SIZES } from '../constants';
+import { COLORS, SIZES } from '../../constants';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
 import { Feather, AntDesign, Ionicons } from '@expo/vector-icons';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 
-const SellingDeviceDetails = ({navigation, route}) => {
-    const {width} = useWindowDimensions()
+const UpdateSellingPost = ({navigation, route}) => {
+  const {width} = useWindowDimensions();
   const deviceId = route.params.deviceId;
-  const firstTimeRef = useRef(true)
+  const firstTimeRef = useRef(true);
 
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.4:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.4:5000/updateDevicesellingPost/${deviceId}`);
       return res.data;
     } 
   });
-
+  console.log(myDevice)
   useFocusEffect(
     useCallback(() => {
       if (firstTimeRef.current) {
@@ -183,4 +183,4 @@ const ImageSilderShow = ({myDevice, width}) => (
     }
   })
 
-export default SellingDeviceDetails
+export default UpdateSellingPost

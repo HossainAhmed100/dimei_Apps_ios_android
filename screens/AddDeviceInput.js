@@ -47,23 +47,11 @@ const AddDeviceInput = ({ navigation }) => {
     const deviceTransferStatus = false;
     const deviceSellingStatus = false;
     
-    const devcieInfo = {modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus};
-     setLoading(true);
-    try {
-        await axios.post('http://192.168.1.4:5000/addNewDevice', {devcieInfo})
-        .then((res) => {
-        if (res.data.acknowledged){
-            alert('Check your email');
-            navigation.navigate('Home')
-        }
-        })
-    } catch (err) {
-        console.log(err);
-        alert('Device Added Feild');
-    } finally {
-        setLoading(false);
-    }
-  }; 
+    const deviceInfos = {modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus};
+
+    navigation.navigate('AddPhotoForNewDevice', {deviceInfos})
+  };
+
 const itemsSelect = [
     {label: "I Bought this Devcie new", value: "mynewDevice"},
     {label: "I Found This Device", value: "finddevice"}
@@ -162,15 +150,15 @@ const itemsSelect = [
             checkedCheckBoxColor={COLORS.blue500}
             uncheckedCheckBoxColor={COLORS.slate500}
             /> */}
-             <CheckBox
-           checked={checked}
-           onPress={toggleCheckbox}
-           // Use ThemeProvider to make change for all checkbox
-           iconType="material-community"
-           checkedIcon="checkbox-marked"
-           uncheckedIcon="checkbox-blank-outline"
-           checkedColor={COLORS.blue500}
-         />
+            <CheckBox
+            checked={checked}
+            onPress={toggleCheckbox}
+            // Use ThemeProvider to make change for all checkbox
+            iconType="material-community"
+            checkedIcon="checkbox-marked"
+            uncheckedIcon="checkbox-blank-outline"
+            checkedColor={COLORS.blue500}
+            />
             <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500}}>terms</Text> and <Text style={{color: COLORS.blue500}}>condition</Text></Text>
             </View>
         </View>

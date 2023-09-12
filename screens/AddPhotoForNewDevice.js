@@ -8,8 +8,8 @@ import { AntDesign } from '@expo/vector-icons';
 import { storage } from '../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-const SellingDeviceAction = ({navigation, route}) => {
-    const deviceInfo = route.params.deviceInfo;
+const AddPhotoForNewDevice = ({navigation, route}) => {
+    const deviceInfos = route.params.deviceInfos;
     const [firebaseIamge, setFirebaseIamge] = useState([]);
     const [selectedImages, setSelectedImages] = useState([]);
     const [loading, setLoading] = useState(false)
@@ -28,7 +28,7 @@ const SellingDeviceAction = ({navigation, route}) => {
           setFirebaseIamge([...newFirebaseImages]);
       
           // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-          await transferToDeviceDattaBase([...newFirebaseImages]);
+          await addDeviceInDatabase([...newFirebaseImages]);
           
         } catch (error) {
           console.error('Error during onSubmit:', error);
@@ -53,30 +53,30 @@ const SellingDeviceAction = ({navigation, route}) => {
       }
       };
     
-      const transferToDeviceDattaBase = async (deviceIamges) => {
+    const addDeviceInDatabase = async (deviceIamges) => {
         setLoading(true);
         const createdAt = new Date().toISOString();
-        const newArray = deviceInfo;
+        const newArray = deviceInfos;
         newArray.createdAt = createdAt;
         newArray.deviceIamges = deviceIamges;
+
         try {
-          const sellingDevInfo = newArray;
-          const response = await axios.post('http://192.168.1.4:5000/addDevcieSellingList', {sellingDevInfo});
-      
-          if (response.data.acknowledged) {
-            alert('Check your email');
-            navigation.navigate('Home');
-          } else {
-            alert('Device Add Failed');
-          }
-      
-        } catch (error) {
-          console.error('Error during transferToDeviceDattaBase:', error);
-          alert('Device Add Failed');
+            const devcieInfo = newArray;
+            const response = await axios.post('http://192.168.1.4:5000/addNewDevice', {devcieInfo})
+            if (response.data.acknowledged) {
+                alert('Check your email');
+                navigation.navigate('Home');
+            } else {
+                alert('Device Add Failed');
+            }
+        } catch (err) {
+            console.error('Error during Add Device To Database:', err);
+            alert('Device Added Feild');
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
+
+    };
     
       const uploadImageAsync = async (uri) => {
         const blob = await new Promise((resolve, reject) => {
@@ -116,6 +116,11 @@ const SellingDeviceAction = ({navigation, route}) => {
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
     <View style={{gap: 10, padding: 10}}>
+      
+      <View style={{padding: 10, backgroundColor: COLORS.slate100, borderRadius: 6}}>
+        <Text style={{color: COLORS.slate300}}>Uplaod Your Device Photo And Security Paper !</Text>
+      </View>
+
       <View>
         <TouchableOpacity style={styles.selectPhotoBtn} onPress={pickImage}>
         <AntDesign name="pluscircle" size={24} color={COLORS.slate300} />
@@ -177,4 +182,4 @@ const styles = StyleSheet.create({
     }
   });
 
-export default SellingDeviceAction;
+export default AddPhotoForNewDevice;

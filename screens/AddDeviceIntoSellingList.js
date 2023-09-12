@@ -69,7 +69,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
       <Text style={{color: COLORS.slate500}}>Description *</Text>
       <Controller control={control} rules={{ required: true}} name="deviceDescription"
       render={({ field: { onChange, onBlur, value } }) => (
-      <TextInput style={styles.descriptionInputBox} multiline={true} numberOfLines = {4} onBlur={onBlur} onChangeText={onChange} 
+      <TextInput style={styles.descriptionInputBox} multiline={true} onBlur={onBlur} onChangeText={onChange} 
       placeholder="Write Somthing" value={value}/>)}/>
       {errors.deviceDescription && <Text style={{color: COLORS.red500}}>Selling Description is required</Text>}
       </View>
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
       descriptionInputBox: {
       paddingHorizontal: SIZES.medium,
       borderRadius: SIZES.xSmall,
+      paddingVertical: 12,
       marginTop: 6,
       width: "100%",
       borderWidth: 1,

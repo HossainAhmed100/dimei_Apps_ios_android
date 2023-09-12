@@ -21,7 +21,7 @@ const AddNewDevice = ({ navigation }) => {
     setLoading(false);
   };
   return (
-    <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
+    <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}} showsVerticalScrollIndicator={false}>
     <View style={{paddingHorizontal: SIZES.large}}>
       <View>
       <View style={styles.searchContainer}>

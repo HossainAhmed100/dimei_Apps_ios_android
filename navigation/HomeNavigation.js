@@ -27,6 +27,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SellingDeviceAction from '../screens/SellingDeviceAction';
 import SellingDeviceDetails from '../screens/SellingDeviceDetails';
 import ViewOwnerDetails from '../screens/ViewOwnerDetails';
+import AddPhotoForNewDevice from '../screens/AddPhotoForNewDevice';
+import UpdateSellingPost from '../screens/DeviceSellScreen/UpdateSellingPost';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -44,6 +46,16 @@ const HomeNavigation = () => {
         <HomeNav.Screen name="Search" component={Search} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
 
+        <HomeNav.Screen name="AddPhotoForNewDevice" component={AddPhotoForNewDevice}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Device Photo Upload',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
         <HomeNav.Screen name="ViewOwnerDetails" component={ViewOwnerDetails}
           options={{ 
             headerBackVisible: false,
@@ -60,6 +72,17 @@ const HomeNavigation = () => {
             headerBackVisible: false,
             headerBackTitleVisible: false,
             title: 'Write Device info',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="UpdateSellingPost" component={UpdateSellingPost}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Update Selling Post',
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
             headerTitleAlign: 'center',
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}

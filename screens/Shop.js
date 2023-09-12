@@ -75,6 +75,28 @@ const Shop = ({navigation, route}) => {
         </ScrollView>
       </View>
     <View style={{paddingVertical: 10, paddingHorizontal: 10}}>
+        {
+          sellingDeviceList.length === 0 && 
+          <FlatList
+         numColumns={2}
+         showsVerticalScrollIndicator={false}
+         data={[1,2,3,4]}
+         keyExtractor={(item) => item}
+         renderItem={({ item }) => (
+          <View style={styles.loadingCardContainer}>
+           <View style={{padding: 6,width: "100%", gap: 4 }}>
+           <View style={{width: "100%", backgroundColor: COLORS.slate100, height: 150, borderRadius: 6}}></View>
+           <View style={{backgroundColor: COLORS.slate100, height: 15, borderRadius: 4}}></View>
+           <View style={{backgroundColor: COLORS.slate100, height: 15, borderRadius: 4}}></View>
+           </View>
+           </View>
+         )}
+         contentContainerStyle={{ rowGap: 12, columnGap: 12 }}
+         refreshControl={
+           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+         }
+       />
+        }
         {isLoading ? (
          <FlatList
          numColumns={2}
