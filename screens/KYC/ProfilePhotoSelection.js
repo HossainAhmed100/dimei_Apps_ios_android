@@ -13,8 +13,6 @@ const ProfilePhotoSelection = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [profilePhotoLoading, setProfilePhotoLoading] = useState(false);
-
-  console.log(accountInfo)
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -83,7 +81,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
     const tokenQuantity = 0;
     const deviceQuantity = 0;
     const referenceQuantity = 0;
-    const verifyedStatus = { "kycverifyed": true, "smsverifyed": false, "phoneverifyed": false, "emailverifyed": false };
+    const verifyedStatus = { "kycverifyed": true, "addressverifyed": true, "phoneverifyed": false, "emailverifyed": false };
     const userInfo = {
       userEmail, userPhone, userNikName, userProfilePic, userAddress, verifyedStatus, userAccountId, ...accountInfo, tokenQuantity, deviceQuantity, referenceQuantity};
      setLoading(true);
@@ -96,6 +94,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
               await axios.post('http://192.168.1.4:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
+                  navigation.navigate('Login')
                   alert('Account Created Successfully!');
                 }
               })
@@ -110,26 +109,6 @@ const ProfilePhotoSelection = ({navigation, route}) => {
     } finally {
         setLoading(false);
     }
-  }
-
-  const data = {
-    "_id": { "$oid": "64fda8cc1abd0f6ee6c39896" },
-    "userEmail": "dinislam@gmail.com",
-    "userName": "Din islam",
-    "userPhone": "01850563626",
-    "userAddress": "Dhaka, Bangladesh",
-    "userNikName": "Din islam",
-    "userProfilePic": profilePhoto,
-    "verifyedStatus": {
-      "kycverifyed": false,
-      "smsverifyed": false,
-      "phoneverifyed": false,
-      "emailverifyed": false
-    },
-    "userAccountId": "4654653432",
-    "tokenQuantity": { "$numberInt": "29" },
-    "deviceQuantity": { "$numberInt": "0" },
-    "referenceQuantity": { "$numberInt": "2" }
   }
 
   return (

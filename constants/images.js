@@ -13,8 +13,13 @@ import patterns from "../assets/images/patterns.png";
 import iphone13pro from "../assets/images/iphone13pro.jpg";
 import frontNid from "../assets/images/frontnid.png";
 import backnid from "../assets/images/backnid.png";
+import conversation from "../assets/images/message.png";
+import numberForms from "../assets/images/numberForms.png";
+import emailForm from "../assets/images/emailForm.png";
 
 export default {
+  emailForm,
+  numberForms,
   profile,
   onBoard,
   deviceQuantityBg,
@@ -25,6 +30,7 @@ export default {
   oppoImg,
   iphoneImg,
   vivovImg,
+  conversation,
   weaccept,
   patterns,
   iphone13pro,

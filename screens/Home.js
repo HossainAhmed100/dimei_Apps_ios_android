@@ -6,9 +6,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from "react-native";
-import React, { useCallback, useContext, useRef } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import { images, icons, COLORS, SIZES } from '../constants';
 import MyDeviceCrad from "../components/Crads/MyDeviceCrad";
 import axios from "axios";
@@ -19,7 +20,9 @@ import { Feather } from '@expo/vector-icons';
 
 const Home = ({navigation}) => {
   const { user, userLoding } = useContext(AuthContext);
-  const firstTimeRef = useRef(true)
+  const firstTimeRef = useRef(true);
+  const [refreshing, setRefreshing] = useState(false);
+
   const { isLoading, isError, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
@@ -37,6 +40,12 @@ const Home = ({navigation}) => {
       refetch()
     }, [refetch])
   )
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch(); // Refresh the data
+    setRefreshing(false);
+  };
 
   // if(!user?.verifyedStatus?.kycverifyed){
   //   navigation.navigate('ProfileDetails')
@@ -126,8 +135,9 @@ const viewDeviceDetails = (did) => {
           renderItem={({item}) => (
             <MyDeviceCrad viewDeviceDetails={viewDeviceDetails} item={item}/>
           )}
-          refreshing={isLoading}
-          // onRefresh={loadData}
+          refreshControl={
+           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+         }
         /> : <FlatList 
         data={[1]}
         keyExtractor={item => item}
@@ -136,8 +146,9 @@ const viewDeviceDetails = (did) => {
             <Text>Not Device Found</Text>
           </View>
         )}
-        refreshing={isLoading}
-        // onRefresh={loadData}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />}
           </View>
         }

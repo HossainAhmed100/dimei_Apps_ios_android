@@ -6,6 +6,7 @@ import { Divider } from '@rneui/themed';
 import { Entypo, MaterialCommunityIcons  } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
+import { format } from 'date-fns';
 
 const PrDeviceDetails = ({navigation, route}) => {
   const {width} = useWindowDimensions()
@@ -90,18 +91,31 @@ const PrDeviceDetails = ({navigation, route}) => {
     {!isLoading && 
     <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
      
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
-        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info </Text>
-        <MaterialCommunityIcons name="arrow-right"  size={SIZES.large} color={COLORS.slate500} />
-      </TouchableOpacity>
+      
 
-      {
-        !myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell && 
-        <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.slate100 }]}>
-        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Lost This Device </Text>
-        <MaterialCommunityIcons name="arrow-right"  size={SIZES.large} color={COLORS.slate500} />
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={styles.actionButton}>
+        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info </Text>
+        <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
+      {
+        (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && (
+          <TouchableOpacity
+            onPress={() => viewOwnerDetails(deviceId)}
+            style={styles.actionButton}
+          >
+            <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>
+              Lost This Device
+            </Text>
+            <MaterialCommunityIcons name="chevron-right"
+              size={SIZES.large}
+              color={COLORS.slate500}
+            />
+          </TouchableOpacity>
+        )
       }
+      </View>
+
       
 
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
@@ -187,13 +201,8 @@ const PhoneDetailsList = ({item}) => (
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Address :</Text>
-    <Text>{item.listingAddress}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
     <Text>Listing Date :</Text>
-    <Text>{item.listingDate}</Text>
+    <Text>{format(new Date(item?.listingDate), 'yyyy-MM-dd')}</Text>
     </View>
     <Divider />
   </View>
@@ -218,13 +227,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.large, 
   },
   actionButton:{
-    flex: 1, 
-    borderWidth: 1, 
+    backgroundColor: COLORS.slate100,
     alignItems: "center", 
     justifyContent: "space-between", 
     borderRadius: SIZES.small, 
     flexDirection: "row", gap: 4, 
-    borderColor: COLORS.white500,
     paddingVertical: SIZES.xSmall, 
     paddingHorizontal: SIZES.large, 
   }

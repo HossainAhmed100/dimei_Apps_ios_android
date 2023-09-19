@@ -5,6 +5,7 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthProvider';
 import { useForm, Controller } from "react-hook-form";
 import { COLORS, SIZES } from '../constants';
+import { MaterialCommunityIcons  } from '@expo/vector-icons';
 
 const VerifyDeviceAcceft = ({navigation, route})  => {
     const transferDeviceId = route.params.transferDeviceId;
@@ -20,26 +21,33 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         } 
     })
 
-    
     const onSubmit = async (data) => {
-        const secretCode = data.deviceSecrentCode;
-        const deviceId = accevtDevice?.deviceId;
-        const devicereciverEmail = user?.userEmail;
-        const deviceTestInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId};
-        if(user){
-        await axios.put(`http://192.168.1.4:5000/devicesecretCodetst/`, {deviceTestInfo})
-        .then((res) => {
-            if(res.data.transferSuccess){
-                navigation.navigate('Home')
-                alert("Device Accept Succesfully!")
-            }else{
-                setAcceptStatus("Secret Code is wrong!")
-            }
-        })
+    const secretCode = data.deviceSecrentCode;
+    const deviceId = accevtDevice?.deviceId;
+    const devicereciverEmail = user?.userEmail;
+    const deviceTestInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId};
+    if(user){
+    await axios.put(`http://192.168.1.4:5000/devicesecretCodetst/`, {deviceTestInfo})
+    .then((res) => {
+        if(res.data.transferSuccess){
+            navigation.navigate('Home')
+            alert("Device Accept Succesfully!")
+        }else{
+            setAcceptStatus("Secret Code is wrong!")
         }
+    })
+    }
      }
   return (
     <View style={{padding: SIZES.medium, backgroundColor: COLORS.white500, minHeight: "100%"}}>
+        { user?.tokenQuantity === 0 && 
+        <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, marginVertical: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
+            <Text style={{marginRight: 10, color: COLORS.white500}}>You Have 0 Token. Please Purchase Token For Accept This Token</Text> 
+            <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
+          </View>
+        </View>
+        }
         <View View style={styles.cardContainer}>
             {accevtDevice?.devicePicture && <Image source={{uri: accevtDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
             <View>
@@ -88,9 +96,13 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         {
         isLoading ? <Pressable style={styles.loginBtn}> 
         <ActivityIndicator size="large" color={COLORS.white500}/> 
-        </Pressable> : <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
+        </Pressable> :
+        user?.tokenQuantity === 0 ? <TouchableOpacity style={styles.disableBtn} >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
+        </TouchableOpacity> : <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
         </TouchableOpacity>
+        
         }
             
        

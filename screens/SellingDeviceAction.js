@@ -38,80 +38,80 @@ const SellingDeviceAction = ({navigation, route}) => {
         }
       };
       
-      const pickImage = async () => {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-      if (!result.canceled) {
-        setSelectedImages([...selectedImages, result.assets[0].uri]);
-        setLoading(false);
-      } else {
+    const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setSelectedImages([...selectedImages, result.assets[0].uri]);
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+     };
+  
+    const transferToDeviceDattaBase = async (deviceIamges) => {
+      setLoading(true);
+      const createdAt = new Date().toISOString();
+      const newArray = deviceInfo;
+      newArray.createdAt = createdAt;
+      newArray.deviceIamges = deviceIamges;
+      try {
+        const sellingDevInfo = newArray;
+        const response = await axios.post('http://192.168.1.4:5000/addDevcieSellingList', {sellingDevInfo});
+    
+        if (response.data.acknowledged) {
+          alert('Check your email');
+          navigation.navigate('Home');
+        } else {
+          alert('Device Add Failed');
+        }
+    
+      } catch (error) {
+        console.error('Error during transferToDeviceDattaBase:', error);
+        alert('Device Add Failed');
+      } finally {
         setLoading(false);
       }
-      };
-    
-      const transferToDeviceDattaBase = async (deviceIamges) => {
-        setLoading(true);
-        const createdAt = new Date().toISOString();
-        const newArray = deviceInfo;
-        newArray.createdAt = createdAt;
-        newArray.deviceIamges = deviceIamges;
-        try {
-          const sellingDevInfo = newArray;
-          const response = await axios.post('http://192.168.1.4:5000/addDevcieSellingList', {sellingDevInfo});
+     };
+  
+    const uploadImageAsync = async (uri) => {
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+          console.log(e);
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
+      });
+  
+      try{
+        const fileRef = ref(storage, `image/image-${Date.now()}`);
+        const result = await uploadBytes(fileRef, blob);
       
-          if (response.data.acknowledged) {
-            alert('Check your email');
-            navigation.navigate('Home');
-          } else {
-            alert('Device Add Failed');
-          }
+        // We're done with the blob, close and release it
+        blob.close();
       
-        } catch (error) {
-          console.error('Error during transferToDeviceDattaBase:', error);
-          alert('Device Add Failed');
-        } finally {
-          setLoading(false);
-        }
-      };
+        return await getDownloadURL(fileRef);
+      }catch(error) {
+        console.log(error)
+      }
+     };
     
-      const uploadImageAsync = async (uri) => {
-        const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = function () {
-            resolve(xhr.response);
-          };
-          xhr.onerror = function (e) {
-            console.log(e);
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.responseType = "blob";
-          xhr.open("GET", uri, true);
-          xhr.send(null);
-        });
-    
-        try{
-          const fileRef = ref(storage, `image/image-${Date.now()}`);
-          const result = await uploadBytes(fileRef, blob);
-        
-          // We're done with the blob, close and release it
-          blob.close();
-        
-          return await getDownloadURL(fileRef);
-        }catch(error) {
-          console.log(error)
-        }
-      };
-      
-    
-      const handleImageRemove = (index) => {
-        const newImages = [...selectedImages];
-        newImages.splice(index, 1);
-        setSelectedImages(newImages);
-      };
+  
+    const handleImageRemove = (index) => {
+      const newImages = [...selectedImages];
+      newImages.splice(index, 1);
+      setSelectedImages(newImages);
+     };
     
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>

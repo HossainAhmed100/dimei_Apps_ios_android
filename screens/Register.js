@@ -1,12 +1,8 @@
 import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity} from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { icons, COLORS, SIZES } from '../constants';
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ActivityIndicator } from "react-native";
-import { auth } from "../FirebaseConfig";
 import { useForm, Controller } from "react-hook-form";
-import axios from "axios";
-import { AuthContext } from "../context/AuthProvider";
 
 const Register = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -16,40 +12,8 @@ const Register = ({ navigation }) => {
     const userName = data.fullName;
     const userPhone = data.userPhone;
     const userPassword = data.userPassword;
-    // const userNikName = "";
-    // const userAddress = "";
-    // const userProfilePic = "";
-    // const userAccountId = "";
-    // const verifyedStatus = { "kycverifyed": false, "smsverifyed": false, "phoneverifyed": false, "emailverifyed": false };
     const userInfo = {userEmail, userName, userPhone, userPassword};
-    
     navigation.navigate('NidPhotoUpload', {userInfo})
-    //  setLoading(true);
-    // try {
-    //     await createUserWithEmailAndPassword(auth, userEmail, userPassword)
-    //     .then((userCredential) => {
-    //       const users = userCredential.user;
-    //       if (users.uid){
-    //         const newuser = async () => {
-    //           await axios.post('http://192.168.1.4:5000/addNewUser', {userInfo})
-    //           .then((res) => {
-    //             if (res.data.acknowledged){
-    //               alert('Please Login Now');
-    //               navigation.navigate('Login')
-    //             }
-    //           })
-    //         }
-    //         newuser();
-    //       }
-    //     })
-        
-    // } catch (err) {
-    //     console.log(err);
-    //     alert('Sign in failed: ' + err.message);
-    // } finally {
-    //     setLoading(false);
-    // }
-
   };
   
   return (

@@ -21,7 +21,6 @@ import PurchaseHistory from '../screens/PurchaseHistory';
 import AddressReference from '../screens/AddressReference';
 import VerifyDeviceAcceft from '../screens/VerifyDeviceAcceft';
 import TokenTransferInput from '../screens/TokenTransferInput';
-import ScreenHeaderBtn from '../components/Button/ScreenHeaderBtn';
 import AddDeviceIntoSellingList from '../screens/AddDeviceIntoSellingList';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SellingDeviceAction from '../screens/SellingDeviceAction';
@@ -29,6 +28,13 @@ import SellingDeviceDetails from '../screens/SellingDeviceDetails';
 import ViewOwnerDetails from '../screens/ViewOwnerDetails';
 import AddPhotoForNewDevice from '../screens/AddPhotoForNewDevice';
 import UpdateSellingPost from '../screens/DeviceSellScreen/UpdateSellingPost';
+import ViewUserProfile from '../screens/UserAccount/ViewUserProfile';
+import KYCPreview from '../screens/KYC/KYCPreview';
+import SupportChat from '../screens/Messeging/SupportChat';
+import ScreenHeaderBtn from '../components/Button/ScreenHeaderBtn';
+import ScreenHeaderRightBtn from '../components/Button/ScreenHeaderRightBtn';
+import EmailVerify from '../screens/VerifyScreen/EmailVerify';
+import PhoneVerify from '../screens/VerifyScreen/PhoneVerify';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -61,6 +67,27 @@ const HomeNavigation = () => {
             headerBackVisible: false,
             headerBackTitleVisible: false,
             title: 'Device Owner',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+        <HomeNav.Screen name="KYCPreview" component={KYCPreview}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'ReSubmit KYC',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="ViewUserProfile" component={ViewUserProfile}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Profile View',
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
             headerTitleAlign: 'center',
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
@@ -128,6 +155,7 @@ const HomeNavigation = () => {
             headerBackTitleVisible: false,
             title: 'Write Device info',
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerRight: () => (<ScreenHeaderRightBtn iconUrl={icons.supportChat} dimension="60%" />),
             headerTitleAlign: 'center',
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
           }}
@@ -227,11 +255,44 @@ const HomeNavigation = () => {
               headerBackTitleVisible: false,
               title: 'Add New Device',
               headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
-              headerRight: () => (<ScreenHeaderBtn iconUrl={icons.alert} dimension="60%" />),
+              headerRight: () => (<ScreenHeaderRightBtn iconUrl={icons.supportChat} dimension="60%" />),
               headerTitleAlign: 'center',
               headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
             }}
           />
+
+        <HomeNav.Screen name="SupportChat" component={SupportChat}
+            options={{ 
+              headerBackVisible: false,
+              headerBackTitleVisible: false,
+              title: 'Help and Support',
+              headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+              headerTitleAlign: 'center',
+              headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+            }}
+          />
+
+        <HomeNav.Screen name="EmailVerify" component={EmailVerify}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Email Verify',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="PhoneVerify" component={PhoneVerify}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Phone Verify',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
 
         <HomeNav.Screen name="AddReference" component={AddressReference}
           options={{ 

@@ -45,7 +45,7 @@ const ProfileDetails = ({ navigation })  => {
             </View>
         </View>
         <View style={{backgroundColor: COLORS.slate100,borderRadius: 10,marginVertical: 10, width: "100%"}}>
-          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
+          <TouchableOpacity onPress={() => navigation.navigate('KYCPreview')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
           <View style={{flexDirection: "row", alignItems: "center", gap: 10,justifyContent: "space-between",}}>
               <View style={styles.verifyList}>
               {user?.verifyedStatus?.kycverifyed ? <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.green500} /> : 
@@ -59,15 +59,15 @@ const ProfileDetails = ({ navigation })  => {
           <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
           <View style={{flexDirection: "row", alignItems: "center", gap: 10,justifyContent: "space-between",}}>
               <View style={styles.verifyList}>
-              {user?.verifyedStatus?.smsverifyed ? <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.green500} /> : 
+              {user?.verifyedStatus?.addressverifyed ? <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.green500} /> : 
               <MaterialCommunityIcons name="close-circle" size={20} color={COLORS.red500} />}
-                <Text style={styles.verifyListText}>SMS Verifyed</Text>
+                <Text style={styles.verifyListText}>Address Verifyed</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
             </View>
           </TouchableOpacity>
           <Divider color={COLORS.slate200}/>
-          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
+          <TouchableOpacity onPress={() => navigation.navigate('PhoneVerify')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
           <View style={{flexDirection: "row", alignItems: "center", gap: 10,justifyContent: "space-between",}}>
               <View style={styles.verifyList}>
               {user?.verifyedStatus?.phoneverifyed ? <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.green500} /> : 
@@ -78,7 +78,7 @@ const ProfileDetails = ({ navigation })  => {
             </View>
           </TouchableOpacity>
           <Divider color={COLORS.slate200}/>
-          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
+          <TouchableOpacity onPress={() => navigation.navigate('EmailVerify')} style={{paddingVertical: 13,paddingHorizontal: 15,}}>
             <View style={{flexDirection: "row", alignItems: "center", gap: 10,justifyContent: "space-between",}}>
               <View style={styles.verifyList}>
                 {user?.verifyedStatus?.emailverifyed ? <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.green500} /> : 

@@ -7,7 +7,6 @@ const AditionalEnfoSelection = ({navigation, route}) => {
     const userDetails = route.params.userDetails;
     const [gender, setGender] = useState("Male");
     const [accountType, setAccountType] = useState("Personal");
-    console.log(userDetails)
     const nextStep = () => {
         const accountInfo = {gender, accountType, ...userDetails};
         navigation.navigate('ProfilePhotoSelection', {accountInfo})

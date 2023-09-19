@@ -46,10 +46,12 @@ import chipActive from '../assets/icons/chipActive.png';
 import chat from '../assets/icons/chat.png';
 import chatActive from '../assets/icons/chatActive.png';
 import deviceChip from '../assets/icons/deviceChip.png';
+import supportChat from '../assets/icons/supportChat.png';
 
 
 export default {
     chipActive,
+    supportChat,
     deviceChip,
     chat,
     chatActive,

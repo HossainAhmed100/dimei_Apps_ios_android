@@ -8,9 +8,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { CheckBox } from '@rneui/themed';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthProvider';
+import { format } from 'date-fns';
 
 const AddDeviceInput = ({ navigation }) => {
     const [checked, setChecked] = React.useState(true);
+    const todyDate = new Date().toISOString();
     const toggleCheckbox = () => setChecked(!checked);
     const [deviceImei, setDeviceImei] = useState('');
     const [listingDate, setListingDate] = useState('');
@@ -20,7 +22,7 @@ const AddDeviceInput = ({ navigation }) => {
     const [items, setItems] = useState([]);
     const { user, userLoding } = useContext(AuthContext);
     const addDevice = async () => {
-    const modelName =  "Iphone 13 Pro";
+    const modelName =  "iPhone 13 Pro";
     const brand = "Apple";
     const colorVarient = "Silver";
     const ram = "6GB";
@@ -34,11 +36,12 @@ const AddDeviceInput = ({ navigation }) => {
     const MISC_Model = "A2638";
     const threePointFive_mm_jack = true;
     const deviceStatus = "Good";
-    const listingDate = "May/12/2023";
+    const listingDate = todyDate;
     const listingAddress = "Dhaka, Bangladesh";
     const daysUsed = "0";
     const deviceImei = "4658925796458359";
     const devicePicture = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
+    const ownerPhoto = user?.userProfilePic;
     const ownerEmail = user?.userEmail;
     const devcieOrigin = value;
     const haveBoxde = false;
@@ -89,7 +92,7 @@ const itemsSelect = [
                 style={styles.inputBox}
                 placeholder="Confirm Password"
                 onChangeText={(text) => setListingDate(text)}
-                value={"7/26/2023"}
+                value={format(new Date(todyDate), 'yyyy-MM-dd')}
             />
             
             </View>

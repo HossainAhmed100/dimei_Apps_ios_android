@@ -47,7 +47,13 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
     const devciePrice = data.devicesellingPrice;
     const sellingTitle = data.sellingTitle;
     const ownerName = user?.userName;
-    const deviceInfo =  { deviceBrand, deviceModelName, sellingTitle, colorVarient, ram, storage, battery, battery, batteryRemovable, sim_slot, gpu, Announced, listingAddress, daysUsed, deviceId, ownerEmail, ownerName, haveOriginalBox, devciePrice };
+    const deviceInfo =  { 
+      deviceBrand, deviceModelName, 
+      sellingTitle, colorVarient, ram, 
+      storage, battery, battery, batteryRemovable, 
+      sim_slot, gpu, Announced, listingAddress, 
+      daysUsed, deviceId, ownerEmail, ownerName,
+      haveOriginalBox, devciePrice };
     navigation.navigate('SellDeviceAction', {deviceInfo})
   };
 

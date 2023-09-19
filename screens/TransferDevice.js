@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../context/AuthProvider';
 
+
 const TransferDevice =  ({navigation, route}) => {
     const deviceId = route.params.deviceId ;
     const [checked, setChecked] = React.useState(true);
@@ -25,41 +26,41 @@ const TransferDevice =  ({navigation, route}) => {
         } 
     })
 
-     const onSubmit = async (data) => {
-        const ownerEmail = user?.userEmail;
-        const ownerPicture = user?.userProfilePic;
-        const ownerName = user?.userName;
-        const reciverAccountEmail = data.reciverAccountEmail;
-        const transferDate = data.transferDate;
-        const deviceModelName =  myDevice?.modelName;
-        const brand = myDevice?.brand;
-        const colorVarient = myDevice?.colorVarient;
-        const ram = myDevice?.ram;
-        const storage = myDevice?.storage;
-        const devicePicture = myDevice?.devicePicture;
-        const deviceStatus = "OwnerShip Transfer";
-        const secretCode = Math.floor(100000 + Math.random() * 900000);
-        const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId}
-        const infoData = {deviceId, secretCode}
-        if(user){
-        await axios.put(`http://192.168.1.4:5000/devicetransferStatusUpdate/`,{infoData})
-        .then((res) => {
-        if (res.data.modifiedCount === 1){
-            try{
-              axios.post(`http://192.168.1.4:5000/reciveTransferDevice/`, {transferDeviceInfo})
-              .then((res) => {
-                if (res.data.acknowledged){
-                navigation.navigate('Home')
-                alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
-                }
-            })
-            }catch (err) {
-                console.log(err);
-                alert('Device Added Feild');
-            } finally {}
-        }})
-        }
-     }
+    const onSubmit = async (data) => {
+    const ownerEmail = user?.userEmail;
+    const ownerPicture = user?.userProfilePic;
+    const ownerName = user?.userName;
+    const reciverAccountEmail = data.reciverAccountEmail;
+    const transferDate = data.transferDate;
+    const deviceModelName =  myDevice?.modelName;
+    const brand = myDevice?.brand;
+    const colorVarient = myDevice?.colorVarient;
+    const ram = myDevice?.ram;
+    const storage = myDevice?.storage;
+    const devicePicture = myDevice?.devicePicture;
+    const deviceStatus = "OwnerShip Transfer";
+    const secretCode = Math.floor(100000 + Math.random() * 900000);
+    const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId}
+    const infoData = {deviceId, secretCode}
+    if(user){
+    await axios.put(`http://192.168.1.4:5000/devicetransferStatusUpdate/`,{infoData})
+    .then((res) => {
+    if (res.data.modifiedCount === 1){
+        try{
+            axios.post(`http://192.168.1.4:5000/reciveTransferDevice/`, {transferDeviceInfo})
+            .then((res) => {
+            if (res.data.acknowledged){
+            navigation.navigate('Home')
+            alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
+            }
+        })
+        }catch (err) {
+            console.log(err);
+            alert('Device Added Feild');
+        } finally {}
+    }})
+    }
+    }
 
 
 
@@ -149,17 +150,13 @@ const TransferDevice =  ({navigation, route}) => {
         </KeyboardAvoidingView>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
         {
-        isLoading ? <Pressable style={styles.loginBtn}> 
+        isLoading ? 
+        <Pressable style={styles.loginBtn}> 
         <ActivityIndicator size="large" color={COLORS.white500}/> 
-        </Pressable> : <View>
-        {
-            user?.tokenQuantity === 0 ? <TouchableOpacity style={styles.disableBtn} >
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
-            </TouchableOpacity> : <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
-            </TouchableOpacity>
-            }
-        </View>
+        </Pressable> : 
+        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
+        </TouchableOpacity>
         }
             
             
