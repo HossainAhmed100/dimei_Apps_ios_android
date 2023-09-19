@@ -1,9 +1,12 @@
 import { View, Text, ScrollView, Image, Pressable, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { SimpleLineIcons  } from '@expo/vector-icons';
 import { COLORS, SIZES, icons, images } from '../constants';
 import { Divider } from '@rneui/themed';
+import axios from 'axios';
+import { AuthContext } from '../context/AuthProvider';
 const BuyToken = () => {
+  const {user} = useContext(AuthContext);
   const tokenPriceList = [
     {
       "tokenQuntaty": 1,
@@ -61,6 +64,21 @@ const BuyToken = () => {
     calculateTotalPrice(price.price.toString());
     setSelectedBox(index);
   };
+
+  const buyTokenAction = async () =>{
+    const infoData = {tokenQuantity: tokenQuantity, userId: user?._id};
+    try{
+      await axios.put("http://192.168.1.4:5000/byToken/", {infoData})
+      .then((res) => {
+        if (res.data.modifiedCount){
+          navigation.navigate('Home')
+          alert('Token Added Successfully!');
+        }
+      })
+    }catch{
+
+    }
+  }
 
 
   return (
@@ -122,7 +140,7 @@ const BuyToken = () => {
         <Text style={{color: COLORS.blue200, fontSize: SIZES.xSmall}}>Total Pay</Text>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 700}}>৳{totalPrice} Taka</Text>
         </View>
-        <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.small, paddingVertical: SIZES.medium}}>
+        <TouchableOpacity onPress={() => buyTokenAction()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.small, paddingVertical: SIZES.medium}}>
           <Text style={{color: COLORS.blue500, fontSize: SIZES.medium, backgroundColor: COLORS.white500, padding: SIZES.small, borderRadius: SIZES.small}}>Pay now ৳{totalPrice} Taka</Text>
         </TouchableOpacity>
       </View>
