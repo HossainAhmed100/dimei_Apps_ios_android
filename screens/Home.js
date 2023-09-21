@@ -31,6 +31,16 @@ const Home = ({navigation}) => {
     } 
   })
 
+  const { data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
+    queryKey: ['itemQuantity', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.4:5000/useritemQuantity/${user?.userEmail}`);
+      return res.data;
+    } 
+  })
+
+
+
   useFocusEffect(
     useCallback(() => {
       if (firstTimeRef.current) {
@@ -38,18 +48,16 @@ const Home = ({navigation}) => {
          return;
       }
       refetch()
-    }, [refetch])
+      fetchToken()
+    }, [refetch, fetchToken])
   )
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch(); // Refresh the data
+    await fetchToken(); // Refresh the data
     setRefreshing(false);
   };
-
-  // if(!user?.verifyedStatus?.kycverifyed){
-  //   navigation.navigate('ProfileDetails')
-  // }
 
 const viewDeviceDetails = (did) => {
   navigation.navigate('MyDeviceDetails', {deviceId: did})
@@ -77,7 +85,7 @@ const viewDeviceDetails = (did) => {
             <ImageBackground source={images.tokenQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.diamond} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Token</Text>
-            <Text style={styles.balanceValue}>{user?.tokenQuantity ? user?.tokenQuantity : "0"}</Text>
+            <Text style={styles.balanceValue}>{itemQuantity?.tokenQuantity ? itemQuantity?.tokenQuantity : "0"}</Text>
             </ImageBackground>
           </View>
           <View style={{ borderRadius: SIZES.xSmall, flex: 1}}>
@@ -91,7 +99,7 @@ const viewDeviceDetails = (did) => {
             <ImageBackground source={images.referenceQuantityBg} style={styles.backgroundImage}>
             <Image source={icons.usersGroup} style={styles.boxIcosn}/>
             <Text style={styles.balanceTitle}>Reference</Text>          
-            <Text style={styles.balanceValue}>{user?.referenceQuantity ? user?.referenceQuantity : "0"}</Text>
+            <Text style={styles.balanceValue}>{itemQuantity?.referenceQuantity ? itemQuantity?.referenceQuantity : "0"}</Text>
             </ImageBackground>
           </View>
         </View>

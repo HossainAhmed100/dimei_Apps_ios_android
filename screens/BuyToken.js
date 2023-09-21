@@ -5,7 +5,8 @@ import { COLORS, SIZES, icons, images } from '../constants';
 import { Divider } from '@rneui/themed';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthProvider';
-const BuyToken = () => {
+
+const BuyToken = ({navigation}) => {
   const {user} = useContext(AuthContext);
   const tokenPriceList = [
     {
@@ -71,8 +72,8 @@ const BuyToken = () => {
       await axios.put("http://192.168.1.4:5000/byToken/", {infoData})
       .then((res) => {
         if (res.data.modifiedCount){
-          navigation.navigate('Home')
           alert('Token Added Successfully!');
+          navigation.navigate('Home')
         }
       })
     }catch{

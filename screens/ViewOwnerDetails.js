@@ -58,13 +58,23 @@ const OwnerCard = ({item, viewProvile}) => {
     <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
     {item?.ownerPhoto && <Image source={{uri: item?.ownerPhoto}} style={{width: 50, height: 50, borderRadius: 6,  resizeMode: "cover"}}/>}
     <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
-      <Text style={{fontSize: 20, fontWeight: 600, color: "#3B3C35"}}>{item?.OwnerName}</Text>
+      <Text style={{fontSize: 20, fontWeight: 600, color: "#3B3C35"}}>{item?.ownerName}</Text>
       <Text style={{fontSize: 16, color: "#808080", fontWeight: "400", fontSize: 14}}>ID: {item.ownerId}</Text>
     </View>
     </View>
-    <TouchableOpacity style={{backgroundColor: COLORS.blue100, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
-      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>{item?.ownarStatus}</Text>
-    </TouchableOpacity>
+    {
+    item?.thisIsPreviousOwner ? 
+    <View style={{backgroundColor: COLORS.blue100, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
+      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>Previous Owner</Text>
+    </View> : item?.thisIsCurrentOwner ?
+    <View style={{backgroundColor: COLORS.green100, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
+      <Text style={{color: COLORS.green500, fontSize: 12, fontWeight: 500}}>Current Owner</Text>
+    </View> :
+    <View style={{backgroundColor: COLORS.red100, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
+      <Text style={{color: COLORS.red500, fontSize: 12, fontWeight: 500}}>Unauthorized Owner</Text>
+    </View>
+    }
+    
     </View>
     <Divider />
 
@@ -75,7 +85,11 @@ const OwnerCard = ({item, viewProvile}) => {
       <Text style={{fontSize: 16, color: "#808080", fontWeight: "400", fontSize: 14}}>{format(new Date(item?.deviceListingDate), 'yyyy-MM-dd hh:mm a')}</Text>
     </View>
     <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
-    <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>Transfer Date</Text>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>
+        {
+        item?.thisIsPreviousOwner ? "Transfer Date" : 
+        item?.thisIsCurrentOwner ? "Received Date" : "Unauthorized Listing Date"
+        } </Text>  
       <Text style={{fontSize: 16, color: "#808080", fontWeight: "400", fontSize: 14}}>{format(new Date(item?.deviceTransferDate), 'yyyy-MM-dd hh:mm a')}</Text>
     </View>
     </View>
@@ -87,45 +101,6 @@ const OwnerCard = ({item, viewProvile}) => {
   </View>
   )
 }
-
-const OwnerInfo = ({item}) => (
-  <View style={{ flexDirection: "column",  width: "100%"}}>
-    <View style={styles.listItem}>
-    <Text>Name :</Text>
-    <Text>{item.OwnerName}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>OwnerId :</Text>
-    <Text>{item.ownerId}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Owner Phone :</Text>
-    <Text>{item.ownerPhone}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Owner Address :</Text>
-    <Text>{item.ownerAddress}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Owner Email :</Text>
-    <Text>{item.ownerEmail}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Listing Date :</Text>
-    <Text>{format(new Date(item?.deviceListingDate), 'yyyy-MM-dd hh:mm a')}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Transfer Date :</Text>
-    <Text>{format(new Date(item?.deviceTransferDate), 'yyyy-MM-dd hh:mm a')}</Text>
-    </View>
-  </View>
-)
 
 
 const styles = StyleSheet.create({

@@ -1,27 +1,52 @@
-import { Image, ScrollView, StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
 import React, { useContext, useState } from "react";  
-import { COLORS, SIZES, images } from '../constants';
+import { COLORS, SIZES, images } from '../../constants';
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
-// import CheckBox from 'react-native-check-box';
 import { CheckBox } from '@rneui/themed';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthProvider';
+import { AuthContext } from '../../context/AuthProvider';
 import { format } from 'date-fns';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from '../../FirebaseConfig';
 
-const AddDeviceInput = ({ navigation }) => {
+const AddDeviceInput = ({navigation, route}) => {
+    const deviceIamges = route.params.deviceIamges;
     const [checked, setChecked] = React.useState(true);
     const todyDate = new Date().toISOString();
+    const [firebaseIamge, setFirebaseIamge] = useState([]);
     const toggleCheckbox = () => setChecked(!checked);
-    const [deviceImei, setDeviceImei] = useState('');
-    const [listingDate, setListingDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
     const [items, setItems] = useState([]);
     const { user, userLoding } = useContext(AuthContext);
+
     const addDevice = async () => {
+    try {
+        // const uploadPromises = deviceIamges.map(async (uri) => {
+        //   return await uploadImageAsync(uri);
+        // });
+    
+        // const newFirebaseImages = await Promise.all(uploadPromises);
+        // setFirebaseIamge([...newFirebaseImages]);
+        
+        // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
+        await addDeviceInDatabase();
+
+      } catch (error) {
+        console.error('Error during addDevice:', error);
+      } finally {
+        setLoading(false);
+      }
+
+    
+  };
+
+  const addDeviceInDatabase = async () => {
+    
+    // setLoading(true);
     const modelName =  "iPhone 13 Pro";
     const brand = "Apple";
     const colorVarient = "Silver";
@@ -38,7 +63,7 @@ const AddDeviceInput = ({ navigation }) => {
     const deviceStatus = "Good";
     const listingDate = todyDate;
     const listingAddress = "Dhaka, Bangladesh";
-    const daysUsed = "0";
+    const daysUsed = 0;
     const deviceImei = "4658925796458359";
     const devicePicture = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
     const ownerPhoto = user?.userProfilePic;
@@ -49,11 +74,69 @@ const AddDeviceInput = ({ navigation }) => {
     const batteryRemovable = false;
     const deviceTransferStatus = false;
     const deviceSellingStatus = false;
-    
-    const deviceInfos = {modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus};
+    const deviceIamge = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
+    const deviceOwnerList = [
+        {
+          ownerId: user?.userAccountId,
+          deviceListingDate: todyDate,
+          deviceTransferDate: todyDate,
+          ownerPhoto: ownerPhoto,
+          ownerName: user?.userName,
+          ownarStatus: "Current Owner",
+          ownerEmail: ownerEmail,
+          deviceLostNoteMessage: "",
+          thisIsPreviousOwner: false,
+          thisIsCurrentOwner: true,
+        }
+    ]    
 
-    navigation.navigate('AddPhotoForNewDevice', {deviceInfos})
+    const deviceInfos = {deviceOwnerList, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceIamge};
+
+    try {
+        const response = await axios.post('http://192.168.1.4:5000/addNewDevice', {deviceInfos})
+        if (response.data.acknowledged) {
+            alert('Check your email');
+            navigation.navigate('Home');
+        } else {
+            alert('Device Add Failed');
+        }
+    } catch (err) {
+        console.error('Error during Add Device To Database:', err);
+        alert('Device Added Feild');
+    } finally {
+        setLoading(false);
+    }
+
+};
+
+  const uploadImageAsync = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    try{
+      const fileRef = ref(storage, `image/image-${Date.now()}`);
+      const result = await uploadBytes(fileRef, blob);
+    
+      // We're done with the blob, close and release it
+      blob.close();
+    
+      return await getDownloadURL(fileRef);
+    }catch(error) {
+      console.log(error)
+    }
   };
+  
 
 const itemsSelect = [
     {label: "I Bought this Devcie new", value: "mynewDevice"},
@@ -82,7 +165,6 @@ const itemsSelect = [
                 style={styles.inputBox}
                 placeholder="Old Password"
                 autoCapitalize='none' 
-                onChangeText={(text) => setDeviceImei(text)}
                 value={"4658925796458359"}
             />
             </View>
@@ -91,7 +173,6 @@ const itemsSelect = [
             <TextInput
                 style={styles.inputBox}
                 placeholder="Confirm Password"
-                onChangeText={(text) => setListingDate(text)}
                 value={format(new Date(todyDate), 'yyyy-MM-dd')}
             />
             
@@ -168,9 +249,11 @@ const itemsSelect = [
         </KeyboardAvoidingView>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
         {
-        loading ? <Pressable style={styles.loginBtn}> 
+        loading ? 
+        <Pressable style={styles.loginBtn}> 
         <ActivityIndicator size="large" color={COLORS.white500}/> 
-        </Pressable> : <Pressable onPress={() => addDevice()} style={styles.loginBtn} >
+        </Pressable> : 
+        <Pressable onPress={() => addDevice()} style={styles.loginBtn} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm </Text>
         </Pressable>
         }

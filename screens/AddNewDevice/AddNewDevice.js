@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
-import { COLORS, SIZES, icons, images } from '../constants'
+import { COLORS, SIZES, icons, images } from '../../constants'
 import { StyleSheet } from 'react-native'
 import { Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
@@ -60,7 +60,7 @@ const AddNewDevice = ({ navigation }) => {
       <Ionicons name="close-outline" size={20} color={COLORS.white500} />
           <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Close</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("AddDeviceInput")} style={{alignItems: "center", justifyContent: "center", padding: SIZES.xSmall, backgroundColor: COLORS.blue500, borderRadius: SIZES.small, flex: 1, flexDirection: "row"}}>
+      <TouchableOpacity onPress={() => navigation.navigate("AddPhotoForNewDevice")} style={{alignItems: "center", justifyContent: "center", padding: SIZES.xSmall, backgroundColor: COLORS.blue500, borderRadius: SIZES.small, flex: 1, flexDirection: "row"}}>
           <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Add now</Text>
       <Ionicons name="add" size={20} color={COLORS.white500} />
       </TouchableOpacity>
