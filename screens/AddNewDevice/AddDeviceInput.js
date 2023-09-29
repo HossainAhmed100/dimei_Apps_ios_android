@@ -1,7 +1,6 @@
 import { Image, StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
 import React, { useContext, useState } from "react";  
 import { COLORS, SIZES, images } from '../../constants';
-import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { CheckBox } from '@rneui/themed';
@@ -10,6 +9,9 @@ import { AuthContext } from '../../context/AuthProvider';
 import { format } from 'date-fns';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from '../../FirebaseConfig';
+import { useQuery } from '@tanstack/react-query';
+import { Divider } from '@rneui/base';
+import { Controller, useForm } from 'react-hook-form';
 
 const AddDeviceInput = ({navigation, route}) => {
     const deviceIamges = route.params.deviceIamges;
@@ -19,11 +21,20 @@ const AddDeviceInput = ({navigation, route}) => {
     const toggleCheckbox = () => setChecked(!checked);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
+    const [dropDownValue, setDropDownValue] = useState(null);
     const [items, setItems] = useState([]);
     const { user, userLoding } = useContext(AuthContext);
+    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: ""},})
+   
 
-    const addDevice = async () => {
+    const { data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
+        queryKey: ['itemQuantity', user?.userEmail], 
+        queryFn: async () => {
+          const res = await axios.get(`http://192.168.1.4:5000/useritemQuantity/${user?.userEmail}`);
+          return res.data;
+        } 
+    })
+    const onSubmit = async (data) => {
     try {
         // const uploadPromises = deviceIamges.map(async (uri) => {
         //   return await uploadImageAsync(uri);
@@ -31,9 +42,9 @@ const AddDeviceInput = ({navigation, route}) => {
     
         // const newFirebaseImages = await Promise.all(uploadPromises);
         // setFirebaseIamge([...newFirebaseImages]);
-        
+        const deviceNote = data.deviceNote;
         // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-        await addDeviceInDatabase();
+        await addDeviceInDatabase(deviceNote);
 
       } catch (error) {
         console.error('Error during addDevice:', error);
@@ -44,7 +55,7 @@ const AddDeviceInput = ({navigation, route}) => {
     
   };
 
-  const addDeviceInDatabase = async () => {
+  const addDeviceInDatabase = async (deviceNotes) => {
     
     // setLoading(true);
     const modelName =  "iPhone 13 Pro";
@@ -68,7 +79,7 @@ const AddDeviceInput = ({navigation, route}) => {
     const devicePicture = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
     const ownerPhoto = user?.userProfilePic;
     const ownerEmail = user?.userEmail;
-    const devcieOrigin = value;
+    const devcieOrigin = dropDownValue;
     const haveBoxde = false;
     const secretCode = "";
     const batteryRemovable = false;
@@ -87,6 +98,7 @@ const AddDeviceInput = ({navigation, route}) => {
           deviceLostNoteMessage: "",
           thisIsPreviousOwner: false,
           thisIsCurrentOwner: true,
+          deviceNote: deviceNotes,
         }
     ]    
 
@@ -139,8 +151,9 @@ const AddDeviceInput = ({navigation, route}) => {
   
 
 const itemsSelect = [
-    {label: "I Bought this Devcie new", value: "mynewDevice"},
-    {label: "I Found This Device", value: "finddevice"}
+    {label: "I Bought This Devcie new", value: "mynewDevice"},
+    {label: "I Found This Device", value: "ifoundthisdevice"},
+    {label: "I Lost This Device", value: "ilostthisdevice"},
 ]
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
@@ -155,28 +168,56 @@ const itemsSelect = [
                     <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : Silver</Text>
                 </View>
             </View>
-        <View style={styles.container}>
-        <View>
-        <KeyboardAvoidingView behavior='padding'>
-        <View style={{ gap: SIZES.medium }}>
+        <View style={{ justifyContent: "space-between", flexDirection: "column" }}>
+        <View style={{ gap: SIZES.small }}>
             <View>
             <Text style={{color: COLORS.slate500}}>Device IMEI *</Text>
             <TextInput
                 style={styles.inputBox}
-                placeholder="Old Password"
+                placeholder="Enter Device imei"
                 autoCapitalize='none' 
                 value={"4658925796458359"}
             />
             </View>
+            <View style={{zIndex: 100}}>
+            <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device origin *</Text>
+            <DropDownPicker
+            open={open}
+            value={dropDownValue}
+            items={itemsSelect}
+            setOpen={setOpen}
+            setValue={setDropDownValue}
+            setItems={setItems}
+            placeholder='Select Device origin'
+            bottomOffset={20}
+            style={{borderColor: COLORS.slate200}}
+            dropDownDirection='BOTTOM'
+            mode='BADGE'
+            />
+            </View>
+            
+            {
+              (dropDownValue === "ifoundthisdevice" ||  dropDownValue === "ilostthisdevice") &&
+            <View>
+              <Text style={styles.inputTextLabel}>Note *</Text>
+              <Controller control={control} rules={{required: true,}}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput style={styles.noteInputBox} multiline={true} numberOfLines={3} placeholder={"Write About Your Devcie "} onBlur={onBlur} onChangeText={onChange} value={value} />
+                )}
+                name="deviceNote"
+              />
+            {errors.deviceNote && <Text style={{color: COLORS.red500}}>Write Some Message Please</Text>}
+            </View>
+            }
             <View>
             <Text style={{color: COLORS.slate500}}>Listing Date *</Text>
             <TextInput
                 style={styles.inputBox}
-                placeholder="Confirm Password"
+                placeholder="Device Listing Date"
                 value={format(new Date(todyDate), 'yyyy-MM-dd')}
             />
-            
             </View>
+            
             {/* <View>
             <Text style={{color: COLORS.slate500}}>Reference</Text>
             <View style={styles.referenceInputBox}>
@@ -209,65 +250,64 @@ const itemsSelect = [
             </View>
             </View>
             </View> */}
-            <View style={{zIndex: 100}}>
-            <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device origin *</Text>
-            <DropDownPicker
-            open={open}
-            value={value}
-            items={itemsSelect}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setItems}
-            placeholder='Select Device origin'
-            style={{
-               borderColor: COLORS.slate200
-              }}
-            bottomOffset={20}
-            dropDownDirection='BOTTOM'
-            mode='BADGE'
-            />
-            </View>
+            {
+              dropDownValue === "mynewDevice" &&
+              <View>
+              <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device Transfer Fee</Text>
+              <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
+              <View style={styles.tokenItem}>
+              <Text style={{color: COLORS.slate500}}>Total Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity} Token</Text>
+              </View>
+              <Divider />
+              <View style={styles.tokenItem}>
+              <Text style={{color: COLORS.slate500}}>Transfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
+              </View>
+              <Divider />
+              <View style={styles.tokenItem}>
+              <Text style={{color: COLORS.slate500}}>Available Token</Text>
+              <Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity && itemQuantity?.tokenQuantity - 1} Token</Text>
+              </View>
+              </View>
+              </View>
+            }
+            
             <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-            {/* <CheckBox
-            isChecked={isChecked}
-            onClick={() => setIsChecked(!isChecked)}
-            checkedCheckBoxColor={COLORS.blue500}
-            uncheckedCheckBoxColor={COLORS.slate500}
-            /> */}
             <CheckBox
             checked={checked}
             onPress={toggleCheckbox}
-            // Use ThemeProvider to make change for all checkbox
             iconType="material-community"
             checkedIcon="checkbox-marked"
             uncheckedIcon="checkbox-blank-outline"
             checkedColor={COLORS.blue500}
             />
-            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500}}>terms</Text> and <Text style={{color: COLORS.blue500}}>condition</Text></Text>
+            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
             </View>
         </View>
-        </KeyboardAvoidingView>
-        <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
+        <View>
         {
         loading ? 
         <Pressable style={styles.loginBtn}> 
-        <ActivityIndicator size="large" color={COLORS.white500}/> 
+        <ActivityIndicator color={COLORS.white500}/> 
         </Pressable> : 
-        <Pressable onPress={() => addDevice()} style={styles.loginBtn} >
+        <Pressable onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm </Text>
         </Pressable>
         }
-            
-       
         </View>
         </View>
-    </View>
-        </View>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+    tokenItem:{
+        paddingHorizontal: SIZES.small, 
+        flexDirection: "row", 
+        alignItems: "center", 
+        justifyContent: "space-between", 
+        paddingVertical: SIZES.xSmall
+    },
     cardContainer:{
         borderWidth: 1, 
         borderColor: COLORS.slate100, 
@@ -278,10 +318,7 @@ const styles = StyleSheet.create({
         marginBottom: SIZES.xSmall, 
         padding: 10
     },
-    container: {
-        backgroundColor: COLORS.white500,
-        },
-        inputBox: {
+    inputBox: {
         paddingVertical: SIZES.xSmall,
         paddingHorizontal: SIZES.medium,
         borderRadius: SIZES.xSmall,
@@ -289,8 +326,17 @@ const styles = StyleSheet.create({
         width: "100%",
         borderWidth: 1,
         borderColor: COLORS.slate200,
-        },
-        referenceInputBox: {
+    },
+    noteInputBox: {
+        paddingVertical: SIZES.xSmall,
+        paddingHorizontal: SIZES.medium,
+        borderRadius: SIZES.xSmall,
+        marginTop: 6,
+        width: "100%",
+        borderWidth: 1,
+        borderColor: COLORS.slate200,
+    },
+    referenceInputBox: {
         paddingVertical: SIZES.medium,
         paddingHorizontal: SIZES.medium,
         borderRadius: SIZES.xSmall,
@@ -298,8 +344,8 @@ const styles = StyleSheet.create({
         width: 300,
         borderWidth: 1,
         borderColor: COLORS.slate200,
-        },
-        loginBtn: {
+    },
+    loginBtn: {
         backgroundColor: COLORS.blue500,
         width: "100%",
         paddingVertical: SIZES.small,
@@ -309,8 +355,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderColor: COLORS.blue500,
         borderWidth: 1,
-        },
-        googleLoginBtn: {
+    },
+    googleLoginBtn: {
         backgroundColor: COLORS.white500,
         width: 300,
         paddingVertical: SIZES.small,
@@ -321,7 +367,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderColor: COLORS.slate200,
         borderWidth: 1,
-        }
+    }
 });
 
 export default AddDeviceInput
