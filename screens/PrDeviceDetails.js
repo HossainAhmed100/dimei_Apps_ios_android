@@ -67,17 +67,6 @@ const PrDeviceDetails = ({navigation, route}) => {
     <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}} showsVerticalScrollIndicator={false}>
     <View showsVerticalScrollIndicator={false}>
     <View>
-    { myDevice?.deviceTransferStatus && 
-        <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, marginVertical: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
-            <Text style={{color: COLORS.white500}}>Device Security Code : </Text>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'center'}}> 
-            <Text style={{marginRight: 10, color: COLORS.white500}}>{myDevice?.secretCode}</Text> 
-            <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
-            </View>
-          </View>
-        </View>
-        }
       <View style={{backgroundColor: COLORS.slate100}}>
       {
       myDevice?.deviceIamges && 
@@ -85,6 +74,17 @@ const PrDeviceDetails = ({navigation, route}) => {
       }
       <Divider />
       </View>
+      { myDevice?.deviceTransferStatus && 
+      <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, margin: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
+        <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
+          <Text style={{color: COLORS.white500}}>Device Security Code : </Text>
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'center'}}> 
+          <Text style={{marginRight: 10, color: COLORS.white500}}>{myDevice?.secretCode}</Text> 
+          <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
+          </View>
+        </View>
+      </View>
+      }
     <View>
       {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>}
     </View>
@@ -93,12 +93,12 @@ const PrDeviceDetails = ({navigation, route}) => {
      
       
 
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: SIZES.small}}>
       <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={styles.actionButton}>
         <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info </Text>
         <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
-      {
+      {/* {
         (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && (
           <TouchableOpacity
             onPress={() => viewOwnerDetails(deviceId)}
@@ -113,7 +113,7 @@ const PrDeviceDetails = ({navigation, route}) => {
             />
           </TouchableOpacity>
         )
-      }
+      } */}
       </View>
 
       
@@ -200,11 +200,6 @@ const PhoneDetailsList = ({item}) => (
     <Text>{item.daysUsed}</Text>
     </View>
     <Divider />
-    <View style={styles.listItem}>
-    <Text>Listing Date :</Text>
-    <Text>{format(new Date(item?.listingDate), 'yyyy-MM-dd')}</Text>
-    </View>
-    <Divider />
   </View>
 )
 
@@ -234,6 +229,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", gap: 4, 
     paddingVertical: SIZES.xSmall, 
     paddingHorizontal: SIZES.large, 
+    flex: 1
   }
 })
 

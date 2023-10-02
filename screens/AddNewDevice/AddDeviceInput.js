@@ -14,7 +14,7 @@ import { Divider } from '@rneui/base';
 import { Controller, useForm } from 'react-hook-form';
 
 const AddDeviceInput = ({navigation, route}) => {
-    const deviceIamges = route.params.deviceIamges;
+    const deviceIamge = route.params.deviceIamges;
     const [checked, setChecked] = React.useState(true);
     const todyDate = new Date().toISOString();
     const [firebaseIamge, setFirebaseIamge] = useState([]);
@@ -25,8 +25,7 @@ const AddDeviceInput = ({navigation, route}) => {
     const [items, setItems] = useState([]);
     const { user, userLoding } = useContext(AuthContext);
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: ""},})
-   
-
+  
     const { data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
         queryKey: ['itemQuantity', user?.userEmail], 
         queryFn: async () => {
@@ -35,16 +34,17 @@ const AddDeviceInput = ({navigation, route}) => {
         } 
     })
     const onSubmit = async (data) => {
+      setLoading(true);
     try {
-        // const uploadPromises = deviceIamges.map(async (uri) => {
-        //   return await uploadImageAsync(uri);
-        // });
+        const uploadPromises = deviceIamge.map(async (uri) => {
+          return await uploadImageAsync(uri);
+        });
     
-        // const newFirebaseImages = await Promise.all(uploadPromises);
-        // setFirebaseIamge([...newFirebaseImages]);
+        const newFirebaseImages = await Promise.all(uploadPromises);
+        setFirebaseIamge([...newFirebaseImages]);
         const deviceNote = data.deviceNote;
         // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-        await addDeviceInDatabase(deviceNote);
+        await addDeviceInDatabase(deviceNote, [...newFirebaseImages]);
 
       } catch (error) {
         console.error('Error during addDevice:', error);
@@ -55,9 +55,9 @@ const AddDeviceInput = ({navigation, route}) => {
     
   };
 
-  const addDeviceInDatabase = async (deviceNotes) => {
+  const addDeviceInDatabase = async (deviceNotes, deviceImgList) => {
     
-    // setLoading(true);
+    setLoading(true);
     const modelName =  "iPhone 13 Pro";
     const brand = "Apple";
     const colorVarient = "Silver";
@@ -82,10 +82,11 @@ const AddDeviceInput = ({navigation, route}) => {
     const devcieOrigin = dropDownValue;
     const haveBoxde = false;
     const secretCode = "";
+    const isDeviceSell = false;
     const batteryRemovable = false;
     const deviceTransferStatus = false;
     const deviceSellingStatus = false;
-    const deviceIamge = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
+    const deviceIamges = deviceImgList;
     const deviceOwnerList = [
         {
           ownerId: user?.userAccountId,
@@ -93,7 +94,7 @@ const AddDeviceInput = ({navigation, route}) => {
           deviceTransferDate: todyDate,
           ownerPhoto: ownerPhoto,
           ownerName: user?.userName,
-          ownarStatus: "Current Owner",
+          ownarStatus: "",
           ownerEmail: ownerEmail,
           deviceLostNoteMessage: "",
           thisIsPreviousOwner: false,
@@ -102,11 +103,14 @@ const AddDeviceInput = ({navigation, route}) => {
         }
     ]    
 
-    const deviceInfos = {deviceOwnerList, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceIamge};
+    const deviceInfos = {deviceOwnerList, isDeviceSell, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceIamges};
 
     try {
         const response = await axios.post('http://192.168.1.4:5000/addNewDevice', {deviceInfos})
-        if (response.data.acknowledged) {
+        if (response.data.isDeviceisExist) {
+            alert('This Devcie is Alredy Added');
+            navigation.navigate('Home');
+        } else if (response.data.acknowledged) {
             alert('Check your email');
             navigation.navigate('Home');
         } else {
@@ -151,9 +155,9 @@ const AddDeviceInput = ({navigation, route}) => {
   
 
 const itemsSelect = [
-    {label: "I Bought This Devcie new", value: "mynewDevice"},
-    {label: "I Found This Device", value: "ifoundthisdevice"},
-    {label: "I Lost This Device", value: "ilostthisdevice"},
+    {label: "আমি এই ডিভাইসটি নতুন কিনেছি", value: "mynewDevice"},
+    {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ifoundthisdevice"},
+    {label: "আমি এই ডিভাইসটি খুজে পেয়েছি", value: "ilostthisdevice"},
 ]
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
@@ -251,7 +255,7 @@ const itemsSelect = [
             </View>
             </View> */}
             {
-              dropDownValue === "mynewDevice" &&
+              (dropDownValue === "mynewDevice" || dropDownValue === null) &&
               <View>
               <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device Transfer Fee</Text>
               <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>

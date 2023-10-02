@@ -81,6 +81,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
     const tokenQuantity = 0;
     const deviceQuantity = 0;
     const referenceQuantity = 0;
+    const listingDeviceList = [];
     const verifyedStatus = { "kycverifyed": true, "addressverifyed": true, "phoneverifyed": false, "emailverifyed": false };
     const userInfo = {
       userEmail, userPhone, userNikName, userProfilePic, userAddress, verifyedStatus, userAccountId, ...accountInfo, tokenQuantity, deviceQuantity, referenceQuantity};

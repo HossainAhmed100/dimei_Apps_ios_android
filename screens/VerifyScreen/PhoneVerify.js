@@ -1,10 +1,12 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { COLORS, SIZES, images } from '../../constants'
 import { TextInput } from 'react-native'
 import { Divider } from '@rneui/base'
+import { AuthContext } from '../../context/AuthProvider'
 
 const PhoneVerify = () => {
+  const { user } = useContext(AuthContext);
   return (
     <View style={{flex: 1, paddingHorizontal: SIZES.medium, backgroundColor: COLORS.white500}}>
       <View style={{paddingVertical: 20, gap: 20,}}>
@@ -23,7 +25,7 @@ const PhoneVerify = () => {
         <View style={styles.phoneNumberInput}>
           <Text style={{fontSize: 14, color: COLORS.slate300}}>🇧🇩 (+880)</Text>
           <Divider orientation="vertical" color={COLORS.slate500}/>
-          <TextInput placeholder='Enter your number' value='1-850-563-626' style={{width: "100%", color: COLORS.slate300}}/>
+          <TextInput placeholder='Enter your number' value={user?.userPhone} style={{width: "100%", color: COLORS.slate300}}/>
         </View>
         <TouchableOpacity style={{backgroundColor: COLORS.blue500, paddingVertical: 15, alignItems: "center", justifyContent: "center", marginVertical: 15, borderRadius: 10}}>
           <Text style={{color: COLORS.white500, fontSize: 16, fontWeight: 500}}>Next Step</Text>

@@ -8,14 +8,15 @@ import { useForm, Controller } from "react-hook-form";
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../context/AuthProvider';
+import { format } from 'date-fns';
 
 
 const TransferDevice =  ({navigation, route}) => {
     const deviceId = route.params.deviceId ;
     const [checked, setChecked] = React.useState(true);
     const toggleCheckbox = () => setChecked(!checked);
-    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: "1/7/2023"}})
-
+    const todyDate = new Date().toISOString();
+    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}});
     const { user, userLoding } = useContext(AuthContext);
 
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
@@ -26,12 +27,20 @@ const TransferDevice =  ({navigation, route}) => {
         } 
     })
 
+    const { data: itemQuantity = [] } = useQuery({ 
+        queryKey: ['itemQuantity', user?.userEmail], 
+        queryFn: async () => {
+          const res = await axios.get(`http://192.168.1.4:5000/useritemQuantity/${user?.userEmail}`);
+          return res.data;
+        } 
+      })
+
     const onSubmit = async (data) => {
     const ownerEmail = user?.userEmail;
     const ownerPicture = user?.userProfilePic;
     const ownerName = user?.userName;
     const reciverAccountEmail = data.reciverAccountEmail;
-    const transferDate = data.transferDate;
+    const transferDate = todyDate;
     const deviceModelName =  myDevice?.modelName;
     const brand = myDevice?.brand;
     const colorVarient = myDevice?.colorVarient;
@@ -82,56 +91,34 @@ const TransferDevice =  ({navigation, route}) => {
         <KeyboardAvoidingView behavior='padding'>
         <View style={{ gap: SIZES.medium }}>
             <View>
-            <Text style={{color: COLORS.slate500}}>Device Receiver Account ID *</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Text style={{color: COLORS.slate500}}>Device Receiver Account Email *</Text>
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput 
-                style={styles.inputBox}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                />
-                )}
-                name="reciverAccountEmail"
+              <TextInput  style={styles.inputBox} onBlur={onBlur} onChangeText={onChange} value={value} placeholder='Type Recevier Acount Email'/>)}
+              name="reciverAccountEmail"
             />
             {errors.reciverAccountEmail && <Text style={{color: COLORS.red500}}>Receiver Account Email is required</Text>}
-            
             </View>
             <View>
             <Text style={{color: COLORS.slate500}}>Date</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
+            <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput 
-                style={styles.inputBox}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                />
-                )}
-                name="transferDate"
+              <TextInput  style={styles.inputBox} onBlur={onBlur} onChangeText={onChange} value={value} /> )}
+              name="transferDate"
             />
             {errors.transferDate && <Text style={{color: COLORS.red500}}>Date is required</Text>}
-            
             </View>
             <View>
                 <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Device Transfer Fee</Text>
                 <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
                 <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Total Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{user?.tokenQuantity} Token</Text>
+                <Text style={{color: COLORS.slate500}}>Total Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity} Token</Text>
                 </View>
                 <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Transfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
+                <Text style={{color: COLORS.slate500}}>Transfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>0 Token</Text>
                 </View>
                 <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Available Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{user?.tokenQuantity && user?.tokenQuantity - 1} Token</Text>
+                <Text style={{color: COLORS.slate500}}>Available Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{user?.tokenQuantity && itemQuantity?.tokenQuantity - 0} Token</Text>
                 </View>
                 </View>
             </View>

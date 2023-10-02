@@ -19,7 +19,6 @@ const UpdateSellingPost = ({navigation, route}) => {
   const deviceId = route.params.deviceId;
   const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const firstTimeRef = useRef(true);
 
   
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
@@ -37,15 +36,6 @@ const UpdateSellingPost = ({navigation, route}) => {
     listingAddress: sellingDevice?.listingAddress, 
   },})
 
-  useFocusEffect(
-    useCallback(() => {
-      if (firstTimeRef.current) {
-         firstTimeRef.current = false;
-         return;
-      }
-      refetch()
-    }, [refetch])
-  );
   const onSubmit = async (data) => {
     const listingAddress = data?.listingAddress;
     const devciePrice = data.devicesellingPrice;
@@ -131,14 +121,12 @@ const UpdateSellingPost = ({navigation, route}) => {
     try {
       await axios.delete(`http://192.168.1.4:5000/deleteDevcieSellingPost/${deviceId}`)
       .then((res) => {
-        console.log(res)
         if(res.data.transferSuccess){
           navigation.navigate('Home')
         }
-    })
-    } catch (err) {
+      })
+    }catch (err) {
         console.log(err);
-    } finally {
     }
    }
 
@@ -163,7 +151,7 @@ const UpdateSellingPost = ({navigation, route}) => {
           </View>
         ))}
       </View>
-      <Text>{`Selected: ${sellingDevice?.deviceIamges.length}/10`}</Text>
+      <Text>{`Selected: ${sellingDevice?.deviceIamges?.length}/10`}</Text>
     </View>
     <View style={{paddingVertical: SIZES.small}}>
     <Divider />
@@ -225,9 +213,6 @@ const UpdateSellingPost = ({navigation, route}) => {
       <MaterialCommunityIcons name="progress-upload" size={SIZES.large} color={COLORS.white500} />
     </TouchableOpacity>
       }
-    <View style={{paddingVertical: SIZES.small, width: "100%"}}>
-    <Divider />
-    </View>
     <TouchableOpacity onPress={() => deleteThisPost(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500}]}>
       <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Delete This Post </Text>
       <MaterialCommunityIcons name="delete-outline" size={SIZES.large} color={COLORS.white500} />

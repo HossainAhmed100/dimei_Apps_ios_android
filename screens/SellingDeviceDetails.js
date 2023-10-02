@@ -37,6 +37,17 @@ const SellingDeviceDetails = ({navigation, route}) => {
     Linking.openURL(`tel:${phoneNumber}`)
 
   }
+
+  const message = (did) => {
+
+    navigation.navigate('DeviceSellingChat', {
+      deviceId: did,
+      deviceImg: myDevice?.deviceIamges[0],
+      devciePrice: myDevice?.devciePrice,
+      sellingTitle: myDevice?.sellingTitle,
+    })
+
+  }
   
 
   return (
@@ -98,7 +109,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
         <Ionicons name="call" size={SIZES.large} color={COLORS.blue500} />
           <Text style={styles.bottonActionBtnText}>Call</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottonActionBtn}>
+        <TouchableOpacity onPress={() => message(deviceId)} style={styles.bottonActionBtn}>
           <AntDesign name="wechat" size={SIZES.large} color={COLORS.blue500} />
           <Text style={styles.bottonActionBtnText}>Chat</Text>
         </TouchableOpacity>

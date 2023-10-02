@@ -35,6 +35,8 @@ import PhoneVerify from '../screens/VerifyScreen/PhoneVerify';
 import AddPhotoForNewDevice from '../screens/AddNewDevice/AddPhotoForNewDevice';
 import AddNewDevice from '../screens/AddNewDevice/AddNewDevice';
 import AddDeviceInput from '../screens/AddNewDevice/AddDeviceInput';
+import DeviceSellingChat from '../screens/Messeging/DeviceSellingChat';
+import DaynamicChatHeader from '../components/Crads/DaynamicChatHeader';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -51,6 +53,18 @@ const HomeNavigation = () => {
         <HomeNav.Screen name="Home2" component={Home} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Search" component={Search} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
+
+        
+        <HomeNav.Screen name="DeviceSellingChat" component={DeviceSellingChat}
+          options={({ route }) => ({ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerRight: () => (<ScreenHeaderRightBtn iconUrl={icons.reportFlag} dimension="60%" />),
+            headerTitle: () => (<DaynamicChatHeader route={route} iconUrl={icons.supportChat} dimension="60%" />),
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          })}
+        />
 
         <HomeNav.Screen name="AddPhotoForNewDevice" component={AddPhotoForNewDevice}
           options={{ 
