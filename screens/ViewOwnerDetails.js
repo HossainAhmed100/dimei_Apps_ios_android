@@ -53,7 +53,7 @@ const ViewOwnerDetails =  ({navigation, route}) => {
 
 const OwnerCard = ({item, viewProvile}) => {
   return(
-    <View style={{ borderWidth: 1, padding: SIZES.xSmall, borderRadius: SIZES.xSmall, borderColor: COLORS.slate100, overflow: "hidden", gap: 10}}>
+    <View style={{ borderWidth: 1, padding: SIZES.xSmall, borderRadius: SIZES.xSmall, borderColor: item?.thisIsUnAuthorizeOwner ? COLORS.red200 : COLORS.slate100, overflow: "hidden", gap: 10}}>
     <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 10}}>
     <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
     {item?.ownerPhoto && <Image source={{uri: item?.ownerPhoto}} style={{width: 50, height: 50, borderRadius: 6,  resizeMode: "cover"}}/>}
@@ -70,7 +70,7 @@ const OwnerCard = ({item, viewProvile}) => {
     <View style={{backgroundColor: COLORS.green100, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
       <Text style={{color: COLORS.green500, fontSize: 12, fontWeight: 500}}>Current Owner</Text>
     </View> :
-    <View style={{backgroundColor: COLORS.red100, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
+    <View style={{backgroundColor: COLORS.red100, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6}}>
       <Text style={{color: COLORS.red500, fontSize: 12, fontWeight: 500}}>Unauthorized Owner</Text>
     </View>
     }

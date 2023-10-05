@@ -28,7 +28,6 @@ const NIDDetailsShow = ({navigation, route}) => {
     },})
     const onSubmit = (data) => {
       const userDetails = {nidData, ...userData};
-      console.log("Nid Details Show",userDetails)
       navigation.navigate('AditionalEnfoSelection', {userDetails})
     }
 
@@ -121,7 +120,7 @@ const NIDDetailsShow = ({navigation, route}) => {
     </View>
     <View style={{position: "absolute", bottom: 0, width: "100%"}}>
     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
-    <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
+    <TouchableOpacity onPress={() => navigation.goBack()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
         <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>BACK</Text>
     </TouchableOpacity>
     <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}> 

@@ -83,8 +83,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
     const referenceQuantity = 0;
     const listingDeviceList = [];
     const verifyedStatus = { "kycverifyed": true, "addressverifyed": true, "phoneverifyed": false, "emailverifyed": false };
-    const userInfo = {
-      userEmail, userPhone, userNikName, userProfilePic, userAddress, verifyedStatus, userAccountId, ...accountInfo, tokenQuantity, deviceQuantity, referenceQuantity};
+    const userInfo = {userEmail, userPhone, userNikName, userProfilePic, userAddress, verifyedStatus, userAccountId, ...accountInfo, tokenQuantity, deviceQuantity, referenceQuantity, listingDeviceList};
      setLoading(true);
     try {
         await createUserWithEmailAndPassword(auth, userEmail, userPassword)
@@ -160,7 +159,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
         </View>
         <View style={{width: 300, paddingVertical: 30}}>
           {loading ? <TouchableOpacity style={styles.confirmBtn}>
-            <ActivityIndicator size="large" color={COLORS.white500}/>
+            <ActivityIndicator color={COLORS.white500}/>
           </TouchableOpacity> : <TouchableOpacity onPress={() => nextStep()} style={styles.confirmBtn}>
             <Text style={styles.confirmBtnText}>CONFIRM</Text>
           </TouchableOpacity>}

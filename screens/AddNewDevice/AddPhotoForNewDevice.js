@@ -5,12 +5,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
 
 const AddPhotoForNewDevice = ({navigation, route}) => {
+  const deviceImeiInput  = route.params.deviceImeiInput;
     const [selectedImages, setSelectedImages] = useState([]);
     const [loading, setLoading] = useState(false)
     
     const onSubmit = async () => {
       const deviceIamges = [...selectedImages];
-      navigation.navigate('AddDeviceInput', {deviceIamges})  
+      navigation.navigate('AddDeviceInput', {deviceIamges, deviceImeiInput})  
     };
       
     const pickImage = async () => {

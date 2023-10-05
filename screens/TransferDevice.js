@@ -17,7 +17,7 @@ const TransferDevice =  ({navigation, route}) => {
     const toggleCheckbox = () => setChecked(!checked);
     const todyDate = new Date().toISOString();
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}});
-    const { user, userLoding } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 

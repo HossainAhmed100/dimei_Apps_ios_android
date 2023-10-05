@@ -73,7 +73,7 @@ const BuyToken = ({navigation}) => {
       .then((res) => {
         if (res.data.modifiedCount){
           alert('Token Added Successfully!');
-          navigation.navigate('Home')
+          navigation.goBack();
         }
       })
     }catch{

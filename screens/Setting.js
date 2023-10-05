@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { View, Text, ScrollView, Pressable, Image, Switch, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Image, Switch, StyleSheet } from "react-native";
 import { COLORS, SIZES, icons } from '../constants';
 import { Feather } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
@@ -8,7 +8,7 @@ import { Divider } from "@rneui/themed";
 
 const Setting = ({navigation}) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { user, userLoding, logOut } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);

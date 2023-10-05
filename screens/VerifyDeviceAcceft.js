@@ -15,7 +15,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const toggleCheckbox = () => setChecked(!checked);
     const [acceptStatus, setAcceptStatus] = useState("");
     const [loading, setLoading] = useState(false);
-    const { user, userLoding } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const todyDate = new Date().toISOString();
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceSecrentCode: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}})
     
@@ -27,7 +27,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         } 
       })
 
-    const { isLoading, isError, data: accevtDevice = [], error } = useQuery({ 
+    const { isLoading, data: accevtDevice = [] } = useQuery({ 
         queryKey: ['accevtDevice', transferDeviceId], 
         queryFn: async () => {
         const res = await axios.get(`http://192.168.1.4:5000/getTransferDeviceDetails/${transferDeviceId}`);
@@ -78,7 +78,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     }
   return (
     <View style={{padding: SIZES.medium, backgroundColor: COLORS.white500, minHeight: "100%"}}>
-        { user?.tokenQuantity === 0 && 
+        { itemQuantity?.tokenQuantity === 0 && 
         <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, marginVertical: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
           <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
             <Text style={{marginRight: 10, color: COLORS.white500}}>You Have 0 Token. Please Purchase Token For Accept This Token</Text> 
@@ -87,14 +87,15 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         </View>
         }
         <View View style={styles.cardContainer}>
-            {accevtDevice?.devicePicture && <Image source={{uri: accevtDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
-            <View>
-                <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{accevtDevice?.modelName}</Text>
-                <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : {accevtDevice?.ram}</Text>
-                <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Storage : {accevtDevice?.storage}</Text>
-                <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Brand : {accevtDevice?.brand}</Text>
-                <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : {accevtDevice?.colorVarient}</Text>
-            </View>
+        {accevtDevice?.devicePicture && 
+        <Image source={{uri: accevtDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
+        <View>
+            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{accevtDevice?.modelName}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : {accevtDevice?.ram}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Storage : {accevtDevice?.storage}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Brand : {accevtDevice?.brand}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : {accevtDevice?.colorVarient}</Text>
+        </View>
         </View>
         <View style={{gap: 10}}>
         <View>
@@ -126,7 +127,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
             <Text style={{color: COLORS.slate500}}>Device Accept Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
             </View>
             <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-            <Text style={{color: COLORS.slate500}}>Available Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity && user?.tokenQuantity - 1} Token</Text>
+            <Text style={{color: COLORS.slate500}}>Available Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity && itemQuantity?.tokenQuantity - 1} Token</Text>
             </View>
             </View>
         </View>
@@ -147,8 +148,8 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         isLoading ? <Pressable style={styles.loginBtn}> 
         <ActivityIndicator color={COLORS.white500}/> 
         </Pressable> :
-        user?.tokenQuantity === 0 ? 
-        <TouchableOpacity style={styles.disableBtn} >
+        itemQuantity?.tokenQuantity === 0 ? 
+        <TouchableOpacity style={[styles.loginBtn, {opacity: 0.5}]} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Accept</Text>
         </TouchableOpacity> : loading ?
         <TouchableOpacity style={styles.loginBtn}> 
@@ -157,7 +158,6 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Accept</Text>
         </TouchableOpacity> 
-        
         }
        
         </View>

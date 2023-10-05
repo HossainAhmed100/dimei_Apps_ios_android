@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import React, { useContext, useState } from "react";  
 import { COLORS, SIZES, images } from '../../constants';
 import { ActivityIndicator } from "react-native";
@@ -12,9 +12,12 @@ import { storage } from '../../FirebaseConfig';
 import { useQuery } from '@tanstack/react-query';
 import { Divider } from '@rneui/base';
 import { Controller, useForm } from 'react-hook-form';
+import AwesomeAlert from 'react-native-awesome-alerts';
+
 
 const AddDeviceInput = ({navigation, route}) => {
     const deviceIamge = route.params.deviceIamges;
+    const deviceImeiInput = route.params.deviceImeiInput;
     const [checked, setChecked] = React.useState(true);
     const todyDate = new Date().toISOString();
     const [firebaseIamge, setFirebaseIamge] = useState([]);
@@ -23,16 +26,26 @@ const AddDeviceInput = ({navigation, route}) => {
     const [open, setOpen] = useState(false);
     const [dropDownValue, setDropDownValue] = useState(null);
     const [items, setItems] = useState([]);
-    const { user, userLoding } = useContext(AuthContext);
-    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: ""},})
+    const { user } = useContext(AuthContext);
+    const [zeroTokenAlert, setZeroTokenAlert] = useState(false)
+    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: ""},});
+
+   const showAlert = () => {
+    setZeroTokenAlert(true)
+    };
   
-    const { data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
+   const hideAlert = () => {
+    setZeroTokenAlert(false)
+    };
+  
+    const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
         queryKey: ['itemQuantity', user?.userEmail], 
         queryFn: async () => {
           const res = await axios.get(`http://192.168.1.4:5000/useritemQuantity/${user?.userEmail}`);
           return res.data;
         } 
     })
+
     const onSubmit = async (data) => {
       setLoading(true);
     try {
@@ -75,7 +88,7 @@ const AddDeviceInput = ({navigation, route}) => {
     const listingDate = todyDate;
     const listingAddress = "Dhaka, Bangladesh";
     const daysUsed = 0;
-    const deviceImei = "4658925796458359";
+    const deviceImei = deviceImeiInput;
     const devicePicture = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
     const ownerPhoto = user?.userProfilePic;
     const ownerEmail = user?.userEmail;
@@ -86,24 +99,24 @@ const AddDeviceInput = ({navigation, route}) => {
     const batteryRemovable = false;
     const deviceTransferStatus = false;
     const deviceSellingStatus = false;
+    const deviceLostStatus = false;
     const deviceIamges = deviceImgList;
-    const deviceOwnerList = [
-        {
-          ownerId: user?.userAccountId,
-          deviceListingDate: todyDate,
-          deviceTransferDate: todyDate,
-          ownerPhoto: ownerPhoto,
-          ownerName: user?.userName,
-          ownarStatus: "",
-          ownerEmail: ownerEmail,
-          deviceLostNoteMessage: "",
-          thisIsPreviousOwner: false,
-          thisIsCurrentOwner: true,
-          deviceNote: deviceNotes,
-        }
-    ]    
+    const deviceOwnerList = {
+      ownarStatus: "",
+      ownerPhoto: ownerPhoto,
+      ownerEmail: ownerEmail,
+      deviceNote: deviceNotes,
+      thisIsCurrentOwner: true,
+      ownerName: user?.userName,
+      deviceLostNoteMessage: "",
+      thisIsPreviousOwner: false,
+      deviceListingDate: todyDate,
+      ownerId: user?.userAccountId,
+      deviceTransferDate: todyDate,
+      thisIsUnAuthorizeOwner: false,
+    };   
 
-    const deviceInfos = {deviceOwnerList, isDeviceSell, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceIamges};
+    const deviceInfos = {deviceOwnerList, isDeviceSell, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceLostStatus, deviceIamges};
 
     try {
         const response = await axios.post('http://192.168.1.4:5000/addNewDevice', {deviceInfos})
@@ -180,7 +193,7 @@ const itemsSelect = [
                 style={styles.inputBox}
                 placeholder="Enter Device imei"
                 autoCapitalize='none' 
-                value={"4658925796458359"}
+                value={deviceImeiInput}
             />
             </View>
             <View style={{zIndex: 100}}>
@@ -289,14 +302,40 @@ const itemsSelect = [
         </View>
         <View>
         {
-        loading ? 
-        <Pressable style={styles.loginBtn}> 
+        isLoading ? <TouchableOpacity style={styles.loginBtn}> 
         <ActivityIndicator color={COLORS.white500}/> 
-        </Pressable> : 
-        <Pressable onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm </Text>
-        </Pressable>
+        </TouchableOpacity> :
+        itemQuantity?.tokenQuantity === 0 ? 
+        <TouchableOpacity onPress={() => showAlert()} style={[styles.loginBtn, {opacity: 0.5}]} >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        </TouchableOpacity> : loading ?
+        <TouchableOpacity style={styles.loginBtn}> 
+        <ActivityIndicator color={COLORS.white500}/> 
+        </TouchableOpacity> :
+        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        </TouchableOpacity> 
         }
+        <AwesomeAlert
+          show={zeroTokenAlert}
+          showProgress={false}
+          title="Token Alert"
+          message="You don't have any Token. Please Buy some Token to continue."
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="Close"
+          confirmText="Buy now"
+          confirmButtonColor={COLORS.blue500}
+          onCancelPressed={() => {
+            hideAlert();
+          }}
+          onConfirmPressed={() => {
+            navigation.navigate('BuyToken');
+            hideAlert();
+          }}
+        />
         </View>
         </View>
       </View>

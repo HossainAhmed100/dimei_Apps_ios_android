@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { AuthContext } from '../context/AuthProvider';
 const ProfileShare = () => {
-  const { user, userLoding } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>

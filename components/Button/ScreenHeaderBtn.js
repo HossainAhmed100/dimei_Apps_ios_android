@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 const ScreenHeaderBtn = ({iconUrl, dimension}) => {
     const navigation = useNavigation();
   return (
-   <TouchableOpacity style={styles.btnContainer}onPress={() => navigation.goBack()} >
+   <TouchableOpacity style={styles.btnContainer} onPress={() => navigation.goBack()}>
     <Image source={iconUrl} resizeMode='cover' style={styles.btnImg(dimension)}/>
    </TouchableOpacity>
   )

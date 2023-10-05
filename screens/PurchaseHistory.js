@@ -1,16 +1,14 @@
-import React, { useContext } from "react";
+import React from "react";
 import { View, Text, ImageBackground, TouchableOpacity, Image, FlatList } from "react-native";
 import { COLORS, SIZES, images } from "../constants";
 import { Feather } from '@expo/vector-icons';
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { AuthContext } from "../context/AuthProvider";
 
 const PurchaseHistory = ({navigation}) => {
-  const { user, userLoding } = useContext(AuthContext);
 
-  const { isLoading, isError, data: trsnData = [], error } = useQuery({ 
-    queryKey: ['trsnData', user?.userEmail],
+  const { isLoading, data: trsnData = [] } = useQuery({ 
+    queryKey: ['trsnData'],
     queryFn: async () => {
       const res =  await axios.get(`http://192.168.1.4:5000/userTranstion/`);
       return res.data;

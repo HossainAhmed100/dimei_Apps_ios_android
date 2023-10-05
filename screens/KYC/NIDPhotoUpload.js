@@ -15,6 +15,8 @@ const NIDPhotoUpload = ({navigation, route}) => {
     const [backsideNidPhoto, setBacksideNidPhoto] = useState(null);
     const [frontNidImageLoding, setFrontNidImageLoding] = useState(false);
     const [backNidImageLoding, setBackNidImageLoding] = useState(false);
+    const [selectFrontSideNid, setselectFrontSideNid] = useState(null);
+    const [selectBackSideNid, setselectBackSideNid] = useState(null)
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -24,6 +26,8 @@ const NIDPhotoUpload = ({navigation, route}) => {
         });
         if (!result.canceled) {
           setFrontNidImageLoding(true)
+          setselectFrontSideNid(result.assets[0].uri);
+          console.log(selectFrontSideNid)
           const uploadUrl = await uploadImageAsync(result.assets[0].uri);
           setFrontNidImage(uploadUrl);
           setInterval(() => {
@@ -46,6 +50,7 @@ const NIDPhotoUpload = ({navigation, route}) => {
       });
       if (!result.canceled) {
         setBackNidImageLoding(true)
+        setselectBackSideNid(result.assets[0].uri);
         const uploadUrl = await uploadImageAsync(result.assets[0].uri);
         setBacksideNidPhoto(uploadUrl);
         setInterval(() => {
@@ -104,7 +109,7 @@ const NIDPhotoUpload = ({navigation, route}) => {
       <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
 
       <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      {frontNidImage ? <Image source={{ uri: frontNidImage }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> : 
+      {selectFrontSideNid ? <Image source={{uri: selectFrontSideNid }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> : 
       <Image source={images.frontNid} style={{width: "100%", height: 180, borderRadius: 10}}/>}
       
       {frontNidImage ? <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
@@ -119,7 +124,7 @@ const NIDPhotoUpload = ({navigation, route}) => {
       <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
 
       <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      {backsideNidPhoto ? <Image source={{ uri: backsideNidPhoto }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> : 
+      {selectBackSideNid ? <Image source={{ uri: selectBackSideNid }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> : 
       <Image source={images.backnid} style={{width: "100%", height: 180, borderRadius: 10}}/>}
       {backsideNidPhoto ? <TouchableOpacity onPress={() =>  setBacksideNidPhoto(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
       <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300} />
@@ -132,15 +137,21 @@ const NIDPhotoUpload = ({navigation, route}) => {
     </View>
     <View style={{position: "absolute", bottom: 0, width: "100%"}}>
     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
-    <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
+    <TouchableOpacity onPress={() => navigation.goBack()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
         <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>BACK</Text>
     </TouchableOpacity>
     <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}> 
     <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>1/3</Text>
     </View>
-    <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>NEXT</Text>
-    </TouchableOpacity>
+    {
+      (frontNidImage && backsideNidPhoto) ?
+      <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
+        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium}}>NEXT</Text>
+      </TouchableOpacity> :
+      <TouchableOpacity activeOpacity={.7} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
+      <Text style={{color: COLORS.slate200, fontWeight: 500, fontSize: SIZES.medium}}>NEXT</Text>
+      </TouchableOpacity>
+    }
     </View>
     </View>
     </View>

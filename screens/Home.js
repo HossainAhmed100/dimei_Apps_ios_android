@@ -119,14 +119,6 @@ const viewDeviceDetails = (did) => {
           </TouchableOpacity>
         </View>
       </View>
-      {!user?.verifyedStatus?.kycverifyed && 
-        <View style={{paddingHorizontal: SIZES.small}}>
-          <View style={{padding: 10, marginVertical: 10, borderRadius: 6, backgroundColor: COLORS.red200, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-          <Text style={{color: COLORS.red500}}>Please Verify Your KYC First</Text>
-          <Feather name="alert-triangle" size={18} color={COLORS.red500} />
-        </View>
-        </View>
-        }
       <View style={{paddingVertical: SIZES.xLarge, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>My Device list</Text> 

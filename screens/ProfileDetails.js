@@ -6,16 +6,10 @@ import { AuthContext } from '../context/AuthProvider';
 import { Divider } from '@rneui/base';
 
 const ProfileDetails = ({ navigation })  => {
-  const { user, userLoding } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, flex: 1, minHeight: "100%"}}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
-      {!user?.verifyedStatus?.kycverifyed && 
-        <View style={{padding: 10, marginVertical: 10, borderRadius: 6, backgroundColor: COLORS.red200, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-          <Text style={{color: COLORS.red500}}>Please Verify Your KYC</Text>
-          <Feather name="alert-triangle" size={18} color={COLORS.red500} />
-        </View>
-        }
         <View style={{flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: SIZES.xSmall}}>
         {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{width: 100, height: 100, borderRadius: 50}}/> : <Image source={require("../assets/images/profile.jpg")} style={{width: 100, height: 100, borderRadius: 50}}/>}
         <View style={{width: 30, height: 30, backgroundColor: COLORS.slate500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 0}}>
