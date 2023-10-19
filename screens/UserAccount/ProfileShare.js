@@ -1,9 +1,9 @@
 import { View, Text, Image, Pressable,ImageBackground } from 'react-native';
 import React, { useContext } from 'react';
-import { COLORS, SIZES, images } from '../constants';
+import { COLORS, SIZES, images } from '../../constants';
 import { Feather } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
-import { AuthContext } from '../context/AuthProvider';
+import { AuthContext } from '../../context/AuthProvider';
 const ProfileShare = () => {
   const { user } = useContext(AuthContext);
 

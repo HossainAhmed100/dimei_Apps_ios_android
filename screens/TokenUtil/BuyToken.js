@@ -1,10 +1,10 @@
-import { View, Text, ScrollView, Image, Pressable, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { SimpleLineIcons  } from '@expo/vector-icons';
-import { COLORS, SIZES, icons, images } from '../constants';
+import { COLORS, SIZES, icons, images } from '../../constants';
 import { Divider } from '@rneui/themed';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthProvider';
+import { AuthContext } from '../../context/AuthProvider';
 
 const BuyToken = ({navigation}) => {
   const {user} = useContext(AuthContext);
@@ -69,7 +69,7 @@ const BuyToken = ({navigation}) => {
   const buyTokenAction = async () =>{
     const infoData = {tokenQuantity: tokenQuantity, userId: user?._id};
     try{
-      await axios.put("http://192.168.1.4:5000/byToken/", {infoData})
+      await axios.put("http://192.168.1.8:5000/byToken/", {infoData})
       .then((res) => {
         if (res.data.modifiedCount){
           alert('Token Added Successfully!');

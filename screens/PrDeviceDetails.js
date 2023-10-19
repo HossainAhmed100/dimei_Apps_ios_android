@@ -17,7 +17,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.4:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.8:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -26,7 +26,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.4:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.1.8:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })

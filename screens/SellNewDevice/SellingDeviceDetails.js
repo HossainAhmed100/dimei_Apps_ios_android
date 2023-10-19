@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, Pressable, FlatList, useWindowDimensions, Linking} from 'react-native';
 import React, { useCallback, useRef } from 'react';
-import { COLORS, SIZES } from '../constants';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, Pressable, FlatList, useWindowDimensions, Linking} from 'react-native';
+import { COLORS, SIZES } from '../../constants';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
 import { Feather, AntDesign, Ionicons } from '@expo/vector-icons';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 
@@ -16,7 +16,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.4:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.8:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });

@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
-import { View, Text, ImageBackground, TouchableOpacity, Image, FlatList } from "react-native";
-import { COLORS, SIZES, images } from "../../constants";
+import React from "react";
+import { View, Text, TouchableOpacity, Image } from "react-native";
+import { COLORS, SIZES } from "../../constants";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet } from "react-native";
@@ -11,7 +11,7 @@ const ViewUserProfile = ({navigation, route}) => {
     const { isLoading, isError, data: user = [], error } = useQuery({ 
         queryKey: [userEmail],
         queryFn: async () => {
-          const res =  await axios.get(`http://192.168.1.4:5000/signleUser/${userEmail}`);
+          const res =  await axios.get(`http://192.168.1.8:5000/signleUser/${userEmail}`);
           return res.data;
         } 
       })

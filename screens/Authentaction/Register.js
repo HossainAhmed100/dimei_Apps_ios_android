@@ -1,6 +1,6 @@
 import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity} from "react-native";
 import React, { useState } from "react";
-import { icons, COLORS, SIZES } from '../constants';
+import { icons, COLORS, SIZES } from '../../constants';
 import { ActivityIndicator } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 

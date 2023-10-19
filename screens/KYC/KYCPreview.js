@@ -103,12 +103,18 @@ const KYCPreview = ({navigation, route}) => {
       <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
 
       <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      <Image source={{ uri: user?.nidImageUrl?.frontNidImage }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> 
-      
-      {frontNidImage ? <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
+      {
+        user?.nidImageUrl?.frontNidImage && 
+        <Image source={{ uri: user?.nidImageUrl?.frontNidImage }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/>
+      }
+      {frontNidImage ? 
+      <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
       <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300}/>
-      </TouchableOpacity>  : <TouchableOpacity onPress={pickImage}  style={{width: 50, height: 50, backgroundColor: COLORS.blue500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 20, right:SIZES.large}}>
-      {frontNidImageLoding ? <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : <Feather name="camera" size={24} color={COLORS.white500} />}
+      </TouchableOpacity>  : 
+      <TouchableOpacity onPress={pickImage}  style={{width: 50, height: 50, backgroundColor: COLORS.blue500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 20, right:SIZES.large}}>
+      {frontNidImageLoding ? 
+      <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
+      <Feather name="camera" size={24} color={COLORS.white500} />}
       </TouchableOpacity>
       }
       

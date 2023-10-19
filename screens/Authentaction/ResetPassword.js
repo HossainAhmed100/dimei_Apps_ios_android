@@ -6,8 +6,8 @@ import {
     TextInput,
     Pressable,
 } from "react-native";
-import { COLORS, SIZES } from '../constants';
-import { auth } from "../FirebaseConfig";
+import { COLORS, SIZES } from '../../constants';
+import { auth } from "../../FirebaseConfig";
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
 
@@ -17,13 +17,11 @@ const ResetPassword = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
     const signIn = async () => {
-    console.log(email, password)
     setLoading(true);
     try {
         const response = await signInWithEmailAndPassword(auth, email, password);
-        console.log(response);
+        
     } catch (err) {
-        console.log(err.code);
             alert(err.code);
     } finally {
         setLoading(false);

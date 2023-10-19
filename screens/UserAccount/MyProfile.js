@@ -1,17 +1,18 @@
 import React, { useContext } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { COLORS, SIZES } from '../constants';
 import { Entypo, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { AuthContext } from '../context/AuthProvider';
 import { Divider } from '@rneui/base';
+import { AuthContext } from '../../context/AuthProvider';
+import { COLORS, SIZES } from '../../constants';
 
-const ProfileDetails = ({ navigation })  => {
+const MyProfile = ({ navigation })  => {
   const { user } = useContext(AuthContext);
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, flex: 1, minHeight: "100%"}}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
         <View style={{flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: SIZES.xSmall}}>
-        {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{width: 100, height: 100, borderRadius: 50}}/> : <Image source={require("../assets/images/profile.jpg")} style={{width: 100, height: 100, borderRadius: 50}}/>}
+        {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={styles.profilePic}/> :
+         <Image source={require("../../assets/images/profile.jpg")} style={styles.profilePic}/>}
         <View style={{width: 30, height: 30, backgroundColor: COLORS.slate500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 0}}>
         <Entypo name="camera" size={16} color={COLORS.white500} />
         </View>
@@ -115,30 +116,12 @@ const styles = StyleSheet.create({
   borderWidth: 1,
   borderColor: COLORS.slate200,
   },
-  reuistBtn: {
-  backgroundColor: COLORS.blue500,
-  width: 300,
-  paddingVertical: SIZES.small,
-  paddingHorizontal: SIZES.large,
-  borderRadius: SIZES.small,
-  alignItems: "center",
-  justifyContent: "center",
-  borderColor: COLORS.blue500,
-  borderWidth: 1,
+  profilePic:{
+    width: 100, 
+    height: 100, 
+    borderRadius: 50
   },
-  kycViewBtn: {
-  backgroundColor: COLORS.white500,
-  width: 300,
-  paddingVertical: SIZES.small,
-  borderRadius: SIZES.xSmall,
-  flexDirection: "row",
-  gap: SIZES.small,
-  alignItems: "center",
-  justifyContent: "center",
-  borderColor: COLORS.slate200,
-  borderWidth: 1,
-  }
+
 });
 
-
-export default ProfileDetails
+export default MyProfile

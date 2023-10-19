@@ -1,13 +1,12 @@
 import { ActivityIndicator, ImageBackground, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
-import { COLORS, SIZES, images } from '../constants';
+import { COLORS, SIZES, images } from '../../constants';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 const TokenTransferInput = () => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const signIn = async () => {
         setLoading(true) 
-        console.log("Transfer Confirm Button Clicked")
     };
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>

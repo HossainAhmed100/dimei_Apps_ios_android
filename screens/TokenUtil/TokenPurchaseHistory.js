@@ -1,16 +1,16 @@
 import React from "react";
 import { View, Text, ImageBackground, TouchableOpacity, Image, FlatList } from "react-native";
-import { COLORS, SIZES, images } from "../constants";
+import { COLORS, SIZES, images } from "../../constants";
 import { Feather } from '@expo/vector-icons';
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const PurchaseHistory = ({navigation}) => {
+const TokenPurchaseHistory = ({navigation}) => {
 
   const { isLoading, data: trsnData = [] } = useQuery({ 
     queryKey: ['trsnData'],
     queryFn: async () => {
-      const res =  await axios.get(`http://192.168.1.4:5000/userTranstion/`);
+      const res =  await axios.get(`http://192.168.1.8:5000/userTranstion/`);
       return res.data;
     } 
   })
@@ -86,4 +86,4 @@ const ListBox = ({item}) => (
   </View>
 )
 
-export default PurchaseHistory;
+export default TokenPurchaseHistory;

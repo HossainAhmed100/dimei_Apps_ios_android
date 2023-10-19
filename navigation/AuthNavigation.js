@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from '../screens/Login';
-import Register from '../screens/Register';
+import Login from '../screens/Authentaction/Login';
+import Register from '../screens/Authentaction/Register';
 import NIDPhotoUpload from '../screens/KYC/NIDPhotoUpload';
 import NIDDetailsShow from '../screens/KYC/NIDDetailsShow';
 import ScreenHeaderBtn from '../components/Button/ScreenHeaderBtn';

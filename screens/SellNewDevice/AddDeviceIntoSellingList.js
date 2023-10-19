@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import 'react-native-get-random-values';
 import axios from 'axios';
 import { useForm, Controller } from "react-hook-form";
-import { COLORS, SIZES } from '../constants';
-import { AuthContext } from '../context/AuthProvider';
+import { COLORS, SIZES } from '../../constants';
+import { AuthContext } from '../../context/AuthProvider';
 import { CheckBox } from '@rneui/themed';
 
 
@@ -22,7 +22,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.4:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.8:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })

@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity,} from "react-native";
-import { icons, COLORS, SIZES } from '../constants';
+import { icons, COLORS, SIZES } from '../../constants';
 import { useForm, Controller } from "react-hook-form";
 import { ActivityIndicator } from "react-native";
-import { AuthContext } from "../context/AuthProvider";
+import { AuthContext } from "../../context/AuthProvider";
 
 const Login = ({ navigation }) => {
   const { userLogin, signinGooglePopup } = useContext(AuthContext);

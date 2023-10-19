@@ -6,7 +6,7 @@ import { icons, COLORS, SIZES } from '../constants';
 import { Image } from "react-native";
 import Shop2 from "../screens/Shop";
 import AllDevice2 from "../screens/AllDevice";
-import Chat from "../screens/Chat";
+import Chat from "../screens/Messeging/Chat";
 
 const Tab = createBottomTabNavigator();
 

@@ -27,7 +27,6 @@ const NIDPhotoUpload = ({navigation, route}) => {
         if (!result.canceled) {
           setFrontNidImageLoding(true)
           setselectFrontSideNid(result.assets[0].uri);
-          console.log(selectFrontSideNid)
           const uploadUrl = await uploadImageAsync(result.assets[0].uri);
           setFrontNidImage(uploadUrl);
           setInterval(() => {

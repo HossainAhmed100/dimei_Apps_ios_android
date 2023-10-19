@@ -2,27 +2,20 @@ import React from 'react'
 import Main from '../screens/Main';
 import Home from '../screens/Home';
 import { icons } from '../constants';
-import Search from '../screens/Search';
 import Setting from '../screens/Setting';
-import Payment from '../screens/Payment';
 import TabNavigator from './TabNavigator';
-import BuyToken from '../screens/BuyToken';
+import BuyToken from '../screens/TokenUtil/BuyToken';
 import AllDevice from '../screens/AllDevice';
-import KYCVerifye from '../screens/KYCVerifye';
-import ProfileShare from '../screens/ProfileShare';
-import ResetPassword from '../screens/ResetPassword';
-import AccountUpdate from '../screens/AccountUpdate';
-import ProfileDetails from '../screens/ProfileDetails';
-import TransferDevice from '../screens/TransferDevice';
+import ProfileShare from '../screens/UserAccount/ProfileShare';
+import ResetPassword from '../screens/Authentaction/ResetPassword';
 import PrDeviceDetails from '../screens/PrDeviceDetails';
-import PurchaseHistory from '../screens/PurchaseHistory';
 import AddressReference from '../screens/AddressReference';
-import VerifyDeviceAcceft from '../screens/VerifyDeviceAcceft';
-import TokenTransferInput from '../screens/TokenTransferInput';
-import AddDeviceIntoSellingList from '../screens/AddDeviceIntoSellingList';
+import VerifyDeviceAcceft from '../screens/VerifyScreen/VerifyDeviceAcceft';
+import TokenTransferInput from '../screens/TokenUtil/TokenTransferInput';
+import AddDeviceIntoSellingList from '../screens/SellNewDevice/AddDeviceIntoSellingList';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SellingDeviceAction from '../screens/SellingDeviceAction';
-import SellingDeviceDetails from '../screens/SellingDeviceDetails';
+import SellingDeviceAction from '../screens/SellNewDevice/SellingDeviceAction';
+import SellingDeviceDetails from '../screens/SellNewDevice/SellingDeviceDetails';
 import ViewOwnerDetails from '../screens/ViewOwnerDetails';
 import UpdateSellingPost from '../screens/DeviceSellScreen/UpdateSellingPost';
 import ViewUserProfile from '../screens/UserAccount/ViewUserProfile';
@@ -37,6 +30,9 @@ import AddNewDevice from '../screens/AddNewDevice/AddNewDevice';
 import AddDeviceInput from '../screens/AddNewDevice/AddDeviceInput';
 import DeviceSellingChat from '../screens/Messeging/DeviceSellingChat';
 import DaynamicChatHeader from '../components/Crads/DaynamicChatHeader';
+import MyProfile from '../screens/UserAccount/MyProfile';
+import TokenPurchaseHistory from '../screens/TokenUtil/TokenPurchaseHistory';
+import TransferDevice from '../screens/TransferDevice';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -46,12 +42,9 @@ const HomeNavigation = () => {
       <HomeNav.Navigator  screenOptions={{ animation: "slide_from_right" }}>
 
         <HomeNav.Screen name="Home" component={TabNavigator} options={{ headerShown: false }}/>
-        <HomeNav.Screen name="Payment" component={Payment} />
         <HomeNav.Screen name="Setting" component={Setting}/>
-        <HomeNav.Screen name="AccountUpdate" component={AccountUpdate} />
         <HomeNav.Screen name="Main" component={Main} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Home2" component={Home} options={{ headerShown: false }}/>
-        <HomeNav.Screen name="Search" component={Search} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
 
         
@@ -175,17 +168,6 @@ const HomeNavigation = () => {
           }}
         />
 
-        <HomeNav.Screen name="KYCVerifye" component={KYCVerifye}
-          options={{ 
-            headerBackVisible: false,
-            headerBackTitleVisible: false,
-            title: 'Verify Your KYC',
-            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
-            headerTitleAlign: 'center',
-            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
-          }}
-        />
-
         <HomeNav.Screen name="ResetPassword" component={ResetPassword}
           options={{ 
             headerBackVisible: false,
@@ -197,7 +179,7 @@ const HomeNavigation = () => {
           }}
         />
 
-        <HomeNav.Screen name="ProfileDetails" component={ProfileDetails}
+        <HomeNav.Screen name="MyProfile" component={MyProfile}
           options={{ 
             headerBackVisible: false,
             headerBackTitleVisible: false,
@@ -319,7 +301,7 @@ const HomeNavigation = () => {
           }}
         />
         
-        <HomeNav.Screen name="TokenPurchaseHistory" component={PurchaseHistory} 
+        <HomeNav.Screen name="TokenPurchaseHistory" component={TokenPurchaseHistory} 
           options={{ 
             headerBackVisible: false,
             headerBackTitleVisible: false,

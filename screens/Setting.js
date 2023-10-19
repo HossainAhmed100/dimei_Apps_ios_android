@@ -26,7 +26,7 @@ const Setting = ({navigation}) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetails')} style={{backgroundColor: "white",borderRadius: 10,padding: 10,marginBottom: 10,}}>
+        <TouchableOpacity onPress={() => navigation.navigate('MyProfile')} style={{backgroundColor: "white",borderRadius: 10,padding: 10,marginBottom: 10,}}>
           <View style={{flexDirection: "row",alignItems: "center",gap: 10,justifyContent: "center",}}>
             {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/> : <Image
             source={require("../assets/images/profile.jpg")} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/>}

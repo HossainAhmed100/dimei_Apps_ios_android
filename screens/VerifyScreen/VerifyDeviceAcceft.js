@@ -2,9 +2,9 @@ import React, { useContext, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthProvider';
+import { AuthContext } from '../../context/AuthProvider';
 import { useForm, Controller } from "react-hook-form";
-import { COLORS, SIZES } from '../constants';
+import { COLORS, SIZES } from '../../constants';
 import { MaterialCommunityIcons  } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { CheckBox } from '@rneui/themed';
@@ -22,7 +22,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const { data: itemQuantity = [] } = useQuery({ 
         queryKey: ['itemQuantity', user?.userEmail], 
         queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.4:5000/useritemQuantity/${user?.userEmail}`);
+          const res = await axios.get(`http://192.168.1.8:5000/useritemQuantity/${user?.userEmail}`);
           return res.data;
         } 
       })
@@ -30,7 +30,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const { isLoading, data: accevtDevice = [] } = useQuery({ 
         queryKey: ['accevtDevice', transferDeviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.4:5000/getTransferDeviceDetails/${transferDeviceId}`);
+        const res = await axios.get(`http://192.168.1.8:5000/getTransferDeviceDetails/${transferDeviceId}`);
         return res.data;
         } 
     })
@@ -56,7 +56,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const deviceTestInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId, newDeviceOwner, previusDeviceOwner};
     
     try{
-        await axios.put(`http://192.168.1.4:5000/verifydeviceAccept/`, {deviceTestInfo})
+        await axios.put(`http://192.168.1.8:5000/verifydeviceAccept/`, {deviceTestInfo})
         .then((res) => {
             if(res.data.modifiedCount === 1){
                 setLoading(false)
