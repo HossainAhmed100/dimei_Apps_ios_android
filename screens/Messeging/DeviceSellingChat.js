@@ -1,9 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { View, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { COLORS, SIZES } from '../../constants';
 import { Ionicons, Feather,Entypo } from '@expo/vector-icons';
 
-const DeviceSellingChat = ({navigation, route}) => {
+const DeviceSellingChat = ({route}) => {
   const deviceId = route.params.deviceId;
   const deviceImg = route.params;
   return (

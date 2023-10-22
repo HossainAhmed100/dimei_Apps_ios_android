@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, TextInput, FlatList } from 'react-native';
 import React, { useContext } from 'react';
 import { COLORS, SIZES, icons } from '../constants';
 import AddReferenceCard from '../components/Crads/AddReferenceCard';
@@ -10,9 +10,9 @@ import { useQuery } from '@tanstack/react-query';
 
 
 const AddressReference = () => {
-  const { user, userLoding } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
-  const { isLoading, isError, data: trsnData = [], error } = useQuery({ 
+  const { isLoading, data: trsnData = [] } = useQuery({ 
     queryKey: ['trsnData', user?.userEmail], 
     queryFn: async () => {
       const res = await axios.get(`http://192.168.1.8:5000/userReference/`);

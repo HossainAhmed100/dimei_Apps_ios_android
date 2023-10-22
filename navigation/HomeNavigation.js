@@ -33,6 +33,7 @@ import DaynamicChatHeader from '../components/Crads/DaynamicChatHeader';
 import MyProfile from '../screens/UserAccount/MyProfile';
 import TokenPurchaseHistory from '../screens/TokenUtil/TokenPurchaseHistory';
 import TransferDevice from '../screens/TransferDevice';
+import DeviceLostScreen from '../screens/DeviceLostScreen';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -47,7 +48,17 @@ const HomeNavigation = () => {
         <HomeNav.Screen name="Home2" component={Home} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
 
-        
+        <HomeNav.Screen name="DeviceLostScreen" component={DeviceLostScreen}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Lost Device',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
         <HomeNav.Screen name="DeviceSellingChat" component={DeviceSellingChat}
           options={({ route }) => ({ 
             headerBackVisible: false,
@@ -258,15 +269,15 @@ const HomeNavigation = () => {
           />
 
         <HomeNav.Screen name="SupportChat" component={SupportChat}
-            options={{ 
-              headerBackVisible: false,
-              headerBackTitleVisible: false,
-              title: 'Help and Support',
-              headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
-              headerTitleAlign: 'center',
-              headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
-            }}
-          />
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Help and Support',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
 
         <HomeNav.Screen name="EmailVerify" component={EmailVerify}
           options={{ 

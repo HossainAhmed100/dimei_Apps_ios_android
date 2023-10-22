@@ -9,9 +9,7 @@ const Main = ({ navigation }) => {
       justifyContent: "center",
       backgroundColor: COLORS.white500,}}>
       <View>
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <Image
             style={{
               resizeMode: "cover",

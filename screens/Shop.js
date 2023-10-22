@@ -15,7 +15,7 @@ import DeviceCard from "../components/Crads/DeviceCard";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const Shop = ({navigation, route}) => {
+const Shop = ({navigation}) => {
 
   const [searchInput, setSearchInput] = useState("iphone");
   const [refreshing, setRefreshing] = useState(false);

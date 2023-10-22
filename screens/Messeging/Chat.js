@@ -1,5 +1,5 @@
+import React from 'react';
 import { Text, View, Image } from 'react-native'
-import React,{ useState } from 'react';
 import { COLORS, SIZES } from '../../constants/theme';
 import { images } from '../../constants';
 

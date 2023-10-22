@@ -16,14 +16,13 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../context/AuthProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { Feather } from '@expo/vector-icons';
 
 const Home = ({navigation}) => {
   const { user, userLoding } = useContext(AuthContext);
   const firstTimeRef = useRef(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { isLoading, isError, data: myDevice = [], refetch } = useQuery({ 
+  const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
       const res = await axios.get(`http://192.168.1.8:5000/mydevice/${user?.userEmail}`);

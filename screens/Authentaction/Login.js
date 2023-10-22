@@ -11,15 +11,18 @@ const Login = ({ navigation }) => {
   const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {userEmail: "", userPassword: ""},})
 
   const onSubmit = async (data) => {
+    setLoading(true)
     const email = data.userEmail;
     const password = data.userPassword;
     userLogin(email, password)
     .then(() => {
       alert("Login Successfull");
+      setLoading(false)
     })
     .catch((error) => {
       console.log(error);
       alert(error.message);
+      setLoading(false)
     });
   }
 

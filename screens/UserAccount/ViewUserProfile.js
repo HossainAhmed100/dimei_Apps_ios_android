@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Divider } from "@rneui/base";
-const ViewUserProfile = ({navigation, route}) => {
+const ViewUserProfile = ({route}) => {
     const userEmail = route.params.userEmail;
     const { isLoading, isError, data: user = [], error } = useQuery({ 
         queryKey: [userEmail],

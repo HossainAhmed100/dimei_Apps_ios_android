@@ -1,7 +1,7 @@
-import { ActivityIndicator, FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { COLORS, SIZES } from '../constants';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
 import { format } from 'date-fns';
@@ -25,7 +25,6 @@ const ViewOwnerDetails =  ({navigation, route}) => {
   const viewProvile = (email) => {
     navigation.navigate('ViewUserProfile', {userEmail: email})
   }
-
 
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500, paddingHorizontal: 10}}>

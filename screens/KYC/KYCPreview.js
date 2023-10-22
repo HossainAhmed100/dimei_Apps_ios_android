@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Feather, Ionicons  } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { COLORS, SIZES, images } from '../../constants';
+import { COLORS, SIZES } from '../../constants';
 import 'react-native-get-random-values';
 import { storage } from '../../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -10,8 +10,8 @@ import { AuthContext } from '../../context/AuthProvider';
 
 
 
-const KYCPreview = ({navigation, route}) => {
-    const { user, userLoding } = useContext(AuthContext);
+const KYCPreview = () => {
+    const { user } = useContext(AuthContext);
     const [frontNidImage, setFrontNidImage] = useState(null);
     const [backsideNidPhoto, setBacksideNidPhoto] = useState(null);
     const [frontNidImageLoding, setFrontNidImageLoding] = useState(false);

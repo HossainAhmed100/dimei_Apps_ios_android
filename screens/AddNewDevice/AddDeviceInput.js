@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import React, { useContext, useState } from "react";  
 import { COLORS, SIZES, images } from '../../constants';
 import { ActivityIndicator } from "react-native";
@@ -101,20 +101,22 @@ const AddDeviceInput = ({navigation, route}) => {
     const deviceSellingStatus = false;
     const deviceLostStatus = false;
     const deviceIamges = deviceImgList;
-    const deviceOwnerList = {
-      ownarStatus: "",
-      ownerPhoto: ownerPhoto,
-      ownerEmail: ownerEmail,
-      deviceNote: deviceNotes,
-      thisIsCurrentOwner: true,
-      ownerName: user?.userName,
-      deviceLostNoteMessage: "",
-      thisIsPreviousOwner: false,
-      deviceListingDate: todyDate,
-      ownerId: user?.userAccountId,
-      deviceTransferDate: todyDate,
-      thisIsUnAuthorizeOwner: false,
-    };   
+    const deviceOwnerList = [
+      {
+        ownarStatus: "",
+        ownerPhoto: ownerPhoto,
+        ownerEmail: ownerEmail,
+        deviceNote: deviceNotes,
+        thisIsCurrentOwner: true,
+        ownerName: user?.userName,
+        deviceLostNoteMessage: "",
+        thisIsPreviousOwner: false,
+        deviceListingDate: todyDate,
+        ownerId: user?.userAccountId,
+        deviceTransferDate: todyDate,
+        thisIsUnAuthorizeOwner: false,
+      }
+    ];   
 
     const deviceInfos = {deviceOwnerList, isDeviceSell, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceLostStatus, deviceIamges};
 

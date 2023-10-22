@@ -16,7 +16,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const toggleCheckbox = () => setChecked(!checked);
   const toggleHaveABox = () => sethaveABox(!checked);
   const { user, userLoding } = useContext(AuthContext);
-  const {control, handleSubmit, formState: { errors }} = useForm()
+  const {control, handleSubmit, formState: { errors }} = useForm();
 
 
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 

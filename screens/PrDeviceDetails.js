@@ -6,7 +6,6 @@ import { Divider } from '@rneui/themed';
 import { Entypo, MaterialCommunityIcons  } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
-import { format } from 'date-fns';
 
 const PrDeviceDetails = ({navigation, route}) => {
   const {width} = useWindowDimensions()
@@ -62,6 +61,10 @@ const PrDeviceDetails = ({navigation, route}) => {
     navigation.navigate('ViewOwnerDetails', {deviceId: did})
   }
 
+  const lostThisDevice = (did) => {
+    navigation.navigate('DeviceLostScreen', {deviceId: did})
+  }
+
 
   return (
     <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}} showsVerticalScrollIndicator={false}>
@@ -98,10 +101,10 @@ const PrDeviceDetails = ({navigation, route}) => {
         <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info </Text>
         <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
-      {/* {
+      {
         (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && (
           <TouchableOpacity
-            onPress={() => viewOwnerDetails(deviceId)}
+            onPress={() => lostThisDevice(deviceId)}
             style={styles.actionButton}
           >
             <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>
@@ -113,7 +116,7 @@ const PrDeviceDetails = ({navigation, route}) => {
             />
           </TouchableOpacity>
         )
-      } */}
+      }
       </View>
 
       
