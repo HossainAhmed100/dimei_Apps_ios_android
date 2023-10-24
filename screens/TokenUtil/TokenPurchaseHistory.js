@@ -10,7 +10,7 @@ const TokenPurchaseHistory = ({navigation}) => {
   const { isLoading, data: trsnData = [] } = useQuery({ 
     queryKey: ['trsnData'],
     queryFn: async () => {
-      const res =  await axios.get(`http://192.168.1.8:5000/userTranstion/`);
+      const res =  await axios.get(`http://192.168.1.2:5000/userTranstion/`);
       return res.data;
     } 
   })

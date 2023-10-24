@@ -20,7 +20,7 @@ const DeviceLostScreen = ({navigation, route}) => {
         const deviceLostMessage = data.deviceDescription;
         const infoData = {deviceId, ownerEmail, deviceLostMessage};
         try{
-            await axios.put(`http://192.168.1.8:5000/deviceloststatusUpdate/`,{infoData})
+            await axios.put(`http://192.168.1.2:5000/deviceloststatusUpdate/`,{infoData})
         }
         catch{
 

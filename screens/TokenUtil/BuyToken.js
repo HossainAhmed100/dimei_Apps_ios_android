@@ -69,7 +69,7 @@ const BuyToken = ({navigation}) => {
   const buyTokenAction = async () =>{
     const infoData = {tokenQuantity: tokenQuantity, userId: user?._id};
     try{
-      await axios.put("http://192.168.1.8:5000/byToken/", {infoData})
+      await axios.put("http://192.168.1.2:5000/byToken/", {infoData})
       .then((res) => {
         if (res.data.modifiedCount){
           alert('Token Added Successfully!');

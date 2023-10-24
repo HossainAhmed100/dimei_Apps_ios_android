@@ -4,7 +4,7 @@ import { COLORS, SIZES } from '../../constants';
 
 const MyDeviceCrad = ({item, viewDeviceDetails}) => {
   return (
-    <Pressable onPress={() => viewDeviceDetails(item?._id)} style={[style.cardContainer, {borderColor: item?.deviceTransferStatus ? COLORS.red200 : item?.isDeviceSell ? COLORS.green200 : COLORS.slate100}]}>
+    <Pressable onPress={() => viewDeviceDetails(item?._id)} style={[style.cardContainer, {borderColor: item?.deviceTransferStatus ? COLORS.red200 : item?.isDeviceSell ? COLORS.green200 : item?.deviceLostStatus ? COLORS.red200 : COLORS.slate100}]}>
     {item?.devicePicture &&  <Image
       source={{ uri: item?.devicePicture }}
       width={120}
@@ -23,6 +23,10 @@ const MyDeviceCrad = ({item, viewDeviceDetails}) => {
         {item?.isDeviceSell &&  
         <View style={{position: "absolute", top: -17, right: -75, backgroundColor: COLORS.green200, padding: 5, borderBottomLeftRadius: 10}}>
         <Text style={{color: COLORS.green500}}>Selling Item</Text>
+        </View>}
+        {item?.deviceLostStatus &&  
+        <View style={{position: "absolute", top: -17, right: -75, backgroundColor: COLORS.red200, padding: 5, borderBottomLeftRadius: 10}}>
+        <Text style={{color: COLORS.red500}}>Lost Item</Text>
         </View>}
        
           <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item?.modelName}</Text>

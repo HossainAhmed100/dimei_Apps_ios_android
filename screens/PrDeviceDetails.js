@@ -16,7 +16,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.8:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.2:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -25,7 +25,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.8:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.1.2:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })
@@ -91,10 +91,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     <View>
       {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList item={myDevice}/>}
     </View>
-    {!isLoading && 
-    <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
-     
-      
+    {!isLoading && <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
 
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: SIZES.small}}>
       <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={styles.actionButton}>
@@ -102,20 +99,20 @@ const PrDeviceDetails = ({navigation, route}) => {
         <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
       </TouchableOpacity>
       {
-        (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && (
-          <TouchableOpacity
-            onPress={() => lostThisDevice(deviceId)}
-            style={styles.actionButton}
-          >
-            <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>
-              Lost This Device
-            </Text>
-            <MaterialCommunityIcons name="chevron-right"
-              size={SIZES.large}
-              color={COLORS.slate500}
-            />
-          </TouchableOpacity>
+        (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && 
+        (
+        <TouchableOpacity onPress={() => lostThisDevice(deviceId)} style={styles.actionButton}>
+          <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>Lost This Device</Text>
+          <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500}/>
+        </TouchableOpacity>
         )
+      }
+      {
+        myDevice.deviceLostStatus && 
+        <TouchableOpacity onPress={() => lostThisDevice(deviceId)} style={styles.actionButton}>
+          <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>i Foun my devcie</Text>
+          <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500}/>
+        </TouchableOpacity>
       }
       </View>
 

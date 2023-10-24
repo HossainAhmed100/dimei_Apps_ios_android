@@ -28,7 +28,7 @@ const AddNewDevice = ({ navigation }) => {
     const deviceimeiNum = data.inputdeviceimei;
     try{
 
-      const response = await axios.get(`http://192.168.1.8:5000/checkDeviceImeiNum/${deviceimeiNum}`);
+      const response = await axios.get(`http://192.168.1.2:5000/checkDeviceImeiNum/${deviceimeiNum}`);
       if(response.data.checkDevcie === "nodevicefound"){
         setcurrentOwner([])
         setshowExistingDevice(false)
