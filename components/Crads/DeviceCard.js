@@ -4,6 +4,8 @@ import { COLORS, SIZES } from '../../constants';
 import { format } from 'date-fns';
 
 const DeviceCard = ({item, viewDeviceDetails}) => {
+  const itemPrice = item?.devciePrice;
+  const devciePrice = itemPrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return (
     <Pressable onPress={() => viewDeviceDetails(item?._id)} style={style.cardContainer}>
       <Image source={{uri: item?.deviceIamges[0]}} style={{width: "100%", height: 160, resizeMode: "cover"}}/>
@@ -18,7 +20,7 @@ const DeviceCard = ({item, viewDeviceDetails}) => {
           <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>{format(new Date(item?.createdAt), 'hh:mm a')}</Text>
           <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}> {item?.ram} / {item?.storage}</Text>
           </View>
-          <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>৳{item?.devciePrice}</Text>
+          <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>৳{devciePrice}</Text>
       </View>
     </Pressable>
   )

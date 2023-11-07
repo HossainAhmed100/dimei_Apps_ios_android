@@ -11,27 +11,27 @@ const BuyToken = ({navigation}) => {
   const tokenPriceList = [
     {
       "tokenQuntaty": 1,
-      "price": 100
+      "price": 1
     },
     {
       "tokenQuntaty": 3,
-      "price": 270
+      "price": 2
     },
     {
       "tokenQuntaty": 5,
-      "price": 450
+      "price": 3
     },
     {
       "tokenQuntaty": 10,
-      "price": 800
+      "price": 4
     },
     {
       "tokenQuntaty": 30,
-      "price": 2650
+      "price": 5
     },
     {
       "tokenQuntaty": 50,
-      "price": 4500
+      "price": 6
     }
   ];
 
@@ -69,7 +69,7 @@ const BuyToken = ({navigation}) => {
   const buyTokenAction = async () =>{
     const infoData = {tokenQuantity: tokenQuantity, userId: user?._id};
     try{
-      await axios.put("http://192.168.1.2:5000/byToken/", {infoData})
+      await axios.put("http://192.168.1.7:5000/byToken/", {infoData})
       .then((res) => {
         if (res.data.modifiedCount){
           alert('Token Added Successfully!');

@@ -22,7 +22,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.7:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -46,6 +46,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
     const listingAddress = data?.deviceAddress;
     const devciePrice = data.devicesellingPrice;
     const sellingTitle = data.sellingTitle;
+    const deviceDescription = data.deviceDescription;
     const ownerName = user?.userName;
     const deviceInfo =  { 
       deviceBrand, deviceModelName, 
@@ -53,7 +54,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
       storage, battery, battery, batteryRemovable, 
       sim_slot, gpu, Announced, listingAddress, 
       daysUsed, deviceId, ownerEmail, ownerName,
-      haveOriginalBox, devciePrice };
+      haveOriginalBox, devciePrice, deviceDescription };
     navigation.navigate('SellDeviceAction', {deviceInfo})
   };
 
@@ -94,7 +95,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
       <Controller control={control} rules={{ required: true}} name="deviceAddress"
       render={({ field: { onChange, onBlur, value } }) => (
       <TextInput placeholder="Device Pickup Address" style={styles.inputBox} onBlur={onBlur} onChangeText={onChange} value={value}/>)}/>
-      {errors.deviceDescription && <Text style={{color: COLORS.red500}}>Device Pickup Address is required</Text>}
+      {errors.deviceAddress && <Text style={{color: COLORS.red500}}>Device Pickup Address is required</Text>}
       </View>
       
       <View>

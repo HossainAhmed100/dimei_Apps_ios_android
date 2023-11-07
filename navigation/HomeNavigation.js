@@ -34,6 +34,8 @@ import MyProfile from '../screens/UserAccount/MyProfile';
 import TokenPurchaseHistory from '../screens/TokenUtil/TokenPurchaseHistory';
 import TransferDevice from '../screens/TransferDevice';
 import DeviceLostScreen from '../screens/DeviceLostScreen';
+import NewDevcieAddTermsandCondition from '../screens/PrivicyPolicy/NewDevcieAddTermsandCondition';
+import ViewDeviceDetails from '../screens/ViewDeviceDetails';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -48,6 +50,16 @@ const HomeNavigation = () => {
         <HomeNav.Screen name="Home2" component={Home} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
 
+        <HomeNav.Screen name="NewDevcieAddTermsandCondition" component={NewDevcieAddTermsandCondition}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'New Device Add Notice',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
         <HomeNav.Screen name="DeviceLostScreen" component={DeviceLostScreen}
           options={{ 
             headerBackVisible: false,
@@ -64,7 +76,6 @@ const HomeNavigation = () => {
             headerBackVisible: false,
             headerBackTitleVisible: false,
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
-            headerRight: () => (<ScreenHeaderRightBtn iconUrl={icons.reportFlag} dimension="60%" />),
             headerTitle: () => (<DaynamicChatHeader route={route} iconUrl={icons.supportChat} dimension="60%" />),
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
           })}
@@ -202,6 +213,17 @@ const HomeNavigation = () => {
         />
 
         <HomeNav.Screen name="MyDeviceDetails" component={PrDeviceDetails}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Device Details',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="ViewDeviceDetails" component={ViewDeviceDetails}
           options={{ 
             headerBackVisible: false,
             headerBackTitleVisible: false,

@@ -20,8 +20,8 @@ const TabNavigator = () => {
         tabBarStyle: {
           backgroundColor: "white",
           height: 60,
-          borderTopLeftRadius: SIZES.xLarge,
-          borderTopRightRadius: SIZES.xLarge,
+          borderTopRightRadius: SIZES.medium,
+          borderTopLeftRadius: SIZES.medium,
           position: "absolute",
           overflow: "hidden",
         },

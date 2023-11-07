@@ -19,7 +19,7 @@ const Shop = ({navigation}) => {
 
   const [searchInput, setSearchInput] = useState("iphone");
   const [refreshing, setRefreshing] = useState(false);
-  const url = `http://192.168.1.2:5000/getAllSellingDevice`;
+  const url = `http://192.168.1.7:5000/getAllSellingDevice`;
 
   const { isLoading, data: sellingDeviceList = [], refetch } = useQuery({ 
     queryKey: ['sellingDeviceList', refreshing], 
@@ -43,10 +43,10 @@ const Shop = ({navigation}) => {
       <View  style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 5, backgroundColor: COLORS.white500, borderColor: COLORS.slate200, borderBottomWidth: 1, borderTopWidth: 1, paddingVertical: 15, paddingHorizontal: 10}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5}}>
           <Image source={icons.location} style={{width: 20, height: 20, resizeMode: "cover", tintColor: COLORS.blue500}}/>
-          <Text style={{fontSize: SIZES.medium, color: COLORS.slate300}}>Jatrabari</Text>
+          <Text style={{fontSize: SIZES.medium, color: COLORS.slate300}}>Dhaka</Text>
         </View>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5}}>
-          <Text style={{fontSize: SIZES.medium, color: COLORS.slate300}}>Found 12,600 Device </Text>
+          <Text style={{fontSize: SIZES.medium, color: COLORS.slate300}}>Found {sellingDeviceList.length} Device </Text>
         </View>
       </View>
       <View style={styles.searchContainer}>
@@ -65,7 +65,7 @@ const Shop = ({navigation}) => {
           <Image source={icons.close} style={styles.tabBtnIcon}/>
         </View>
         <View style={styles.tabBtn}>
-          <Text style={styles.tabBtnText}>Apple 130 Pro max</Text>
+          <Text style={styles.tabBtnText}>iPhone 13 Pro</Text>
           <Image source={icons.close} style={styles.tabBtnIcon}/>
         </View>
         <View style={styles.tabBtn}>

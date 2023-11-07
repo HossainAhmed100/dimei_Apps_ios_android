@@ -22,15 +22,14 @@ const TransferDevice =  ({navigation, route}) => {
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.2:5000/getSingleDevice/${deviceId}`);
+        const res = await axios.get(`http://192.168.1.7:5000/getSingleDevice/${deviceId}`);
         return res.data;
         } 
     })
-
     const { data: itemQuantity = [] } = useQuery({ 
         queryKey: ['itemQuantity', user?.userEmail], 
         queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.2:5000/useritemQuantity/${user?.userEmail}`);
+          const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
           return res.data;
         } 
       })
@@ -43,24 +42,25 @@ const TransferDevice =  ({navigation, route}) => {
     const transferDate = todyDate;
     const deviceModelName =  myDevice?.modelName;
     const brand = myDevice?.brand;
+    const deviceImei = myDevice?.deviceImei;
     const colorVarient = myDevice?.colorVarient;
     const ram = myDevice?.ram;
     const storage = myDevice?.storage;
     const devicePicture = myDevice?.devicePicture;
     const deviceStatus = "OwnerShip Transfer";
     const secretCode = Math.floor(100000 + Math.random() * 900000);
-    const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId}
+    const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId, deviceImei}
     const infoData = {deviceId, secretCode}
     if(user){
-    await axios.put(`http://192.168.1.2:5000/devicetransferStatusUpdate/`,{infoData})
+    await axios.put(`http://192.168.1.7:5000/devicetransferStatusUpdate/`,{infoData})
     .then((res) => {
     if (res.data.modifiedCount === 1){
         try{
-            axios.post(`http://192.168.1.2:5000/reciveTransferDevice/`, {transferDeviceInfo})
+            axios.post(`http://192.168.1.7:5000/reciveTransferDevice/`, {transferDeviceInfo})
             .then((res) => {
             if (res.data.acknowledged){
-            navigation.navigate('Home')
             alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
+            navigation.navigate('Home')
             }
         })
         }catch (err) {

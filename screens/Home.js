@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  ScrollView
 } from "react-native";
 import React, { useCallback, useContext, useRef, useState } from "react";
 import { images, icons, COLORS, SIZES } from '../constants';
@@ -18,14 +19,14 @@ import { AuthContext } from "../context/AuthProvider";
 import { useFocusEffect } from "@react-navigation/native";
 
 const Home = ({navigation}) => {
-  const { user, userLoding } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const firstTimeRef = useRef(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.7:5000/myalldevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -33,7 +34,7 @@ const Home = ({navigation}) => {
   const { data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
     queryKey: ['itemQuantity', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/useritemQuantity/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -58,11 +59,12 @@ const Home = ({navigation}) => {
     setRefreshing(false);
   };
 
-const viewDeviceDetails = (did) => {
+const viewMyDeviceDetails = (did) => {
   navigation.navigate('MyDeviceDetails', {deviceId: did})
 }
+
   return (
-    <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
+    <View style={{flex: 1, backgroundColor: COLORS.white500}}>
 
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.small, backgroundColor: COLORS.white500, paddingHorizontal: SIZES.small}}>
         <View style={{flexDirection: "column", justifyContent: "center", gap: 2}}>
@@ -74,7 +76,9 @@ const viewDeviceDetails = (did) => {
             <Image source={icons.notification} style={{width: SIZES.xLarge, height: SIZES.xLarge, tintColor: COLORS.slate300}}/>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate("ProfileShare")} style={{alignItems: "center", justifyContent: "center"}}>
-            {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{borderRadius: 6, width: 45, height: 45}}/> : <Image source={images.profile} style={{borderRadius: 6, width: 45, height: 45}}/>}
+            {user?.userProfilePic ? 
+            <Image source={{uri: user?.userProfilePic}} style={{borderRadius: 6, width: 45, height: 45}}/> : 
+            <Image source={images.profile} style={{borderRadius: 6, width: 45, height: 45}}/>}
           </TouchableOpacity>
         </View>
       </View>
@@ -101,14 +105,14 @@ const viewDeviceDetails = (did) => {
             <Text style={styles.balanceValue}>{itemQuantity?.referenceQuantity ? itemQuantity?.referenceQuantity : "0"}</Text>
             </ImageBackground>
           </View>
-        </View>
+      </View>
 
-        <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
+      <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "center"}}>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BuyToken')}>
           <Text style={styles.buttonText}>By Token</Text>
           <Image source={icons.shoppingCart} style={styles.buttonIcons}/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddNewDevice')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('NewDevcieAddTermsandCondition')}>
           <Text style={styles.buttonText}>Add Device</Text>
           <Image source={icons.plus} style={styles.buttonIcons}/>
           </TouchableOpacity>
@@ -116,39 +120,33 @@ const viewDeviceDetails = (did) => {
           <Text style={styles.buttonText}>Add Ref</Text>
           <Image source={icons.userPlus} style={styles.buttonIcons}/>
           </TouchableOpacity>
-        </View>
+      </View>
       </View>
       <View style={{paddingVertical: SIZES.xLarge, paddingHorizontal: SIZES.small, backgroundColor: COLORS.white500}}>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-          <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>My Device list</Text> 
+        <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>Recent Device list</Text> 
         <TouchableOpacity onPress={() => navigation.navigate('Device')}>
         <Image source={icons.downArrow} style={{width: 18, height: 18, transform: [{ rotate: '-90deg' }], tintColor: COLORS.slate300}}/>
         </TouchableOpacity>
         </View>
         <View style={{paddingVertical: 20}}>
         {
-          isLoading ? <View><ActivityIndicator /></View> : <View>
-            {myDevice.length !== 0 ? <FlatList 
-          data={myDevice}
-          keyExtractor={item => item._id}
-          renderItem={({item}) => (
-            <MyDeviceCrad viewDeviceDetails={viewDeviceDetails} item={item}/>
+          isLoading ? <View><ActivityIndicator /></View> :
+          <View style={{marginBottom: 300}}>
+          {myDevice.length !== 0 ? 
+          <FlatList data={myDevice} keyExtractor={item => item._id} renderItem={({item}) => (
+            <MyDeviceCrad viewMyDeviceDetails={viewMyDeviceDetails} item={item}/>
           )}
-          refreshControl={
-           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-         }
-        /> : <FlatList 
-        data={[1]}
-        keyExtractor={item => item}
-        renderItem={({item}) => (
-          <View style={{minHeight: 200, alignItems: "center", justifyContent: "center"}}>
-            <Text>Not Device Found</Text>
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          contentContainerStyle={{ marginBottom: 5 }}
+          showsVerticalScrollIndicator={false}
+          /> : 
+          <FlatList data={[1]} keyExtractor={item => item} renderItem={({item}) => (
+          <View style={{paddingVertical: 100, alignItems: "center", justifyContent: "center"}}>
+            <Text>No Device Found</Text>
           </View>
-        )}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />}
+          )}
+           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}/>}
           </View>
         }
         </View>

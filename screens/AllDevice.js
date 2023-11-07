@@ -1,6 +1,6 @@
 
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { FlatList, Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, RefreshControl, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Tab, TabView } from '@rneui/themed';
 import axios from 'axios';
 import { COLORS, SIZES, icons } from '../constants';
@@ -9,24 +9,29 @@ import DeviceAcceptCard from '../components/Crads/DeviceAcceptCard';
 import { AuthContext } from '../context/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Controller, useForm } from 'react-hook-form';
 
 const AllDevice = ({navigation}) => {
   const [index, setIndex] = useState(0);
-  const { user, userLoding } = useContext(AuthContext);
-  const firstTimeRef = useRef(true)
+  const { user } = useContext(AuthContext);
+  const firstTimeRef = useRef(true);
+  const {control, handleSubmit, formState: { errors }, watch} = useForm({defaultValues: {inputdeviceimei: ""},});
+  const [inputdeviceimei] = watch('inputdeviceimei');
+  const [refreshing, setRefreshing] = useState(false);
 
   const { isLoading, isError, data: myDevice = [], refetch: refetchMyDevice } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/mydevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.7:5000/myalldevice/${user?.userEmail}`);
       return res.data;
     } 
   })
 
-  const { isLoading: reciveDeviceLoad, data: reciveDevice = [], refetch } = useQuery({ 
+  const { isLoading: reciveDeviceLoading, data: reciveDevice = [], refetch } = useQuery({ 
     queryKey: ['reciveDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/reciveTransferDevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.1.7:5000/reciveTransferDevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -42,82 +47,78 @@ const AllDevice = ({navigation}) => {
     }, [refetch, refetchMyDevice])
   )
 
-    const viewDeviceDetails = (did) => {
-      navigation.navigate('MyDeviceDetails', {deviceId: did})
-    }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch(); // Refresh the data
+    await refetchMyDevice(); // Refresh the data
+    setRefreshing(false);
+  };
 
-    const acceotDevice = (did) => {
-      navigation.navigate('VerifyDeviceAccept', {transferDeviceId: did})
-    }
+  const onSubmit = async (data) => {
+    console.log(data)
+  }
+
+  const viewMyDeviceDetails = (did) => {
+    navigation.navigate('MyDeviceDetails', {deviceId: did})
+  }
+  
+  const acceotDevice = (did) => {
+    navigation.navigate('VerifyDeviceAccept', {transferDeviceId: did})
+  }
+  
+  const viewProfile = (email) => {
+    navigation.navigate('ViewUserProfile', {userEmail: email})
+  }
+  const viewDeviceDetails = (deviceId, ownerEmail) => {
+    navigation.navigate('ViewDeviceDetails', {deviceId: deviceId, deviceOwnerEmail: ownerEmail})
+  }
+
     return (
       <>
-      <Tab
-        value={index}
-        onChange={(e) => setIndex(e)}
-        containerStyle={(active) => ({
-          backgroundColor: active ? COLORS.blue500 : COLORS.slate100,
-        })}
-        indicatorStyle={{
-          backgroundColor: COLORS.blue200,
-          height: 3,
-        }}
+      <Tab value={index} onChange={(e) => setIndex(e)}
+        containerStyle={(active) => ({backgroundColor: active ? COLORS.blue500 : COLORS.slate100,})}
+        indicatorStyle={{backgroundColor: COLORS.blue200,height: 3,}}
       >
-        <Tab.Item
-          title="All Device"
-          titleStyle={(active) => ({
-              color: active ? COLORS.white500 : COLORS.slate500,
-              fontSize: 12
-          })}
-        />
-        <Tab.Item
-          title="Recive Device"
-          titleStyle={(active) => ({
-              color: active ? COLORS.white500 : COLORS.slate500,
-              fontSize: 12
-          })}
-        />
+        <Tab.Item title="All Device" titleStyle={(active) => ({ color: active ? COLORS.white500 : COLORS.slate500, fontSize: 12 })} />
+        <Tab.Item title="Recive Device" titleStyle={(active) => ({color: active ? COLORS.white500 : COLORS.slate500,fontSize: 12})}/>
       </Tab>
   
       <TabView value={index} onChange={setIndex} animationType="spring">
-        <TabView.Item style={{ backgroundColor: 'red', width: '100%' }}>
+        <TabView.Item style={{width: '100%' }}>
         <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
-          <View style={styles.searchContainer}>
-              <View style={styles.searchWrapper}>
-              {/* <Image source={icons.search} style={{width: 30, height: 30, tintColor: COLORS.slate200}}/> */}
-              <TextInput style={styles.searchInput} placeholder="Search UniId, Name, Brand. . . "/>
-              </View>
-              <TouchableOpacity style={styles.filterBtn}>
-              <Image source={icons.search} style={styles.filterBtnImage}/>
-              </TouchableOpacity>
-          </View>
-          {
-            !userLoding && <View style={{paddingHorizontal: SIZES.small}}>
-            <FlatList 
-            style={{minHeight: "100%"}}
-            data={myDevice}
-            keyExtractor={item => item._id}
-            renderItem={({item}) => (
-                <MyDeviceCrad viewDeviceDetails={viewDeviceDetails} item={item}/>
-            )}
-            refreshing={isLoading}
-            />
-          </View>
-          }
+        <View style={{flexDirection: "row", gap: 10, padding: 10}}>
+        <Controller control={control} rules={{required: true,}}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput style={styles.inputBox} placeholder="Search imei, Name. . ." onBlur={onBlur} onChangeText={onChange} value={value} />
+          )}
+          name="inputdeviceimei"
+        />
+        {inputdeviceimei ?
+        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
+        <Image source={icons.search} style={{resizeMode: "contain", width: 20, height: 20, tintColor: COLORS.white500}}/>
+        </TouchableOpacity> :
+        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
+        <MaterialCommunityIcons name="line-scan" size={20} color={COLORS.white500} />
+        </TouchableOpacity>
+        }
+        </View>
+        {errors.inputdeviceimei && <Text style={{color: COLORS.red500}}>Please Enter your Device IMEI number</Text>}
+        <View style={{paddingHorizontal: SIZES.small, marginBottom: 200}}>
+        <FlatList style={{minHeight: "100%"}} data={myDevice} keyExtractor={item => item._id}
+        renderItem={({item}) => (<MyDeviceCrad viewMyDeviceDetails={viewMyDeviceDetails} userEmail={user?.userEmail} item={item}/>)}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        />
+        </View>
         </View>
         </TabView.Item>
-        <TabView.Item style={{ backgroundColor: 'red', width: '100%' }}>
+        <TabView.Item style={{ width: '100%' }}>
         <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
           <View style={{padding: SIZES.small}}>
-            <FlatList 
-              style={{minHeight: "100%"}}
-              data={reciveDevice}
-              keyExtractor={item => item._id}
-              renderItem={({item}) => (
-                  <DeviceAcceptCard acceotDevice={acceotDevice} item={item}/>
-              )}
-              refreshing={reciveDeviceLoad}
-              />
-            </View>
+          <FlatList style={{minHeight: "100%"}} data={reciveDevice} keyExtractor={item => item._id}
+          renderItem={({item}) => (<DeviceAcceptCard viewProfile={viewProfile} viewDeviceDetails={viewDeviceDetails} acceotDevice={acceotDevice} item={item}/>)}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+          </View>
         </View>
         </TabView.Item>
       </TabView>
@@ -126,44 +127,21 @@ const AllDevice = ({navigation}) => {
 }
 
 const styles = StyleSheet.create({
-  searchContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    backgroundColor: COLORS.white500,
-    padding: SIZES.small,
-    justifyContent: "space-between",
-  },
-  searchWrapper: {
-    borderWidth: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    flexDirection: "row",
-    flexGrow: 1,
-    marginRight: 10,
-    borderRadius: SIZES.small,
-    borderColor: COLORS.slate200,
-    backgroundColor: COLORS.white500,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-  },
-  searchInput: {
+  inputBoxBtn: {
+    paddingVertical: SIZES.small,
     paddingHorizontal: SIZES.medium,
+    borderRadius: SIZES.xSmall,
+    backgroundColor: COLORS.blue500,
+    alignItems: "center", justifyContent: "center"
   },
-  filterBtn: {
-    alignItems: "center", 
-    justifyContent: "center", 
-    backgroundColor: COLORS.blue500, 
-    borderRadius: SIZES.small,
-    padding: 8,
-    width: 50,
-    height: 50
+  inputBox: {
+    paddingVertical: SIZES.xSmall,
+    paddingHorizontal: SIZES.medium,
+    borderRadius: SIZES.xSmall,
+    borderWidth: 1,
+    borderColor: COLORS.slate200,
+    flex: 1
   },
-  filterBtnImage: {
-    width: 30,
-    height: 30,
-    resizeMode: "contain",
-    tintColor: COLORS.white500,
-  }
 })
 
 export default AllDevice

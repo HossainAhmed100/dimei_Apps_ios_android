@@ -1,6 +1,6 @@
-import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import React, { useContext, useState } from "react";  
-import { COLORS, SIZES, images } from '../../constants';
+import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'; 
+import { COLORS, SIZES } from '../../constants';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { ActivityIndicator } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { CheckBox } from '@rneui/themed';
@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Divider } from '@rneui/base';
 import { Controller, useForm } from 'react-hook-form';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const AddDeviceInput = ({navigation, route}) => {
@@ -27,7 +28,8 @@ const AddDeviceInput = ({navigation, route}) => {
     const [dropDownValue, setDropDownValue] = useState(null);
     const [items, setItems] = useState([]);
     const { user } = useContext(AuthContext);
-    const [zeroTokenAlert, setZeroTokenAlert] = useState(false)
+    const firstTimeRef = useRef(true);
+    const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: ""},});
 
    const showAlert = () => {
@@ -38,155 +40,163 @@ const AddDeviceInput = ({navigation, route}) => {
     setZeroTokenAlert(false)
     };
   
-    const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
-        queryKey: ['itemQuantity', user?.userEmail], 
+    const { data: devciePreview = []} = useQuery({ 
+        queryKey: ['devciePreview', user?.userEmail], 
         queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.2:5000/useritemQuantity/${user?.userEmail}`);
+          const res = await axios.get(`http://192.168.1.7:5000/checkDeviceImeiNum/${deviceImeiInput}`);
           return res.data;
         } 
     })
 
-    const onSubmit = async (data) => {
-      setLoading(true);
-    try {
-        const uploadPromises = deviceIamge.map(async (uri) => {
-          return await uploadImageAsync(uri);
-        });
-    
-        const newFirebaseImages = await Promise.all(uploadPromises);
-        setFirebaseIamge([...newFirebaseImages]);
-        const deviceNote = data.deviceNote;
-        // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-        await addDeviceInDatabase(deviceNote, [...newFirebaseImages]);
+    const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
+        queryKey: ['itemQuantity', user?.userEmail], 
+        queryFn: async () => {
+          const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
+          return res.data;
+        } 
+    })
 
-      } catch (error) {
-        console.error('Error during addDevice:', error);
-      } finally {
-        setLoading(false);
-      }
-
-    
-  };
-
-  const addDeviceInDatabase = async (deviceNotes, deviceImgList) => {
-    
-    setLoading(true);
-    const modelName =  "iPhone 13 Pro";
-    const brand = "Apple";
-    const colorVarient = "Silver";
-    const ram = "6GB";
-    const storage = "128GB";
-    const battery = "128GBLi-Ion 3095 mAh";
-    const sim = false;
-    const sim_slot = "Dual SIM";
-    const gpu = "Apple GPU (5-core graphics)";
-    const Chipset = "Apple A15 Bionic (5 nm)";
-    const Announced = "2021, September 14";
-    const MISC_Model = "A2638";
-    const threePointFive_mm_jack = true;
-    const deviceStatus = "Good";
-    const listingDate = todyDate;
-    const listingAddress = "Dhaka, Bangladesh";
-    const daysUsed = 0;
-    const deviceImei = deviceImeiInput;
-    const devicePicture = "https://i.ibb.co/YWkJ22y/iphone13pro.jpg";
-    const ownerPhoto = user?.userProfilePic;
-    const ownerEmail = user?.userEmail;
-    const devcieOrigin = dropDownValue;
-    const haveBoxde = false;
-    const secretCode = "";
-    const isDeviceSell = false;
-    const batteryRemovable = false;
-    const deviceTransferStatus = false;
-    const deviceSellingStatus = false;
-    const deviceLostStatus = false;
-    const deviceIamges = deviceImgList;
-    const deviceOwnerList = [
-      {
-        ownarStatus: "",
-        ownerPhoto: ownerPhoto,
-        ownerEmail: ownerEmail,
-        deviceNote: deviceNotes,
-        thisIsCurrentOwner: true,
-        ownerName: user?.userName,
-        deviceLostNoteMessage: "",
-        thisIsPreviousOwner: false,
-        deviceListingDate: todyDate,
-        ownerId: user?.userAccountId,
-        deviceTransferDate: todyDate,
-        thisIsUnAuthorizeOwner: false,
-      }
-    ];   
-
-    const deviceInfos = {deviceOwnerList, isDeviceSell, ownerPhoto, modelName, brand, colorVarient, ram, storage, battery, secretCode, batteryRemovable, sim, sim_slot, gpu, Chipset, Announced, MISC_Model, threePointFive_mm_jack, devcieOrigin, deviceStatus, devicePicture, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceLostStatus, deviceIamges};
-
-    try {
-        const response = await axios.post('http://192.168.1.2:5000/addNewDevice', {deviceInfos})
-        if (response.data.isDeviceisExist) {
-            alert('This Devcie is Alredy Added');
-            navigation.navigate('Home');
-        } else if (response.data.acknowledged) {
-            alert('Check your email');
-            navigation.navigate('Home');
-        } else {
-            alert('Device Add Failed');
+    useFocusEffect(
+      useCallback(() => {
+        if (firstTimeRef.current) {
+           firstTimeRef.current = false;
+           return;
         }
-    } catch (err) {
-        console.error('Error during Add Device To Database:', err);
-        alert('Device Added Feild');
-    } finally {
-        setLoading(false);
-    }
+        fetchToken()
+      }, [fetchToken])
+    )
+
+const onSubmit = async (data) => {
+  setLoading(true);
+try {
+    const uploadPromises = deviceIamge.map(async (uri) => {
+      return await uploadImageAsync(uri);
+    });
+
+    const newFirebaseImages = await Promise.all(uploadPromises);
+    setFirebaseIamge([...newFirebaseImages]);
+    const deviceNote = data.deviceNote;
+    // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
+    await addDeviceInDatabase(deviceNote, [...newFirebaseImages]);
+
+  } catch (error) {
+    console.error('Error during addDevice:', error);
+  } finally {
+    setLoading(false);
+  }
+
 
 };
 
-  const uploadImageAsync = async (uri) => {
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function (e) {
-        console.log(e);
-        reject(new TypeError("Network request failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", uri, true);
-      xhr.send(null);
-    });
+const addDeviceInDatabase = async (deviceNotes, deviceImgList) => {
+setLoading(true);
+const secretCode = "";
+const haveBoxde = false;
+const daysUsed = todyDate;
+const isDeviceSell = false;
+const deviceStatus = "Good";
+const newOwnerClaim = false;
+const listingDate = todyDate;
+const deviceLostStatus = false;
+const deviceSellingStatus = false;
+const deviceImei = deviceImeiInput;
+const deviceTransferStatus = false;
+const someonefoundthisdevice = false;
+const ownerEmail = user?.userEmail;
+const devcieOrigin = dropDownValue;
+const ownerPhoto = user?.userProfilePic;
+const listingAddress = "Dhaka, Bangladesh";
+const deviceIamges = [{deviceImgList, ownerEmail}];
+const deviceOwnerList = [
+  {
+    ownarStatus: "",
+    ownerPhoto: ownerPhoto,
+    ownerEmail: ownerEmail,
+    deviceNote: deviceNotes,
+    thisIsCurrentOwner: true,
+    ownerName: user?.userName,
+    deviceLostNoteMessage: "",
+    thisIsPreviousOwner: false,
+    deviceOrigin: dropDownValue,
+    deviceListingDate: todyDate,
+    ownerId: user?.userAccountId,
+    deviceTransferDate: todyDate,
+    thisIsUnAuthorizeOwner: false,
+  }
+];   
 
-    try{
-      const fileRef = ref(storage, `image/image-${Date.now()}`);
-      const result = await uploadBytes(fileRef, blob);
-    
-      // We're done with the blob, close and release it
-      blob.close();
-    
-      return await getDownloadURL(fileRef);
-    }catch(error) {
-      console.log(error)
+const deviceInfos = {deviceOwnerList, newOwnerClaim, isDeviceSell, ownerPhoto, secretCode, devcieOrigin, deviceStatus, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceLostStatus, deviceIamges};
+
+try {
+    const response = await axios.post('http://192.168.1.7:5000/addNewDevice', {deviceInfos})
+    if (response.data.isDeviceisExist) {
+        alert('This Devcie is Alredy Added');
+        navigation.navigate('Home');
+    } else if (response.data.acknowledged) {
+        alert('Check your email');
+        navigation.navigate('Home');
+    } else {
+        alert('Device Add Failed');
     }
-  };
+} catch (err) {
+    console.error('Error during Add Device To Database:', err);
+    alert('Device Added Feild');
+} finally {
+    setLoading(false);
+}
+
+};
+
+const uploadImageAsync = async (uri) => {
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function (e) {
+      console.log(e);
+      reject(new TypeError("Network request failed"));
+    };
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+
+  try{
+    const fileRef = ref(storage, `image/image-${Date.now()}`);
+    const result = await uploadBytes(fileRef, blob);
   
+    // We're done with the blob, close and release it
+    blob.close();
+  
+    return await getDownloadURL(fileRef);
+  }catch(error) {
+    console.log(error)
+  }
+};  
 
 const itemsSelect = [
     {label: "আমি এই ডিভাইসটি নতুন কিনেছি", value: "mynewDevice"},
-    {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ifoundthisdevice"},
     {label: "আমি এই ডিভাইসটি খুজে পেয়েছি", value: "ilostthisdevice"},
+    {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ifoundthisdevice"},
 ]
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
         <View style={{padding: SIZES.small}}>
-            <View style={styles.cardContainer}>
-                <Image source={images.iphone13pro} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>
-                <View>
-                    <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>iPhone 13 Pro</Text>
-                    <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : 6GB</Text>
-                    <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Storage : 128GB</Text>
-                    <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Brand : Apple</Text>
-                    <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : Silver</Text>
-                </View>
-            </View>
+          <View style={styles.cardContainer}>
+          {devciePreview?.devicePicture ?
+          <Image source={{uri: devciePreview?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/> :
+          <ActivityIndicator />
+          }
+              
+          <View>
+              <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{devciePreview?.modelName}</Text>
+              <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : {devciePreview?.ram}</Text>
+              <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Storage : {devciePreview?.storage}</Text>
+              <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Brand : {devciePreview?.brand}</Text>
+              <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : {devciePreview?.colorVarient}</Text>
+          </View>
+          </View>
         <View style={{ justifyContent: "space-between", flexDirection: "column" }}>
         <View style={{ gap: SIZES.small }}>
             <View>

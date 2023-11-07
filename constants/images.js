@@ -1,5 +1,5 @@
 import profile from "../assets/images/profile.jpg";
-import onBoard from "../assets/images/onBoard.png";
+import policyOnBoard from "../assets/images/policyOnBoard.png";
 import deviceQuantityBg from "../assets/images/deviceQuantityBg.png";
 import referenceQuantityBg from "../assets/images/referenceQuantityBg.png";
 import tokenQuantityBg from "../assets/images/tokenQuantityBg.png";
@@ -16,7 +16,7 @@ export default {
   emailForm,
   numberForms,
   profile,
-  onBoard,
+  policyOnBoard,
   deviceQuantityBg,
   referenceQuantityBg,
   tokenQuantityBg,

@@ -1,13 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
+import React, { useCallback, useContext, useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthProvider';
 import { useForm, Controller } from "react-hook-form";
 import { COLORS, SIZES } from '../../constants';
-import { MaterialCommunityIcons  } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { CheckBox } from '@rneui/themed';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const VerifyDeviceAcceft = ({navigation, route})  => {
     const transferDeviceId = route.params.transferDeviceId;
@@ -17,30 +19,36 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const [loading, setLoading] = useState(false);
     const { user } = useContext(AuthContext);
     const todyDate = new Date().toISOString();
+    const firstTimeRef = useRef(true);
+    const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceSecrentCode: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}})
     
-    const { data: itemQuantity = [] } = useQuery({ 
-        queryKey: ['itemQuantity', user?.userEmail], 
-        queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.2:5000/useritemQuantity/${user?.userEmail}`);
-          return res.data;
-        } 
-      })
+    const showAlert = () => {setZeroTokenAlert(true)};
+    
+    const hideAlert = () => {setZeroTokenAlert(false)};
 
-    const { isLoading, data: accevtDevice = [] } = useQuery({ 
-        queryKey: ['accevtDevice', transferDeviceId], 
-        queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.2:5000/getTransferDeviceDetails/${transferDeviceId}`);
-        return res.data;
-        } 
+    const { data: itemQuantity = [], refetch } = useQuery({ 
+      queryKey: ['itemQuantity', user?.userEmail], 
+      queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
+      return res.data;
+      } 
+    })
+
+    const { isLoading, data: acceptDevice = [], refetch: refetchAcceptDevice } = useQuery({ 
+      queryKey: ['acceptDevice', transferDeviceId], 
+      queryFn: async () => {
+      const res = await axios.get(`http://192.168.1.7:5000/getTransferDeviceDetails/${transferDeviceId}`);
+      return res.data;
+      } 
     })
 
     const onSubmit = async (data) => {
     setLoading(true)
     const secretCode = data.deviceSecrentCode;
-    const deviceId = accevtDevice?.deviceId;
+    const deviceId = acceptDevice?.deviceId;
     const devicereciverEmail = user?.userEmail;
-    const previusDeviceOwner = accevtDevice?.ownerEmail;
+    const previusDeviceOwner = acceptDevice?.ownerEmail;
     const newDeviceOwner = {
         ownerId: user?.userAccountId,
         deviceListingDate: todyDate,
@@ -53,10 +61,10 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         thisIsPreviousOwner: false,
         thisIsCurrentOwner: true,
       };
-    const deviceTestInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId, newDeviceOwner, previusDeviceOwner};
+    const acceptDeviceInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId, newDeviceOwner, previusDeviceOwner};
     
     try{
-        await axios.put(`http://192.168.1.2:5000/verifydeviceAccept/`, {deviceTestInfo})
+        await axios.put(`http://192.168.1.7:5000/verifydeviceAccept/`, {acceptDeviceInfo})
         .then((res) => {
             if(res.data.modifiedCount === 1){
                 setLoading(false)
@@ -75,26 +83,30 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
 
     
 
-    }
+    }    
+
+    useFocusEffect(
+      useCallback(() => {
+        if (firstTimeRef.current) {
+           firstTimeRef.current = false;
+           return;
+        }
+        refetch()
+        refetchAcceptDevice()
+      }, [refetch, refetchAcceptDevice])
+    )
+
   return (
     <View style={{padding: SIZES.medium, backgroundColor: COLORS.white500, minHeight: "100%"}}>
-        { itemQuantity?.tokenQuantity === 0 && 
-        <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, marginVertical: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
-            <Text style={{marginRight: 10, color: COLORS.white500}}>You Have 0 Token. Please Purchase Token For Accept This Token</Text> 
-            <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
-          </View>
-        </View>
-        }
         <View View style={styles.cardContainer}>
-        {accevtDevice?.devicePicture && 
-        <Image source={{uri: accevtDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
+        {acceptDevice?.devicePicture && 
+        <Image source={{uri: acceptDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
         <View>
-            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{accevtDevice?.modelName}</Text>
-            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : {accevtDevice?.ram}</Text>
-            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Storage : {accevtDevice?.storage}</Text>
-            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Brand : {accevtDevice?.brand}</Text>
-            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : {accevtDevice?.colorVarient}</Text>
+            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{acceptDevice?.modelName}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : {acceptDevice?.ram}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Storage : {acceptDevice?.storage}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Brand : {acceptDevice?.brand}</Text>
+            <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Color : {acceptDevice?.colorVarient}</Text>
         </View>
         </View>
         <View style={{gap: 10}}>
@@ -143,13 +155,19 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
             />
              <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500}}>terms</Text> and <Text style={{color: COLORS.blue500}}>condition</Text></Text>
         </View>
-        <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
-        {
-        isLoading ? <Pressable style={styles.loginBtn}> 
+        { itemQuantity?.tokenQuantity === 0 && 
+        <View style={{padding: 10, borderRadius: 10, backgroundColor: COLORS.red200}}>
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
+            <Text style={{marginRight: 10, color: COLORS.red500}}>You Have 0 Token. Please Purchase Token For Accept This Token</Text> 
+          </View>
+        </View>
+        }
+       <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 20 }}>
+       {isLoading ? <TouchableOpacity style={styles.loginBtn}> 
         <ActivityIndicator color={COLORS.white500}/> 
-        </Pressable> :
+        </TouchableOpacity> :
         itemQuantity?.tokenQuantity === 0 ? 
-        <TouchableOpacity style={[styles.loginBtn, {opacity: 0.5}]} >
+        <TouchableOpacity onPress={() => showAlert()} style={[styles.loginBtn, {opacity: 0.5}]} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Accept</Text>
         </TouchableOpacity> : loading ?
         <TouchableOpacity style={styles.loginBtn}> 
@@ -159,7 +177,26 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Accept</Text>
         </TouchableOpacity> 
         }
-       
+        <AwesomeAlert
+          show={zeroTokenAlert}
+          showProgress={false}
+          title="Token Alert"
+          message="You don't have any Token. Please Buy some Token to continue."
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="Close"
+          confirmText="Buy now"
+          confirmButtonColor={COLORS.blue500}
+          onCancelPressed={() => {
+            hideAlert();
+          }}
+          onConfirmPressed={() => {
+            navigation.navigate('BuyToken');
+            hideAlert();
+          }}
+        />
         </View>
     </View>
   )

@@ -1,69 +1,42 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, StyleSheet, Image } from 'react-native'
 import React, { useState } from 'react';
 import { COLORS, SIZES, icons, images } from '../../constants';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { Divider } from '@rneui/base';
 
 const AddNewDevice = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
-  const [showText, setShowText] = useState(false);
-  const [showExistingDevice, setshowExistingDevice] = useState(false);
-  const [deviceImageNum, setdeviceImageNum] = useState("")
-  const [existingDeviceData, setexistingDeviceData] = useState([]);
-  const [currentOwner, setcurrentOwner] = useState([]);
-  const {control, handleSubmit, formState: { errors }, reset} = useForm({defaultValues: {inputdeviceimei: ""},});
-  const closeExistingDevice = () => {
-    setshowExistingDevice(false)
-    setexistingDeviceData([])
-    reset()
-  };
+  const [searchData, setsearchData] = useState([]);
+  const [showData, setShowData] = useState(false)
+  const {control, handleSubmit, formState: { errors }, reset, watch} = useForm({defaultValues: {inputdeviceimei: ""},});
+  const [inputdeviceimei] = watch(['inputdeviceimei']);
+
   const handleHidePress = () => {
-    setShowText(false);
+    reset();
     setLoading(false);
+    setsearchData([]);
+    setShowData(false)
   };
+
   const onSubmit = async (data) => {
     setLoading(true);
     const deviceimeiNum = data.inputdeviceimei;
     try{
-
-      const response = await axios.get(`http://192.168.1.2:5000/checkDeviceImeiNum/${deviceimeiNum}`);
-      if(response.data.checkDevcie === "nodevicefound"){
-        setcurrentOwner([])
-        setshowExistingDevice(false)
-        setdeviceImageNum(deviceimeiNum)
-        setShowText(true);
-        setLoading(false);
-      }else if(response.data.checkDevcie === "devicealredyExist"){
-        setexistingDeviceData(response.data.devicedata)
-        const currentOwner = response.data.devicedata.deviceOwnerList.find(owner => owner.thisIsCurrentOwner === true);
-        setcurrentOwner(currentOwner)
-        setshowExistingDevice(true)
-        setdeviceImageNum(deviceimeiNum)
-        setLoading(false);
-      }else if(response.data.checkDevcie === "thisisloastDevice"){
-        setcurrentOwner([])
-        setshowExistingDevice(false)
-        setShowText(true);
-        setLoading(false);
-        setdeviceImageNum(deviceimeiNum)
-      }
-      
+      const response = await axios.get(`http://192.168.1.7:5000/checkDeviceImeiNum/${deviceimeiNum}`);
+      setsearchData(response.data);
+      setLoading(false);
+      setShowData(true)
     }
     catch{
       setLoading(false);
     }
   };
 
-  const viewProvile = (email) => {
-    navigation.navigate('ViewUserProfile', {userEmail: email})
-  }
-
   const nextAction = () => {
-    navigation.navigate("AddPhotoForNewDevice", {deviceImeiInput: deviceImageNum})
+    navigation.navigate("AddPhotoForNewDevice", {deviceImeiInput: inputdeviceimei})
   };
-
   return (
     <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}} showsVerticalScrollIndicator={false}>
     <View style={{paddingHorizontal: SIZES.large}}>
@@ -75,87 +48,46 @@ const AddNewDevice = ({ navigation }) => {
         )}
         name="inputdeviceimei"
       />
+      {inputdeviceimei ?
       <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
       <Image source={icons.search} style={{resizeMode: "contain", width: 20, height: 20, tintColor: COLORS.white500}}/>
+      </TouchableOpacity> :
+      <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
+      <MaterialCommunityIcons name="line-scan" size={20} color={COLORS.white500} />
       </TouchableOpacity>
+      }
       </View>
       {errors.inputdeviceimei && <Text style={{color: COLORS.red500}}>Please Enter your Device IMEI number</Text>}
       
       {loading && <ActivityIndicator />}
-      {showExistingDevice &&
-     <View>
-       <View style={{padding: 10, backgroundColor: COLORS.red100, borderRadius: 6}}>
-        <Text style={{color: COLORS.red500}}>This Device is Alredy Exist !</Text>
-      </View>
-      <View style={styles.cardContainer}>
-      <View style={{flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: SIZES.medium}}>
-      <Image source={{uri: existingDeviceData?.devicePicture}} style={{width: 120, height: 140, borderRadius: 4, marginRight: 10, resizeMode: "cover"}}/>
-      </View>
-      <Divider color={COLORS.slate200}/>
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", paddingVertical: 10, paddingHorizontal: SIZES.xSmall}}>
-        <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10}}>
-        <Image source={{uri: existingDeviceData?.ownerPhoto}} style={{borderRadius: 6, width: 35, height: 35}}/>
-        <Text style={{fontSize: 16, fontWeight: 500, color: COLORS.slate300}}>{currentOwner?.ownerName}</Text>
-        </View>
-        <TouchableOpacity onPress={() => viewProvile(currentOwner?.ownerEmail)} style={{flexDirection: "row"}}>
-        <Text style={{fontSize: 12, fontWeight: 500, color: COLORS.blue500}}>View Profile</Text>
-         <Entypo name="chevron-small-right" size={20} color={COLORS.blue500} />
-        </TouchableOpacity>
-      </View>
-      <View>
-      <Divider color={COLORS.slate200}/>
-      <Text style={styles.dText}>Model : {existingDeviceData?.modelName}</Text>
-      <Divider color={COLORS.slate200}/>
-      <Text style={styles.dText}>Brand : {existingDeviceData?.brand}</Text>
-      <Divider color={COLORS.slate200}/>
-      <Text style={styles.dText}>Colors : {existingDeviceData?.colorVarient}</Text>
-      <Divider color={COLORS.slate200}/>
-      <Text style={styles.dText}>Internal Ram : {existingDeviceData?.ram}</Text>
-      <Divider color={COLORS.slate200}/>
-      <Text style={styles.dText}>Internal Storage : {existingDeviceData?.storage}</Text>
-      <Divider color={COLORS.slate200}/>
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", paddingVertical: 10, paddingHorizontal: SIZES.xSmall}}>
-        <TouchableOpacity onPress={() => closeExistingDevice()} style={[styles.actionBtn, {backgroundColor: COLORS.red500}]}>
-        <Text style={styles.actionBtnTitle}>Cancel</Text>
-        <Ionicons name="close" size={20} color={COLORS.white500} />
-        </TouchableOpacity>
-      </View>
-      </View>
-      </View>
-     </View>
-    }
 
-      {showText &&  
+      {showData &&  
       <View style={{borderWidth: 1, borderColor: COLORS.slate200, borderRadius: SIZES.small, marginVertical: SIZES.medium}}>
         <View style={{flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: SIZES.medium}}>
-        <Image source={images.iphone13pro} style={{width: 120, height: 140, borderRadius: 4, marginRight: 10, resizeMode: "cover"}}/>
+        <Image source={{uri: searchData?.devicePicture}} style={{width: 120, height: 140, borderRadius: 4, marginRight: 10, resizeMode: "cover"}}/>
         </View>
         <View>
-        <Text style={styles.dText}>Model : iPhone 13 Pro</Text>
+        <Text style={styles.dText}>Model : {searchData?.modelName}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>3.5mm jack : No</Text>
+        <Text style={styles.dText}>Brand : {searchData?.brand}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Colors : Silver</Text>
+        <Text style={styles.dText}>3.5mm jack : {searchData?.threePointFive_mm_jack ? "Yes" : "No"}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>MISC Model : A2638</Text>
+        <Text style={styles.dText}>Colors : {searchData?.colorVarient}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Internal Ram : 6GB</Text>
+        <Text style={styles.dText}>MISC Model : {searchData?.MISC_Model}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Battery Helth : 85%</Text>
+        <Text style={styles.dText}>Ram : {searchData?.ram}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Weight : 204 g (7.20 oz)</Text>
+        <Text style={styles.dText}>Internal Storage : {searchData?.storage}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Internal Storage : 128GB</Text>
+        <Text style={styles.dText}>Announced : {searchData?.AnnouncedDate}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Announced : 2021, September 14</Text>
+        <Text style={styles.dText}>Chipset : {searchData?.Chipset}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Chipset : Apple A15 Bionic (5 nm)</Text>
+        <Text style={styles.dText}>SIM Slot: {searchData?.sim_slot}</Text>
         <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>GPU : Apple GPU (5-core graphics)</Text>
-        <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>SIM : Nano-SIM and eSIM or Dual SIM</Text>
-        <Divider color={COLORS.slate200}/>
-        <Text style={styles.dText}>Battery : 128GBLi-Ion 3095 mAh, non-removable</Text>
+        <Text style={styles.dText}>Battery : {searchData?.battery}</Text>
         <Divider color={COLORS.slate200}/>
         </View>
 

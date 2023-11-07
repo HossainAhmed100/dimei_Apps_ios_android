@@ -16,7 +16,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.2:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.1.7:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });

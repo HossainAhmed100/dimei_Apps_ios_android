@@ -16,7 +16,7 @@ const Main = ({ navigation }) => {
               height: 250,
               width: 300,
             }}
-            source={images.onBoard}
+            source={images.policyOnBoard}
           />
         </View>
         <View style={{ flexDirection: "column", gap: SIZES.xSmall, marginBottom: 80 }}>
