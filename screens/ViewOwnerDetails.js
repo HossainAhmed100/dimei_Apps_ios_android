@@ -11,10 +11,10 @@ const ViewOwnerDetails =  ({navigation, route}) => {
   const deviceId = route.params.deviceId;
   const [refreshing, setRefreshing] = useState(false);
 
-  const { isLoading, data: deviceOwnerList = [], refetch } = useQuery({ 
+  const { isLoading, data: ownerData = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/getDeviceOwnerList/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/getDeviceOwnerList/${deviceId}`);
       return res.data;
     } 
   })
@@ -23,8 +23,9 @@ const ViewOwnerDetails =  ({navigation, route}) => {
     await refetch(); // Refresh the data
     setRefreshing(false);
   };
-  const viewProvile = (email) => {
-    navigation.navigate('ViewUserProfile', {userEmail: email})
+  const viewOwnerDetails = (ownerInfo) => {
+    const data = {deviceId: deviceId, ownerInfo: ownerInfo, ownerEmail: ownerData?.ownerEmail};
+    navigation.navigate('ViewDeviceOwnerInfo', {paramsInfo: data})
   }
 
   return (
@@ -33,8 +34,8 @@ const ViewOwnerDetails =  ({navigation, route}) => {
       {isLoading ? <ActivityIndicator size={"large"}/> : 
         (
         <View>
-          <FlatList showsVerticalScrollIndicator={false} data={deviceOwnerList} keyExtractor={(item, index) => index}
-          renderItem={({ item, index }) => <OwnerCard item={item} viewProvile={viewProvile} index={index}/>}
+          <FlatList showsVerticalScrollIndicator={false} data={ownerData?.deviceOwnerList} keyExtractor={(item, index) => index}
+          renderItem={({ item, index }) => <OwnerCard item={item} viewOwnerDetails={viewOwnerDetails} index={index}/>}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
           contentContainerStyle={{ rowGap: 12, columnGap: 12 }}
           />
@@ -45,14 +46,19 @@ const ViewOwnerDetails =  ({navigation, route}) => {
   )
 }
 
-const OwnerCard = ({item, viewProvile}) => {
+const OwnerCard = ({item, viewOwnerDetails}) => {
+  const formattedDate = (date) => {
+    const distance = formatDistanceToNow(new Date(date));
+    const formatted = format(new Date(date), "MMMM d, yyyy h:mm a"); // Adjust the format as needed
+    return `${distance} - ${formatted}`;
+  };
   return(
     <View style={[styles.cardContainer, {borderColor: item?.thisIsUnAuthorizeOwner ? COLORS.red200 : COLORS.slate100}]}>
     <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 10}}>
     <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
     {item?.ownerPhoto && <Image source={{uri: item?.ownerPhoto}} style={{width: 50, height: 50, borderRadius: 6,  resizeMode: "cover"}}/>}
     <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
-      <Text style={{fontSize: 20, fontWeight: 600, color: "#3B3C35"}}>{item?.ownerName}</Text>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>{item?.ownerName}</Text>
       <Text style={styles.dateText}>ID: {item.ownerId}</Text>
     </View>
     </View>
@@ -70,27 +76,24 @@ const OwnerCard = ({item, viewProvile}) => {
     </View>
     {item?.deviceOrigin && <DevcieOriginText item={item?.deviceOrigin}/>}
     <Divider />
-    <View style={{flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", gap: 10}}>
     <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
     <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
       <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>Listing Date</Text>
-      {item?.deviceListingDate ? <Text style={styles.dateText}>{formatDistanceToNow(new Date(item?.deviceListingDate))}</Text> : <ActivityIndicator />}
-      {item?.deviceListingDate ? <Text style={styles.dateText}>{format(new Date(item?.deviceListingDate), 'yyyy-MM-dd hh:mm a')}</Text> : <ActivityIndicator />}
+      {item?.deviceTransferDate ? <Text style={styles.dateText}>{formattedDate(item?.deviceTransferDate)}</Text>: <ActivityIndicator />}
     </View>
     <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
       <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>
-        {item?.thisIsPreviousOwner ? "Transfer Date" : 
-        item?.thisIsCurrentOwner ? "Received Date" : "Unauthorized Listing Date"}
+        {item?.thisIsPreviousOwner ? "Transfer Date" : item?.thisIsCurrentOwner ? "Received Date" : "Unauthorized Listing Date"}
       </Text>  
-      {item?.deviceTransferDate ? <Text style={styles.dateText}>{formatDistanceToNow(new Date(item?.deviceTransferDate))}</Text> : <ActivityIndicator />}
-      {item?.deviceTransferDate ? <Text style={styles.dateText}>{format(new Date(item?.deviceTransferDate), 'yyyy-MM-dd hh:mm a')}</Text>: <ActivityIndicator />}
+      {item?.deviceTransferDate ? <Text style={styles.dateText}>{formattedDate(item?.deviceTransferDate)}</Text>: <ActivityIndicator />}
     </View>
     </View>
-    <TouchableOpacity onPress={() => viewProvile(item?.ownerEmail)} style={{paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6}}>
-      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>View Profile</Text>
+    <Divider />
+    <View style={{flexDirection: "row", gap: 10}}>
+    <TouchableOpacity onPress={() => viewOwnerDetails(item)} style={{borderRadius: 6, alignItems: "flex-end", padding: 6, justifyContent: "center"}}>
+      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>View Details</Text>
     </TouchableOpacity>
     </View>
-
   </View>
   )
 }
@@ -121,10 +124,10 @@ const styles = StyleSheet.create({
   cardContainer:{
     borderWidth: 1, 
     padding: SIZES.xSmall, 
-    borderRadius: SIZES.xSmall, 
+    borderRadius: 6, 
     overflow: "hidden", gap: 10
   },
-  ownerAlertBg:{paddingVertical: 6, paddingHorizontal: 16, borderRadius: 6},
+  ownerAlertBg:{paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6},
   ownerAlertText:{fontSize: 12, fontWeight: 500},
   dateText:{fontSize: 14, color: "#808080", fontWeight: "400"},
   deviceOriginText: {color: COLORS.slate300, fontSize: 14},

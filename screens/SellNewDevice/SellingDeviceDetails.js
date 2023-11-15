@@ -16,7 +16,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });
@@ -92,7 +92,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
       <Text style={{fontSize: SIZES.medium, color: COLORS.slate500, fontWeight: 500}}>Description</Text>
       <View style={{paddingVertical: 6}}>
       <Text style={{fontSize: 14, color: COLORS.slate300, fontWeight: 400, lineHeight: 20}}>
-      Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially
+      {myDevice?.deviceDescription}
       </Text>
       </View>
       </View>

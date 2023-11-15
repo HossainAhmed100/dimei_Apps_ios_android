@@ -3,14 +3,14 @@ import { StyleSheet, Text, View,TextInput, TouchableOpacity, ScrollView } from '
 import { useForm, Controller } from "react-hook-form";
 import { COLORS, SIZES } from '../constants';
 import axios from 'axios';
-import { CheckBox } from '@rneui/themed';
 import { format } from 'date-fns';
 import { AuthContext } from "../context/AuthProvider";
+import { MaterialIcons  } from '@expo/vector-icons';
+
 
 const DeviceLostScreen = ({navigation, route}) => {
     const deviceId = route.params.deviceId;
     const [checked, setChecked] = useState(false);
-    const toggleCheckbox = () => setChecked(!checked);
     const todyDate = new Date().toISOString();
     const {user} = useContext(AuthContext);
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceDescription: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}});
@@ -20,12 +20,13 @@ const DeviceLostScreen = ({navigation, route}) => {
         const deviceLostMessage = data.deviceDescription;
         const infoData = {deviceId, ownerEmail, deviceLostMessage};
         try{
-            await axios.put(`http://192.168.1.7:5000/deviceloststatusUpdate/`,{infoData})
+            await axios.put(`http://192.168.0.127:5000/deviceloststatusUpdate/`,{infoData})
         }
         catch{
 
         }
     }
+    const toggleCheckbox = () => {setChecked(!checked);};
 
 
   return (
@@ -53,15 +54,16 @@ const DeviceLostScreen = ({navigation, route}) => {
       placeholder="Write Somthing (optional)" value={value}/>)}/>
       {errors.deviceDescription && <Text style={{color: COLORS.red500}}>Selling Description is required</Text>}
       </View>
-      
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-      <CheckBox checked={checked} onPress={toggleCheckbox} iconType="material-community" 
-      checkedIcon="checkbox-marked" uncheckedIcon="checkbox-blank-outline" checkedColor={COLORS.blue500} />
-      <Text style={{marginLeft: 4}}>I aggre with 
-      <Text style={{color: COLORS.blue500}}>terms</Text> and 
-      <Text style={{color: COLORS.blue500}}>condition</Text></Text>
+      <View>
+        <TouchableOpacity onPress={toggleCheckbox}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+            <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+            <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+          </View>
+        </TouchableOpacity>
       </View>
-
     </View>
     <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
     <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >

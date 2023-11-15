@@ -19,7 +19,7 @@ const dts = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -27,7 +27,7 @@ const dts = ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
+      const res = await axios.get(`http://192.168.0.127:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
       return res.data;
     } 
   })
@@ -47,7 +47,7 @@ const dts = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.7:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.0.127:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })

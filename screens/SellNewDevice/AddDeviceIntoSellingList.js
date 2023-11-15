@@ -6,14 +6,13 @@ import axios from 'axios';
 import { useForm, Controller } from "react-hook-form";
 import { COLORS, SIZES } from '../../constants';
 import { AuthContext } from '../../context/AuthProvider';
-import { CheckBox } from '@rneui/themed';
+import { MaterialIcons  } from '@expo/vector-icons';
 
 
 const AddDeviceIntoSellingList = ({navigation, route}) => {
   const deviceId = route.params.deviceId ;
   const [haveABox, sethaveABox] = useState(false);
   const [checked, setChecked] = useState(false);
-  const toggleCheckbox = () => setChecked(!checked);
   const toggleHaveABox = () => sethaveABox(!checked);
   const { user, userLoding } = useContext(AuthContext);
   const {control, handleSubmit, formState: { errors }} = useForm();
@@ -22,11 +21,12 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
   
+  const toggleCheckbox = () => {setChecked(!checked)};
 
   const onSubmit = async (data) => {
     const deviceBrand = sellingDevice?.brand;
@@ -129,12 +129,15 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
       <Text style={{marginLeft: 4}}>I Have a Original Box</Text>
       </View>
       
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-      <CheckBox checked={checked} onPress={toggleCheckbox} iconType="material-community" 
-      checkedIcon="checkbox-marked" uncheckedIcon="checkbox-blank-outline" checkedColor={COLORS.blue500} />
-      <Text style={{marginLeft: 4}}>I aggre with 
-      <Text style={{color: COLORS.blue500}}>terms</Text> and 
-      <Text style={{color: COLORS.blue500}}>condition</Text></Text>
+      <View>
+        <TouchableOpacity onPress={toggleCheckbox}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+            <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+            <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
     </View>

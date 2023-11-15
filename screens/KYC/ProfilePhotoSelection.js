@@ -1,5 +1,5 @@
 import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { COLORS, SIZES } from '../../constants'
 import { Feather, Ionicons  } from '@expo/vector-icons';
@@ -7,12 +7,15 @@ import { auth, storage } from '../../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
+import { AuthContext } from '../../context/AuthProvider';
 
 const ProfilePhotoSelection = ({navigation, route}) => {
   const accountInfo = route.params.accountInfo;
+  const {logOut} = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [profilePhotoLoading, setProfilePhotoLoading] = useState(false);
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -70,6 +73,13 @@ const ProfilePhotoSelection = ({navigation, route}) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  const sinOut = () => {
+    logOut()
+    .then(() => {
+      navigation.navigate('Login')
+    })
+  };
+
   const nextStep = async () => {
     const userNikName = accountInfo.userName;
     const userProfilePic = profilePhoto;
@@ -91,11 +101,12 @@ const ProfilePhotoSelection = ({navigation, route}) => {
           const users = userCredential.user;
           if (users.uid){
             const newuser = async () => {
-              await axios.post('http://192.168.1.7:5000/addNewUser', {userInfo})
+              await axios.post('http://192.168.0.127:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                   navigation.navigate('Login')
                   alert('Account Created Successfully!');
+                  sinOut();
                 }
               })
             }

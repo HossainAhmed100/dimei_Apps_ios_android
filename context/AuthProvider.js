@@ -42,7 +42,7 @@ const AuthProvider = ({ children }) => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         const email = currentUser?.email; 
         const getUserDataFromMongo = async () => {
-           await axios.get(`http://192.168.1.7:5000/signleUser/${email}`)  
+           await axios.get(`http://192.168.0.127:5000/signleUser/${email}`)  
             .then((res) => {
               setUser(res.data)
               setUserLoding(false);
@@ -56,8 +56,13 @@ const AuthProvider = ({ children }) => {
   
     // Log out User
     const logOut = () => {
-      setUserLoding(true);
-      return signOut(auth);
+      const userEmail = auth?.currentUser?.email; 
+      if(userEmail){
+        setUserLoding(true);
+        return signOut(auth);
+      }else{
+        navigation.navigate('Login')
+      }
     };
   
     // Forgat Password Action

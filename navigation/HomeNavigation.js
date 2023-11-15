@@ -36,6 +36,8 @@ import TransferDevice from '../screens/TransferDevice';
 import DeviceLostScreen from '../screens/DeviceLostScreen';
 import NewDevcieAddTermsandCondition from '../screens/PrivicyPolicy/NewDevcieAddTermsandCondition';
 import ViewDeviceDetails from '../screens/ViewDeviceDetails';
+import Claimownershipagain from '../screens/ClaimOwnerShipAgain/Claimownershipagain';
+import ViewDeviceOwnerInfo from '../screens/ViewDeviceOwnerInfo';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -50,11 +52,33 @@ const HomeNavigation = () => {
         <HomeNav.Screen name="Home2" component={Home} options={{ headerShown: false }}/>
         <HomeNav.Screen name="Device" component={AllDevice} options={{ headerShown: false }}/>
 
+        <HomeNav.Screen name="ViewDeviceOwnerInfo" component={ViewDeviceOwnerInfo}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Device Owner Info',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="Claimownershipagain" component={Claimownershipagain}
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'Claim Ownership',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
         <HomeNav.Screen name="NewDevcieAddTermsandCondition" component={NewDevcieAddTermsandCondition}
           options={{ 
             headerBackVisible: false,
             headerBackTitleVisible: false,
-            title: 'New Device Add Notice',
+            title: 'Terms & Condition',
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
             headerTitleAlign: 'center',
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}

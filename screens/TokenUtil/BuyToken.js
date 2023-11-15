@@ -9,36 +9,19 @@ import { AuthContext } from '../../context/AuthProvider';
 const BuyToken = ({navigation}) => {
   const {user} = useContext(AuthContext);
   const tokenPriceList = [
-    {
-      "tokenQuntaty": 1,
-      "price": 1
-    },
-    {
-      "tokenQuntaty": 3,
-      "price": 2
-    },
-    {
-      "tokenQuntaty": 5,
-      "price": 3
-    },
-    {
-      "tokenQuntaty": 10,
-      "price": 4
-    },
-    {
-      "tokenQuntaty": 30,
-      "price": 5
-    },
-    {
-      "tokenQuntaty": 50,
-      "price": 6
-    }
+    {"tokenQuntaty": 1,"price": 1},
+    {"tokenQuntaty": 3,"price": 2},
+    {"tokenQuntaty": 5,"price": 3},
+    {"tokenQuntaty": 10,"price": 4},
+    {"tokenQuntaty": 30,"price": 5},
+    {"tokenQuntaty": 50,"price": 6}
   ];
 
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [tokenQuantity, setTokenQuantity] = useState(''); // Set default token quantity to empty
   const [totalPrice, setTotalPrice] = useState('');
   const [selectedBox, setSelectedBox] = useState(0); // Track the selected box index
+  const todyDate = new Date().toISOString();
 
   useEffect(() => {
     // Set the default selection and values when the component mounts
@@ -58,7 +41,6 @@ const BuyToken = ({navigation}) => {
     setTotalPrice(quantity)
   };
 
-  
   const handlePriceSelect = (price, index) => {
     setSelectedPrice(price);
     setTokenQuantity(price.tokenQuntaty.toString());
@@ -67,13 +49,32 @@ const BuyToken = ({navigation}) => {
   };
 
   const buyTokenAction = async () =>{
-    const infoData = {tokenQuantity: tokenQuantity, userId: user?._id};
+    const infoData = {
+      userEmail: user?.userEmail,
+      userId: user?._id,
+      buyingTokenQuantity: tokenQuantity,
+      transactionList: [
+        {
+          userId: user?._id,
+          date: todyDate,
+          titleName: "Token Purchase",
+          status: "BUY",
+          userProfilePic: "https://i.ibb.co/qdHZgxr/polygon-matic-card-image.jpg",
+          transtionQuantity: tokenQuantity
+        }
+      ]
+    }
     try{
-      await axios.put("http://192.168.1.7:5000/byToken/", {infoData})
+      await axios.put("http://192.168.0.127:5000/byToken/", {infoData})
       .then((res) => {
-        if (res.data.modifiedCount){
+        if (res.data.modifiedCount === 1){
           alert('Token Added Successfully!');
           navigation.goBack();
+        }else if(res.data.insertedId){
+          alert('Token Added Successfully!');
+          navigation.goBack();
+        }else{
+          alert('Somthing is wrong!');
         }
       })
     }catch{

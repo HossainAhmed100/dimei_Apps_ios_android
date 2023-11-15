@@ -3,18 +3,16 @@ import React, { useContext } from "react";
 import { COLORS, SIZES } from '../constants';
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";
-import { CheckBox } from '@rneui/themed';
 import { useForm, Controller } from "react-hook-form";
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../context/AuthProvider';
 import { format } from 'date-fns';
-
+import { MaterialIcons  } from '@expo/vector-icons';
 
 const TransferDevice =  ({navigation, route}) => {
     const deviceId = route.params.deviceId ;
-    const [checked, setChecked] = React.useState(true);
-    const toggleCheckbox = () => setChecked(!checked);
+    const [checked, setChecked] = useState(false);
     const todyDate = new Date().toISOString();
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}});
     const { user } = useContext(AuthContext);
@@ -22,17 +20,19 @@ const TransferDevice =  ({navigation, route}) => {
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.1.7:5000/getSingleDevice/${deviceId}`);
+        const res = await axios.get(`http://192.168.0.127:5000/getSingleDevice/${deviceId}`);
         return res.data;
         } 
     })
     const { data: itemQuantity = [] } = useQuery({ 
         queryKey: ['itemQuantity', user?.userEmail], 
         queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
+          const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
           return res.data;
         } 
       })
+
+    const toggleCheckbox = () => {setChecked(!checked)};
 
     const onSubmit = async (data) => {
     const ownerEmail = user?.userEmail;
@@ -52,11 +52,11 @@ const TransferDevice =  ({navigation, route}) => {
     const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId, deviceImei}
     const infoData = {deviceId, secretCode}
     if(user){
-    await axios.put(`http://192.168.1.7:5000/devicetransferStatusUpdate/`,{infoData})
+    await axios.put(`http://192.168.0.127:5000/devicetransferStatusUpdate/`,{infoData})
     .then((res) => {
     if (res.data.modifiedCount === 1){
         try{
-            axios.post(`http://192.168.1.7:5000/reciveTransferDevice/`, {transferDeviceInfo})
+            axios.post(`http://192.168.0.127:5000/reciveTransferDevice/`, {transferDeviceInfo})
             .then((res) => {
             if (res.data.acknowledged){
             alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
@@ -122,16 +122,15 @@ const TransferDevice =  ({navigation, route}) => {
                 </View>
                 </View>
             </View>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-            <CheckBox
-            checked={checked}
-            onPress={toggleCheckbox}
-            iconType="material-community"
-            checkedIcon="checkbox-marked"
-            uncheckedIcon="checkbox-blank-outline"
-            checkedColor={COLORS.blue500}
-            />
-            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500}}>terms</Text> and <Text style={{color: COLORS.blue500}}>condition</Text></Text>
+            <View>
+                <TouchableOpacity onPress={toggleCheckbox}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+                    <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+                    <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+                    <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+                </View>
+                </TouchableOpacity>
             </View>
         </View>
         </KeyboardAvoidingView>

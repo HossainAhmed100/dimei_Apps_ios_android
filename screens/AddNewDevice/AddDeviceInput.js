@@ -3,7 +3,6 @@ import { COLORS, SIZES } from '../../constants';
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { ActivityIndicator } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
-import { CheckBox } from '@rneui/themed';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthProvider';
 import { format } from 'date-fns';
@@ -14,15 +13,15 @@ import { Divider } from '@rneui/base';
 import { Controller, useForm } from 'react-hook-form';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
+import { MaterialIcons  } from '@expo/vector-icons';
 
 
 const AddDeviceInput = ({navigation, route}) => {
     const deviceIamge = route.params.deviceIamges;
     const deviceImeiInput = route.params.deviceImeiInput;
-    const [checked, setChecked] = React.useState(true);
+    const [checked, setChecked] = useState(false);
     const todyDate = new Date().toISOString();
     const [firebaseIamge, setFirebaseIamge] = useState([]);
-    const toggleCheckbox = () => setChecked(!checked);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [dropDownValue, setDropDownValue] = useState(null);
@@ -39,11 +38,11 @@ const AddDeviceInput = ({navigation, route}) => {
    const hideAlert = () => {
     setZeroTokenAlert(false)
     };
-  
+    const toggleCheckbox = () => {setChecked(!checked);};
     const { data: devciePreview = []} = useQuery({ 
         queryKey: ['devciePreview', user?.userEmail], 
         queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.7:5000/checkDeviceImeiNum/${deviceImeiInput}`);
+          const res = await axios.get(`http://192.168.0.127:5000/checkDeviceImeiNum/${deviceImeiInput}`);
           return res.data;
         } 
     })
@@ -51,7 +50,7 @@ const AddDeviceInput = ({navigation, route}) => {
     const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
         queryKey: ['itemQuantity', user?.userEmail], 
         queryFn: async () => {
-          const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
+          const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
           return res.data;
         } 
     })
@@ -59,127 +58,137 @@ const AddDeviceInput = ({navigation, route}) => {
     useFocusEffect(
       useCallback(() => {
         if (firstTimeRef.current) {
-           firstTimeRef.current = false;
-           return;
+            firstTimeRef.current = false;
+            return;
         }
         fetchToken()
       }, [fetchToken])
     )
 
-const onSubmit = async (data) => {
-  setLoading(true);
-try {
-    const uploadPromises = deviceIamge.map(async (uri) => {
-      return await uploadImageAsync(uri);
-    });
+    const onSubmit = async (data) => {
+      setLoading(true);
+    try {
+        const uploadPromises = deviceIamge.map(async (uri) => {
+          return await uploadImageAsync(uri);
+        });
 
-    const newFirebaseImages = await Promise.all(uploadPromises);
-    setFirebaseIamge([...newFirebaseImages]);
-    const deviceNote = data.deviceNote;
-    // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-    await addDeviceInDatabase(deviceNote, [...newFirebaseImages]);
+        const newFirebaseImages = await Promise.all(uploadPromises);
+        setFirebaseIamge([...newFirebaseImages]);
+        const deviceNote = data.deviceNote;
+        // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
+        await addDeviceInDatabase(deviceNote, [...newFirebaseImages]);
 
-  } catch (error) {
-    console.error('Error during addDevice:', error);
-  } finally {
-    setLoading(false);
-  }
+      } catch (error) {
+        console.error('Error during addDevice:', error);
+      } finally {
+        setLoading(false);
+      }
 
 
-};
+    };
 
-const addDeviceInDatabase = async (deviceNotes, deviceImgList) => {
-setLoading(true);
-const secretCode = "";
-const haveBoxde = false;
-const daysUsed = todyDate;
-const isDeviceSell = false;
-const deviceStatus = "Good";
-const newOwnerClaim = false;
-const listingDate = todyDate;
-const deviceLostStatus = false;
-const deviceSellingStatus = false;
-const deviceImei = deviceImeiInput;
-const deviceTransferStatus = false;
-const someonefoundthisdevice = false;
-const ownerEmail = user?.userEmail;
-const devcieOrigin = dropDownValue;
-const ownerPhoto = user?.userProfilePic;
-const listingAddress = "Dhaka, Bangladesh";
-const deviceIamges = [{deviceImgList, ownerEmail}];
-const deviceOwnerList = [
-  {
-    ownarStatus: "",
-    ownerPhoto: ownerPhoto,
-    ownerEmail: ownerEmail,
-    deviceNote: deviceNotes,
-    thisIsCurrentOwner: true,
-    ownerName: user?.userName,
-    deviceLostNoteMessage: "",
-    thisIsPreviousOwner: false,
-    deviceOrigin: dropDownValue,
-    deviceListingDate: todyDate,
-    ownerId: user?.userAccountId,
-    deviceTransferDate: todyDate,
-    thisIsUnAuthorizeOwner: false,
-  }
-];   
+    const addDeviceInDatabase = async (deviceNotes, deviceImgList) => {
+    setLoading(true);
+    const secretCode = "";
+    const haveBoxde = false;
+    const daysUsed = todyDate;
+    const isDeviceSell = false;
+    const deviceStatus = "Good";
+    const newOwnerClaim = false;
+    const listingDate = todyDate;
+    const deviceLostStatus = false;
+    const deviceSellingStatus = false;
+    const unauthorizeOwnerQuantity = 0;
+    const deviceImei = deviceImeiInput;
+    const deviceTransferStatus = false;
+    const someonefoundthisdevice = false;
+    const ownerEmail = user?.userEmail;
+    const devcieOrigin = dropDownValue;
+    const ownerPhoto = user?.userProfilePic;
+    const listingAddress = "Dhaka, Bangladesh";
+    const deviceIamges = [{deviceImgList, ownerEmail}];
+    const deviceOwnerList = [
+      {
+        ownarStatus: "",
+        ownerPhoto: ownerPhoto,
+        ownerEmail: ownerEmail,
+        deviceNote: deviceNotes,
+        thisIsCurrentOwner: true,
+        ownerName: user?.userName,
+        deviceLostNoteMessage: "",
+        thisIsPreviousOwner: false,
+        deviceOrigin: dropDownValue,
+        deviceListingDate: todyDate,
+        ownerId: user?.userAccountId,
+        deviceTransferDate: todyDate,
+        thisIsUnAuthorizeOwner: false,
+      }
+    ];   
+    
+    const deviceInfos = {
+      deviceOwnerList, 
+      someonefoundthisdevice, newOwnerClaim, 
+      isDeviceSell, ownerPhoto, secretCode, 
+      devcieOrigin, deviceStatus, listingAddress, 
+      listingDate, daysUsed, deviceImei, haveBoxde, 
+      ownerEmail, deviceTransferStatus, 
+      deviceSellingStatus, deviceLostStatus, 
+      unauthorizeOwnerQuantity, deviceIamges,
+    };
 
-const deviceInfos = {deviceOwnerList, newOwnerClaim, isDeviceSell, ownerPhoto, secretCode, devcieOrigin, deviceStatus, listingAddress, listingDate, daysUsed, deviceImei, haveBoxde, ownerEmail, deviceTransferStatus, deviceSellingStatus, deviceLostStatus, deviceIamges};
-
-try {
-    const response = await axios.post('http://192.168.1.7:5000/addNewDevice', {deviceInfos})
-    if (response.data.isDeviceisExist) {
-        alert('This Devcie is Alredy Added');
-        navigation.navigate('Home');
-    } else if (response.data.acknowledged) {
-        alert('Check your email');
-        navigation.navigate('Home');
-    } else {
-        alert('Device Add Failed');
+    try {
+        const response = await axios.post('http://192.168.0.127:5000/addNewDevice', {deviceInfos})
+        if (response.data.isDeviceisExist) {
+            alert('This Devcie is Alredy Added');
+            navigation.navigate('Home');
+        } else if (response.data.acknowledged) {
+            alert('Check your email');
+            navigation.navigate('Home');
+        } else {
+            alert('Device Add Failed');
+        }
+    } catch (err) {
+        console.error('Error during Add Device To Database:', err);
+        alert('Device Added Feild');
+    } finally {
+        setLoading(false);
     }
-} catch (err) {
-    console.error('Error during Add Device To Database:', err);
-    alert('Device Added Feild');
-} finally {
-    setLoading(false);
-}
 
-};
-
-const uploadImageAsync = async (uri) => {
-  const blob = await new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-      resolve(xhr.response);
     };
-    xhr.onerror = function (e) {
-      console.log(e);
-      reject(new TypeError("Network request failed"));
-    };
-    xhr.responseType = "blob";
-    xhr.open("GET", uri, true);
-    xhr.send(null);
-  });
 
-  try{
-    const fileRef = ref(storage, `image/image-${Date.now()}`);
-    const result = await uploadBytes(fileRef, blob);
-  
-    // We're done with the blob, close and release it
-    blob.close();
-  
-    return await getDownloadURL(fileRef);
-  }catch(error) {
-    console.log(error)
-  }
-};  
+    const uploadImageAsync = async (uri) => {
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+          console.log(e);
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
+      });
 
-const itemsSelect = [
-    {label: "আমি এই ডিভাইসটি নতুন কিনেছি", value: "mynewDevice"},
-    {label: "আমি এই ডিভাইসটি খুজে পেয়েছি", value: "ilostthisdevice"},
-    {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ifoundthisdevice"},
-]
+      try{
+        const fileRef = ref(storage, `image/image-${Date.now()}`);
+        const result = await uploadBytes(fileRef, blob);
+      
+        // We're done with the blob, close and release it
+        blob.close();
+      
+        return await getDownloadURL(fileRef);
+      }catch(error) {
+        console.log(error)
+      }
+    };  
+
+    const itemsSelect = [
+        {label: "আমি এই ডিভাইসটি নতুন কিনেছি", value: "mynewDevice"},
+        {label: "আমি এই ডিভাইসটি খুজে পেয়েছি", value: "ifoundthisdevice"},
+        {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ilostthisdevice"},
+    ]
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
         <View style={{padding: SIZES.small}}>
@@ -231,7 +240,8 @@ const itemsSelect = [
               <Text style={styles.inputTextLabel}>Note *</Text>
               <Controller control={control} rules={{required: true,}}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput style={styles.noteInputBox} multiline={true} numberOfLines={3} placeholder={"Write About Your Devcie "} onBlur={onBlur} onChangeText={onChange} value={value} />
+                  <TextInput style={styles.noteInputBox} multiline={true} numberOfLines={3} 
+                  placeholder={"Write About Your Devcie "} onBlur={onBlur} onChangeText={onChange} value={value} />
                 )}
                 name="deviceNote"
               />
@@ -240,11 +250,7 @@ const itemsSelect = [
             }
             <View>
             <Text style={{color: COLORS.slate500}}>Listing Date *</Text>
-            <TextInput
-                style={styles.inputBox}
-                placeholder="Device Listing Date"
-                value={format(new Date(todyDate), 'yyyy-MM-dd')}
-            />
+            <TextInput style={styles.inputBox} placeholder="Device Listing Date" value={format(new Date(todyDate), 'yyyy-MM-dd')} />
             </View>
             
             {/* <View>
@@ -300,16 +306,15 @@ const itemsSelect = [
               </View>
             }
             
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-            <CheckBox
-            checked={checked}
-            onPress={toggleCheckbox}
-            iconType="material-community"
-            checkedIcon="checkbox-marked"
-            uncheckedIcon="checkbox-blank-outline"
-            checkedColor={COLORS.blue500}
-            />
-            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+            <View>
+              <TouchableOpacity onPress={toggleCheckbox}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+                  <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+                  <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+                  <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+                </View>
+              </TouchableOpacity>
             </View>
         </View>
         <View>
@@ -333,7 +338,7 @@ const itemsSelect = [
           showProgress={false}
           title="Token Alert"
           message="You don't have any Token. Please Buy some Token to continue."
-          closeOnTouchOutside={true}
+          closeOnTouchOutside={false}
           closeOnHardwareBackPress={false}
           showCancelButton={true}
           showConfirmButton={true}

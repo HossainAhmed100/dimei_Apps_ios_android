@@ -58,7 +58,7 @@ const SellingDeviceAction = ({navigation, route}) => {
       newArray.deviceIamges = deviceIamges;
       try {
         const sellingDevInfo = newArray;
-        const response = await axios.post('http://192.168.1.7:5000/addDevcieSellingList', {sellingDevInfo});
+        const response = await axios.post('http://192.168.0.127:5000/addDevcieSellingList', {sellingDevInfo});
     
         if (response.data.acknowledged) {
           alert('Check your email');

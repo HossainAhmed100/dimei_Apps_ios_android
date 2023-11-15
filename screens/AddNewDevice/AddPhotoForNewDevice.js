@@ -35,6 +35,7 @@ const AddPhotoForNewDevice = ({navigation, route}) => {
       setSelectedImages(newImages);
     };
 
+    
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
     <View style={{gap: 10, padding: 10}}>

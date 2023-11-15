@@ -12,15 +12,16 @@ import { Tab, TabView } from '@rneui/themed';
 
 const PrDeviceDetails = ({navigation, route}) => {
   const {user} = useContext(AuthContext);
-  const {width} = useWindowDimensions()
-  const queryClient = useQueryClient()
+  const {width} = useWindowDimensions();
+  const queryClient = useQueryClient();
   const deviceId = route.params.deviceId ;
   const firstTimeRef = useRef(true);
   const [index, setIndex] = useState(0);
+
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -28,11 +29,10 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
+      const res = await axios.get(`http://192.168.0.127:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
       return res.data;
     } 
   })
-  
 
   useFocusEffect(
     useCallback(() => {
@@ -43,12 +43,11 @@ const PrDeviceDetails = ({navigation, route}) => {
       refetch()
     }, [refetch])
   )
-
   const canselTransferDevice = async () => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.1.7:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.0.127:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })
@@ -74,8 +73,17 @@ const PrDeviceDetails = ({navigation, route}) => {
     navigation.navigate('DeviceLostScreen', {deviceId: did})
   }
   const mydevicehasbeenfound = (did) => {
-    navigation.navigate('DeviceLostScreen', {deviceId: did})
+    navigation.navigate('Claimownershipagain', {deviceId: did})
   }
+  const claimownershipagain = (did, unauthorizeOwnerQuantity) => {
+    console.log(did, unauthorizeOwnerQuantity)
+    if(unauthorizeOwnerQuantity > 0){
+      alert("Please Remove the Unauthorise Owner in this devcie")
+    }else{
+      navigation.navigate('Claimownershipagain', {deviceId: did})
+    }
+  }
+
   return (
     <View style={{backgroundColor: COLORS.white500}}>
       <View style={{backgroundColor: COLORS.slate100}}>
@@ -94,116 +102,105 @@ const PrDeviceDetails = ({navigation, route}) => {
       </View>
       }
       <View style={{height: 500}}>
-      <Tab
-        buttonStyle={{
-          paddingHorizontal: 5
-        }}
-        value={index}
-        onChange={(e) => setIndex(e)}
-        indicatorStyle={{
-          backgroundColor: 'white',
-          height: 3,
-        }}
-        variant="primary"
-      >
-    <Tab.Item
-      title="Devcie info"
-      titleStyle={{ fontSize: 12 }}
-    />
-    <Tab.Item
-      title="Action"
-      titleStyle={{ fontSize: 12 }}
-    />
-  </Tab>
+      <Tab buttonStyle={{paddingHorizontal: 5}} value={index} onChange={(e) => setIndex(e)}
+        indicatorStyle={{ backgroundColor: 'white', height: 3, }} variant="primary" >
+        <Tab.Item title="Devcie info" titleStyle={{ fontSize: 12 }} />
+        <Tab.Item title="Action" titleStyle={{ fontSize: 12 }} />
+      </Tab>
 
-  <TabView value={index} onChange={setIndex} animationType="spring">
-    <TabView.Item style={{ width: '100%' }}>
-    <ScrollView>
-      {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList  item={myDevice}/>}
-    </ScrollView>
-    </TabView.Item>
+    <TabView value={index} onChange={setIndex} animationType="spring">
+      <TabView.Item style={{ width: '100%' }}>
+      <ScrollView>
+        {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList  item={myDevice}/>}
+      </ScrollView>
+      </TabView.Item>
 
-    <TabView.Item style={{ width: '100%' }}>
-    {!isLoading && 
-      <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
-      { myDevice?.ownerEmail !== user?.userEmail ? 
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.red200 }]}>
-      <Text style={{color: COLORS.red500, fontSize: 14}}>This is not your Device, see the device owner</Text>
-      <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.red500} />
-      </TouchableOpacity> :
-      <View style={{flexDirection: "column",gap: SIZES.small}}>
+      <TabView.Item style={{ width: '100%' }}>
+      {!isLoading && 
+        <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
+        { myDevice?.ownerEmail !== user?.userEmail ? 
+        <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.red200 }]}>
+        <Text style={{color: COLORS.red500, fontSize: 14}}>This is not your Device, see the device owner</Text>
+        <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.red500} />
+        </TouchableOpacity> :
+        <View style={{flexDirection: "column",gap: SIZES.small}}>
+          {
+          myDevice?.newOwnerClaim ? 
+          <View style={styles.alertMessageContainer}>
+          <Text style={styles.alertRedText}>Someone claimed this device ownership</Text>
+          <MaterialCommunityIcons name="alert-circle-outline" size={SIZES.large} color={COLORS.red500} />
+          </View> : myDevice?.someonefoundthisdevice &&
+          <View style={styles.alertMessageContainer}>
+          <Text style={styles.alertRedText}>Someone found this device. view Owner info</Text>
+          <MaterialCommunityIcons name="alert-circle-outline" size={SIZES.large} color={COLORS.red500} />
+          </View>
+          }
+        <View style={{flexDirection: "column", gap: SIZES.small}}>
+        <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={styles.actionButton}>
+          <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info</Text>
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4}}>
+          {
+          (myDevice?.newOwnerClaim || myDevice?.someonefoundthisdevice) && 
+          <View style={{padding: 5, borderRadius: 5, backgroundColor: COLORS.red200}}>
+          <MaterialCommunityIcons name="account-alert" size={SIZES.medium} color={COLORS.red500} />
+          </View>
+          }
+          <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
+          </View>
+        </TouchableOpacity>
         {
-        myDevice?.newOwnerClaim ? 
-        <View style={styles.alertMessageContainer}>
-        <Text style={styles.alertRedText}>Someone claimed this device ownership</Text>
-        <MaterialCommunityIcons name="alert-circle-outline" size={SIZES.large} color={COLORS.red500} />
-        </View> : myDevice?.someonefoundthisdevice &&
-        <View style={styles.alertMessageContainer}>
-        <Text style={styles.alertRedText}>Someone found this device. view Owner info</Text>
-        <MaterialCommunityIcons name="alert-circle-outline" size={SIZES.large} color={COLORS.red500} />
-        </View>
-        }
-      <View style={{flexDirection: "column", gap: SIZES.small}}>
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={styles.actionButton}>
-        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info</Text>
-        {myDevice?.newOwnerClaim && <View style={{padding: 5, borderRadius: 5, backgroundColor: COLORS.red200}}>
-        <MaterialCommunityIcons name="account-alert" size={SIZES.medium} color={COLORS.red500} />
-        </View>}
-        <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
-      </TouchableOpacity>
-      {
-        !myDevice?.deviceLostStatus &&
-        (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && 
-        (
+          !myDevice?.deviceLostStatus &&
+          (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && 
+          (
           <TouchableOpacity onPress={() => lostThisDevice(deviceId)} style={styles.actionButton}>
           <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>Lost This Device</Text>
           <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500}/>
-        </TouchableOpacity>
-        )
-      }
-      </View>
-      </View>
-      }
-      
+          </TouchableOpacity>
+          )
+        }
+        </View>
+        </View>
+        }
+        
 
-      
-      { myDevice?.ownerEmail === user?.userEmail && 
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
-      
-      {myDevice?.someonefoundthisdevice ? 
-        <TouchableOpacity onPress={() => mydevicehasbeenfound(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-          <Text style={styles.whiteText}>Claim your ownership again</Text>
-          <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity> : myDevice?.deviceLostStatus ? 
-        <TouchableOpacity onPress={() => mydevicehasbeenfound(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-          <Text style={styles.whiteText}>My device has been found</Text>
-          <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity> : myDevice.deviceTransferStatus ? 
-        <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-          <Text style={styles.whiteText}>Cencel Transfer </Text>
-          <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity> : myDevice?.isDeviceSell ? 
-        <TouchableOpacity onPress={() => updateSellingPost(deviceId)} style={[styles.button,{ backgroundColor: COLORS.green500 }]}>
-          <Text style={styles.whiteText}>Update Selling Post </Text>
-          <MaterialCommunityIcons name="square-edit-outline"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity> :
+        
+        { myDevice?.ownerEmail === user?.userEmail && 
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
-        <TouchableOpacity onPress={() => transferDevice(deviceId)}  style={[styles.button,{ backgroundColor: COLORS.blue500 }]}>
-          <Text style={styles.whiteText}>Transfer </Text>
-          <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => sellDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.blue200 }]}>
-        <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
-        <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
-        </TouchableOpacity>
-      </View>
+        
+        {myDevice?.someonefoundthisdevice ? 
+          <TouchableOpacity onPress={() => claimownershipagain(deviceId, myDevice?.unauthorizeOwnerQuantity)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
+            <Text style={styles.whiteText}>Claim your ownership again</Text>
+            <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
+          </TouchableOpacity> : myDevice?.deviceLostStatus ? 
+          <TouchableOpacity onPress={() => mydevicehasbeenfound(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
+            <Text style={styles.whiteText}>My device has been found</Text>
+            <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
+          </TouchableOpacity> : myDevice.deviceTransferStatus ? 
+          <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
+            <Text style={styles.whiteText}>Cencel Transfer </Text>
+            <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
+          </TouchableOpacity> : myDevice?.isDeviceSell ? 
+          <TouchableOpacity onPress={() => updateSellingPost(deviceId)} style={[styles.button,{ backgroundColor: COLORS.green500 }]}>
+            <Text style={styles.whiteText}>Update Selling Post </Text>
+            <MaterialCommunityIcons name="square-edit-outline"  size={SIZES.large} color={COLORS.white500} />
+          </TouchableOpacity> :
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
+          <TouchableOpacity onPress={() => transferDevice(deviceId)}  style={[styles.button,{ backgroundColor: COLORS.blue500 }]}>
+            <Text style={styles.whiteText}>Transfer </Text>
+            <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => sellDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.blue200 }]}>
+          <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
+          <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
+          </TouchableOpacity>
+        </View>
+        }
+        </View>
+        }
+      </View> 
       }
-      </View>
-      }
-    </View> 
-    }
-    </TabView.Item>
-  </TabView>
+      </TabView.Item>
+    </TabView>
       </View>
    
     </View>

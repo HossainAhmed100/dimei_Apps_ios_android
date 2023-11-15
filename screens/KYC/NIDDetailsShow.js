@@ -1,13 +1,14 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { CheckBox } from '@rneui/themed';
 import { COLORS, SIZES } from '../../constants';
 import { useForm, Controller } from "react-hook-form";
+import { MaterialIcons  } from '@expo/vector-icons';
+
 
 const NIDDetailsShow = ({navigation, route}) => {
     const userData = route.params.userData ;
     const [checked, setChecked] = React.useState(true);
-    const toggleCheckbox = () => setChecked(!checked);
+    const toggleCheckbox = () => {setChecked(!checked)};
     const nidData = {
       nidnumber: "5154895645", 
       usernidname: "Hossain Ahmed", 
@@ -30,7 +31,6 @@ const NIDDetailsShow = ({navigation, route}) => {
       const userDetails = {nidData, ...userData};
       navigation.navigate('AditionalEnfoSelection', {userDetails})
     }
-
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
      <View style={{flex: 1, alignItems: "center", paddingVertical: SIZES.small}}>
@@ -105,29 +105,28 @@ const NIDDetailsShow = ({navigation, route}) => {
             />
           {errors.userPassword && <Text style={{color: COLORS.red500}}>Your Parmanent Addres is required.</Text>}
           </View>
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-end"}}>
-          <CheckBox
-          checked={checked}
-          onPress={toggleCheckbox}
-          iconType="material-community"
-          checkedIcon="checkbox-marked"
-          uncheckedIcon="checkbox-blank-outline"
-          checkedColor={COLORS.blue500}
-          />
-          <Text>Same as Present Address</Text>
+          <View>
+            <TouchableOpacity onPress={toggleCheckbox}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+                <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+                <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+                <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+              </View>
+            </TouchableOpacity>
           </View>
     </View>
     </View>
     <View style={{position: "absolute", bottom: 0, width: "100%"}}>
     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
-    <TouchableOpacity onPress={() => navigation.goBack()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>BACK</Text>
+    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.actionBtn}>
+        <Text style={styles.actionBtnText}>BACK</Text>
     </TouchableOpacity>
     <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}> 
     <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>2/3</Text>
     </View>
-    <TouchableOpacity activeOpacity={.7} onPress={handleSubmit(onSubmit)} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>NEXT</Text>
+    <TouchableOpacity activeOpacity={.7} onPress={handleSubmit(onSubmit)} style={styles.actionBtn}>
+        <Text style={styles.actionBtnText}>NEXT</Text>
     </TouchableOpacity>
     </View>
     </View>
@@ -137,16 +136,28 @@ const NIDDetailsShow = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   inputBox: {
-    paddingVertical: 6,
     width: 300,
+    fontSize: 16,
+    paddingVertical: 6,
     borderBottomWidth: 1,
-    borderColor: COLORS.slate500,
     color: COLORS.slate500,
-    fontSize: 16
+    borderColor: COLORS.slate500,
   },
   inputTextLabel: {
+    fontSize: 12,
     color: COLORS.slate400,
-    fontSize: 12
+  },
+  actionBtn: {
+    alignItems: "center", 
+    justifyContent: "center", 
+    paddingHorizontal: SIZES.large, 
+    paddingVertical: SIZES.medium
+  },
+  actionBtnText: {
+    fontWeight: 500, 
+    color: COLORS.white500, 
+    fontSize: SIZES.medium,
+    borderRadius: SIZES.small
   }
 })
 

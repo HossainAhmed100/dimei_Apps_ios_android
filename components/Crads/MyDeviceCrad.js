@@ -11,6 +11,7 @@ const MyDeviceCrad = ({item, viewMyDeviceDetails}) => {
       borderColor: item?.deviceTransferStatus ? COLORS.blue200 : 
       item?.isDeviceSell ? COLORS.green200 : 
       item?.newOwnerClaim ? COLORS.red200 : 
+      item?.someonefoundthisdevice ? COLORS.red200 : 
       item?.deviceLostStatus ? COLORS.red200 : COLORS.slate100}]}>
     {item?.devicePicture &&  
     <Image source={{ uri: item?.devicePicture }} width={120} height={140} resizeMode="cover" style={{ borderRadius: 4, marginRight: 10, }} />}
@@ -33,13 +34,15 @@ const MyDeviceCrad = ({item, viewMyDeviceDetails}) => {
        
         <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item?.modelName}</Text>
         <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4}}>
-        {!item?.newOwnerClaim ? 
-          <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.green200, borderRadius: 4}}>
-            <Text style={{color: COLORS.green500, fontSize: SIZES.xSmall}}>Active</Text>
-          </View>  : 
+        {item?.newOwnerClaim ?
           <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.red200, borderRadius: 4}}>
             <Text style={{color: COLORS.red500, fontSize: SIZES.xSmall}}>Rejcted</Text>
-          </View>  
+          </View> : item?.someonefoundthisdevice ?
+           <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.red200, borderRadius: 4}}>
+           <Text style={{color: COLORS.red500, fontSize: SIZES.xSmall}}>Rejcted</Text>
+         </View> : <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.green200, borderRadius: 4}}>
+           <Text style={{color: COLORS.green500, fontSize: SIZES.xSmall}}>Active</Text>
+          </View>
         }
         <View style={{paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.blue200, borderRadius: 4}}>
         {item?.daysUsed && <Text style={{color: COLORS.blue500, fontSize: SIZES.xSmall}}>{formatDistanceToNow(new Date(item?.daysUsed))}</Text>}

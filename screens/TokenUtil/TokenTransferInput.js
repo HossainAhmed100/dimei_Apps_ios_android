@@ -1,19 +1,56 @@
 import { ActivityIndicator, ImageBackground, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { COLORS, SIZES, images } from '../../constants';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-const TokenTransferInput = () => {
+import { AuthContext } from '../../context/AuthProvider';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { useFocusEffect } from '@react-navigation/native';
+
+const TokenTransferInput = ({navigation}) => {
+    const {user} = useContext(AuthContext);
     const [email, setEmail] = useState('');
+    const firstTimeRef = useRef(true);
     const [loading, setLoading] = useState(false);
-    const signIn = async () => {
-        setLoading(true) 
+    const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
+
+    const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
+        queryKey: ['itemQuantity', user?.userEmail], 
+        queryFn: async () => {
+          const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
+          return res.data;
+        } 
+    })
+
+    useFocusEffect(
+    useCallback(() => {
+        if (firstTimeRef.current) {
+            firstTimeRef.current = false;
+            return;
+        }
+        fetchToken()
+    }, [fetchToken])
+    )
+    
+   const showAlert = () => {
+    setZeroTokenAlert(true)
     };
+  
+   const hideAlert = () => {
+    setZeroTokenAlert(false)
+    };
+
+    const onSubmit = async (data) => {console.log(data)};
+
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
     <ImageBackground source={images.patterns} style={{resizeMode: 'contain', justifyContent: "center", padding: SIZES.medium, borderBottomRightRadius: 15,borderBottomLeftRadius: 15, overflow: "hidden"}}>
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
       <Text style={{fontSize: SIZES.medium, color: COLORS.blue100}}>Total Token</Text>
-      <Text style={{fontSize: 25, color: COLORS.white500, fontWeight: 700}}>29</Text>
+      <Text style={{fontSize: 25, color: COLORS.white500, fontWeight: 700}}>
+        {itemQuantity ? itemQuantity?.tokenQuantity : <ActivityIndicator />}
+      </Text>
       </View>
       </ImageBackground>
     <View style={{padding: SIZES.small}}>
@@ -88,12 +125,40 @@ const TokenTransferInput = () => {
 
     <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 10, paddingHorizontal: SIZES.small }}>
         {
-        loading ? <TouchableOpacity style={styles.loginBtn}> 
-        <ActivityIndicator size="small" color={COLORS.white500}/> 
-        </TouchableOpacity> : <TouchableOpacity onPress={() => signIn()} style={styles.loginBtn} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm </Text>
-        </TouchableOpacity>
+        isLoading ? <TouchableOpacity style={styles.loginBtn}> 
+        <ActivityIndicator color={COLORS.white500}/> 
+        </TouchableOpacity> :
+        itemQuantity?.tokenQuantity === 0 ? 
+        <TouchableOpacity onPress={() => showAlert()} style={[styles.loginBtn, {opacity: 0.5}]} >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        </TouchableOpacity> : loading ?
+        <TouchableOpacity style={styles.loginBtn}> 
+        <ActivityIndicator color={COLORS.white500}/> 
+        </TouchableOpacity> :
+        <TouchableOpacity onPress={() => onSubmit("OnSubmit")} style={styles.loginBtn} >
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        </TouchableOpacity> 
         }
+        <AwesomeAlert
+          show={zeroTokenAlert}
+          showProgress={false}
+          title="Token Alert"
+          message="You don't have any Token. Please Buy some Token to continue."
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="Close"
+          confirmText="Buy now"
+          confirmButtonColor={COLORS.blue500}
+          onCancelPressed={() => {
+            hideAlert();
+          }}
+          onConfirmPressed={() => {
+            navigation.navigate('BuyToken');
+            hideAlert();
+          }}
+        />
     </View>
     </View>
   )

@@ -6,15 +6,14 @@ import { AuthContext } from '../../context/AuthProvider';
 import { useForm, Controller } from "react-hook-form";
 import { COLORS, SIZES } from '../../constants';
 import { format } from 'date-fns';
-import { CheckBox } from '@rneui/themed';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
+import { MaterialIcons  } from '@expo/vector-icons';
 
 
 const VerifyDeviceAcceft = ({navigation, route})  => {
     const transferDeviceId = route.params.transferDeviceId;
-    const [checked, setChecked] = React.useState(true);
-    const toggleCheckbox = () => setChecked(!checked);
+    const [checked, setChecked] = useState(false);
     const [acceptStatus, setAcceptStatus] = useState("");
     const [loading, setLoading] = useState(false);
     const { user } = useContext(AuthContext);
@@ -23,6 +22,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
     const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceSecrentCode: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}})
     
+    const toggleCheckbox = () => {setChecked(!checked)};
     const showAlert = () => {setZeroTokenAlert(true)};
     
     const hideAlert = () => {setZeroTokenAlert(false)};
@@ -30,7 +30,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const { data: itemQuantity = [], refetch } = useQuery({ 
       queryKey: ['itemQuantity', user?.userEmail], 
       queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/useritemQuantity/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
       return res.data;
       } 
     })
@@ -38,7 +38,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const { isLoading, data: acceptDevice = [], refetch: refetchAcceptDevice } = useQuery({ 
       queryKey: ['acceptDevice', transferDeviceId], 
       queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/getTransferDeviceDetails/${transferDeviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/getTransferDeviceDetails/${transferDeviceId}`);
       return res.data;
       } 
     })
@@ -64,7 +64,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const acceptDeviceInfo = {secretCode, deviceId, devicereciverEmail, transferDeviceId, newDeviceOwner, previusDeviceOwner};
     
     try{
-        await axios.put(`http://192.168.1.7:5000/verifydeviceAccept/`, {acceptDeviceInfo})
+        await axios.put(`http://192.168.0.127:5000/verifydeviceAccept/`, {acceptDeviceInfo})
         .then((res) => {
             if(res.data.modifiedCount === 1){
                 setLoading(false)
@@ -144,17 +144,16 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
             </View>
         </View>
         </View>
-        <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-            <CheckBox
-            checked={checked}
-            onPress={toggleCheckbox}
-            iconType="material-community"
-            checkedIcon="checkbox-marked"
-            uncheckedIcon="checkbox-blank-outline"
-            checkedColor={COLORS.blue500}
-            />
-             <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500}}>terms</Text> and <Text style={{color: COLORS.blue500}}>condition</Text></Text>
-        </View>
+        <View>
+        <TouchableOpacity onPress={toggleCheckbox}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+            <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+            <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+            <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+          </View>
+        </TouchableOpacity>
+      </View>
         { itemQuantity?.tokenQuantity === 0 && 
         <View style={{padding: 10, borderRadius: 10, backgroundColor: COLORS.red200}}>
           <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import 'react-native-get-random-values';
 import { MaterialCommunityIcons  } from '@expo/vector-icons';
@@ -9,10 +9,8 @@ import { AntDesign } from '@expo/vector-icons';
 import { storage } from '../../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useQuery } from "@tanstack/react-query";
-import { useFocusEffect } from '@react-navigation/native';
 import { Divider } from '@rneui/themed';
 import { useForm, Controller } from "react-hook-form";
-import { CheckBox } from '@rneui/themed';
 
 
 const UpdateSellingPost = ({navigation, route}) => {
@@ -24,7 +22,7 @@ const UpdateSellingPost = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.1.7:5000/updateDevicesellingPost/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.127:5000/updateDevicesellingPost/${deviceId}`);
       return res.data;
     } 
   });
@@ -58,7 +56,7 @@ const UpdateSellingPost = ({navigation, route}) => {
   }
    };
 
-  const transferToDeviceDattaBase = async (deviceIamges) => {
+  const transferToDeviceDattaBase = async (deviceIamges, deviceInfo) => {
     setLoading(true);
     const createdAt = new Date().toISOString();
     const newArray = deviceInfo;
@@ -66,7 +64,7 @@ const UpdateSellingPost = ({navigation, route}) => {
     newArray.deviceIamges = deviceIamges;
     try {
       const sellingDevInfo = newArray;
-      const response = await axios.post('http://192.168.1.7:5000/addDevcieSellingList', {sellingDevInfo});
+      const response = await axios.post('http://192.168.0.127:5000/addDevcieSellingList', {sellingDevInfo});
   
       if (response.data.acknowledged) {
         alert('Check your email');
@@ -119,7 +117,7 @@ const UpdateSellingPost = ({navigation, route}) => {
 
    const deleteThisPost = async (deviceId) => {
     try {
-      await axios.delete(`http://192.168.1.7:5000/deleteDevcieSellingPost/${deviceId}`)
+      await axios.delete(`http://192.168.0.127:5000/deleteDevcieSellingPost/${deviceId}`)
       .then((res) => {
         if(res.data.transferSuccess){
           navigation.navigate('Home')
