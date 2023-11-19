@@ -107,11 +107,13 @@ const AddDeviceInput = ({navigation, route}) => {
     const ownerPhoto = user?.userProfilePic;
     const listingAddress = "Dhaka, Bangladesh";
     const deviceIamges = [{deviceImgList, ownerEmail}];
+    const devcieOwnerSecretOTP = Math.floor(100000 + Math.random() * 900000);
     const deviceOwnerList = [
       {
         ownarStatus: "",
         ownerPhoto: ownerPhoto,
         ownerEmail: ownerEmail,
+        deviceImei: deviceImei,
         deviceNote: deviceNotes,
         thisIsCurrentOwner: true,
         ownerName: user?.userName,
@@ -122,6 +124,7 @@ const AddDeviceInput = ({navigation, route}) => {
         ownerId: user?.userAccountId,
         deviceTransferDate: todyDate,
         thisIsUnAuthorizeOwner: false,
+        devcieOwnerSecretOTP: devcieOwnerSecretOTP,
       }
     ];   
     

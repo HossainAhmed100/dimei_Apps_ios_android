@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native'
+import { FlatList, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native'
 import React, { useContext, useState } from 'react'
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -7,7 +7,8 @@ import { COLORS, SIZES } from '../constants';
 import { Entypo,Feather  } from '@expo/vector-icons';
 import { format, formatDistanceToNow } from 'date-fns';
 import { AuthContext } from '../context/AuthProvider';
-
+import { ActivityIndicator } from 'react-native';
+import { useForm, Controller } from "react-hook-form";
 
 const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   const {user} = useContext(AuthContext);
@@ -17,6 +18,8 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   const deviceOwnerEmail = paramsInfo?.ownerEmail;
   const {width} = useWindowDimensions();
   const [showUnauthorizedCode, setShowUnauthorizedCode] = useState(false);
+  const [removeOwnerBtnLoading, setRemoveOwnerBtnLoading] = useState(false);
+  const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {secretCodeForRemoveOwner: ""},})
 
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, ownerInfo?.ownerEmail], 
@@ -26,13 +29,45 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
     } 
   })
 
-  const formattedDate = (date) => {
-    const distance = formatDistanceToNow(new Date(date));
-    const formatted = format(new Date(date), "MMMM d, yyyy h:mm a"); // Adjust the format as needed
-    return `${distance} - ${formatted}`;
-  };
+  const formattedDate = (date) => (
+    <Text style={styles.dateText}>
+      {formatDistanceToNow(new Date(date))} - {format(new Date(date), "MMMM d, yyyy h:mm a")}
+    </Text>
+  );
+  
+  
+  
+  const onSubmit = async (data) => {
+    const {ownerEmail, deviceImei, thisIsUnAuthorizeOwner} = ownerInfo;
+    const secretCodeForRemoveOwner = data.secretCodeForRemoveOwner;
+    const ownerDetails = {ownerEmail, deviceImei, thisIsUnAuthorizeOwner, secretCodeForRemoveOwner};
+    setRemoveOwnerBtnLoading(true)
+    console.log("🚀 ~ file: ViewDeviceOwnerInfo.js:45 ~ onSubmit ~ ownerDetails:", ownerDetails)
+    try {
+      const res = await axios.delete(`http://192.168.0.127:5000/deleteUnauthorizedOwner`, {params: { ownerDetails }});
+      if(res.data.ownerDeletedSuccess){
+        alert("Unauthorized Owner Remove Successfully")
+        navigation.popToTop();
+      }else if(res.data.unauthorizeOwnerQuantityIsZero){
+        alert("Unauthorized Quantity is 0")
+      }else if(res.data.secretCodeisWrong){
+        alert("Unauthorized Owner OTP is Wrong")
+      }else if(res.data.thisIsNotUnauthorizedOwner){
+        alert("Unauthorized Owner OTP is Wrong")
+      }else if(res.data.ownerRemoveFeilds){
+        alert("Somthing is Wrong!")
+      }else{
+        console.log(res.data);
+      }
+      setRemoveOwnerBtnLoading(false)
+    } catch (error) {
+      setRemoveOwnerBtnLoading(false)
+      console.error(error);
+    }
+  }
+
   return (
-    <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
         <View style={{backgroundColor: COLORS.slate100}}>
             {devciePhotos && <ImageSilderShow devciePhotos={devciePhotos} width={width}/>}
             <Divider />
@@ -62,15 +97,10 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
             <Divider />  
             <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
             <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
-              <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>Listing Date</Text>
-              {ownerInfo?.deviceTransferDate ? <Text style={styles.dateText}>{formattedDate(ownerInfo?.deviceTransferDate)}</Text>: <ActivityIndicator />}
-            </View>
-            <Divider /> 
-            <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
               <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>
                 {ownerInfo?.thisIsPreviousOwner ? "Transfer Date" : ownerInfo?.thisIsCurrentOwner ? "Received Date" : "Unauthorized Listing Date"}
               </Text>  
-              {ownerInfo?.deviceTransferDate ? <Text style={styles.dateText}>{formattedDate(ownerInfo?.deviceTransferDate)}</Text>: <ActivityIndicator />}
+              {ownerInfo?.deviceTransferDate ? formattedDate(ownerInfo?.deviceTransferDate): <ActivityIndicator />}
             </View>
             <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
               <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>Owner Message</Text>
@@ -80,22 +110,36 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
             { 
             ownerInfo?.thisIsUnAuthorizeOwner && 
             user?.userEmail === deviceOwnerEmail ? 
-            ownerInfo?.thisIsCurrentOwner ? <Text></Text> :
+            ownerInfo?.thisIsCurrentOwner ? <View></View> :
+            <KeyboardAvoidingView>
             <View style={{backgroundColor: COLORS.red100, borderRadius: 4, borderWidth:2, borderColor: COLORS.red200}}>
             <View style={{paddingVertical: 15, paddingHorizontal: 10}}>
             <Text style={{fontSize: 14, fontWeight: 600, color: "#CB4242"}}>Denger Zone</Text>
             </View>
             <Divider />
             <View style={{paddingVertical: 15, paddingHorizontal: 10, flexDirection: "column", gap: 5}}>
-            <Text style={{fontSize: 14, fontWeight: 600, color: COLORS.slate300}}>Delete The Unauthorize Owner</Text>
-            <View style={{ flexDirection: "row", gap: 10}}>
-            <TextInput placeholder='Type Unauthorized Owner OTP' style={{padding: 10, borderRadius: 4, borderWidth:2, borderColor: COLORS.red200, flex: 1}}/>
-            <TouchableOpacity style={{borderRadius: 4 ,backgroundColor: COLORS.red500, alignItems: "center", justifyContent: "center", width: 80}}>
-            <Text style={{color: COLORS.white500, fontWeight: 500}}>Confirm</Text>
+            <View>
+            <Text>Remove Unauthorized Owner</Text>
+            <Controller control={control} rules={{required: true,}}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput style={styles.inputBox} placeholder='Type Unauthorized Owner OTP' onBlur={onBlur} onChangeText={onChange} value={value} />
+                )}
+                name="secretCodeForRemoveOwner"
+              />
+            {errors.secretCodeForRemoveOwner && <Text style={{color: COLORS.red500}}>Unauthorized Owner OTP required.</Text>}
+            </View>
+            
+            {removeOwnerBtnLoading ? 
+            <TouchableOpacity style={styles.ownerRemoveBtn}>
+              <ActivityIndicator size="small" color="#ffffff"/>
+            </TouchableOpacity> :
+            <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.ownerRemoveBtn}>
+            <Text style={{color: COLORS.white500, fontWeight: 500}}>Remove</Text>
             </TouchableOpacity>
+            }
             </View> 
-            </View> 
-            </View>  : 
+            </View>
+            </KeyboardAvoidingView>   : 
             (user?.userEmail === ownerInfo?.ownerEmail && ownerInfo?.thisIsUnAuthorizeOwner) ?
             <View style={{backgroundColor: COLORS.red200, borderRadius: 4}}>
             <View style={{paddingVertical: 15, paddingHorizontal: 10}}>
@@ -115,10 +159,10 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
             </View> 
             </View> 
             </View>  :
-            <Text></Text>
+            <View></View>
             }
         </View>   
-    </View>
+    </ScrollView>
   )
 }
 
@@ -151,20 +195,48 @@ const DevcieOriginText = ({item}) => {
 }
 
 const styles = StyleSheet.create({
-    ownerAlertBg:{paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6},
-  ownerAlertText:{fontSize: 12, fontWeight: 500},
-    dateText:{fontSize: 14, color: "#808080", fontWeight: "400"},
-    deviceOriginText: {
-        color: COLORS.slate300, 
-        fontSize: 14
-    },
-    deviceOriginBox: {
-        backgroundColor: COLORS.slate100, 
-        padding: 10, borderRadius: 4, 
-        flexDirection: "row", 
-        alignItems: "center", 
-        justifyContent: "flex-start",
-        gap: 6
-    },
+  inputBox: {
+    marginTop: 6,
+    borderWidth: 1,
+    borderRadius: 6,
+    borderColor: COLORS.slate200,
+    paddingVertical: SIZES.xSmall,
+    paddingHorizontal: SIZES.medium,
+  },
+  ownerAlertBg:{
+    borderRadius: 6,
+    paddingVertical: 6, 
+    paddingHorizontal: 12, 
+  },
+  ownerAlertText:{
+    fontSize: 12, 
+    fontWeight: 500
+  },
+  dateText:{
+    fontSize: 14, 
+    color: "#808080", 
+    fontWeight: "400"
+  },
+  deviceOriginText: {
+    fontSize: 14,
+    color: COLORS.slate300, 
+  },
+  deviceOriginBox: {
+    gap: 6,
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "flex-start",
+    padding: 10, borderRadius: 4, 
+    backgroundColor: COLORS.slate100, 
+  },
+  ownerRemoveBtn:{
+    width: 100,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 6,
+    paddingVertical: SIZES.xSmall,
+    backgroundColor: COLORS.red500, 
+    paddingHorizontal: SIZES.medium,
+  }
 });
 export default ViewDeviceOwnerInfo;
