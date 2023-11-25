@@ -131,11 +131,6 @@ const PhoneDetailsList = ({item}) => (
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>3.5 mm jack :</Text>
-    <Text>{item?.threePointFive_mm_jack ? "Yes" : "No"}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
     <Text>Chipset :</Text>
     <Text>{item?.Chipset}</Text>
     </View>
@@ -148,11 +143,6 @@ const PhoneDetailsList = ({item}) => (
     <View style={styles.listItem}>
     <Text>Battery :</Text>
     <Text>{item.battery} {item?.batteryRemovable ? "(removable)" : "(non-removable)"}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Days Used :</Text>
-    {item?.daysUsed ? <Text>{formatDistanceToNow(new Date(item?.daysUsed))}</Text> : <ActivityIndicator />}
     </View>
     <Divider />
   </View>

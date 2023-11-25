@@ -9,7 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 
 const SellingDeviceDetails = ({navigation, route}) => {
-    const {width} = useWindowDimensions()
+  const {width} = useWindowDimensions();
   const deviceId = route.params.deviceId;
   const firstTimeRef = useRef(true)
 
@@ -49,20 +49,21 @@ const SellingDeviceDetails = ({navigation, route}) => {
 
   }
   
+  const devicePrice = myDevice?.devciePrice;
+  const formattedPrice = devicePrice?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   return (
     <View>
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
     
-    {
-    myDevice?.deviceIamges && 
+    {myDevice?.deviceIamges && 
     <ImageSilderShow myDevice={myDevice} width={width}/>
     }
     <Divider />
     <View>
     <View style={{padding: 10, gap: 4, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
     <View>
-    <Text style={{fontSize: SIZES.large, color: COLORS.slate500, fontWeight: 600}}>Tk. {myDevice?.devciePrice}</Text>
+    <Text style={{fontSize: SIZES.large, color: COLORS.slate500, fontWeight: 600}}>Tk. {formattedPrice}</Text>
     <Text style={{fontSize: SIZES.medium, color: COLORS.slate300, fontWeight: 600}}>{myDevice?.sellingTitle}</Text>
     </View>
     <Pressable style={{backgroundColor: COLORS.slate100, borderRadius: 10, padding: 10, alignItems: "center", justifyContent: "center"}}>
@@ -102,7 +103,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
       <View style={{position: "absolute", bottom: 0, width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1, padding: 10}}>
         <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}>
         <Text style={{color: COLORS.blue200, fontSize: SIZES.xSmall}}>Price</Text>
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 700}}>৳{myDevice?.devciePrice} Taka</Text>
+        <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 700}}>৳{formattedPrice} Taka</Text>
         </View>
         <View style={{flexDirection: "row", gap: 10, marginRight: 10}}>
         <TouchableOpacity onPress={() => clickToPhoneCall("01850563626")} style={styles.bottonActionBtn}>
@@ -155,6 +156,7 @@ const PhoneDetailsList = ({item}) => (
 const ImageSilderShow = ({myDevice, width}) => (
   <FlatList
       horizontal
+      showsHorizontalScrollIndicator={false}
       data={myDevice?.deviceIamges}
       keyExtractor={(item, index) => `${index}`}
       renderItem={({ item }) => (

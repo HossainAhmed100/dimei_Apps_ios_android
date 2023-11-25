@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { Feather, Ionicons  } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS, SIZES, images } from '../../constants';
@@ -16,14 +16,16 @@ const NIDPhotoUpload = ({navigation, route}) => {
     const [frontNidImageLoding, setFrontNidImageLoding] = useState(false);
     const [backNidImageLoding, setBackNidImageLoding] = useState(false);
     const [selectFrontSideNid, setselectFrontSideNid] = useState(null);
-    const [selectBackSideNid, setselectBackSideNid] = useState(null)
+    const [selectBackSideNid, setselectBackSideNid] = useState(null);
+
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           aspect: [3, 2],
           quality: 1,
-        });
+        }); 
+
         if (!result.canceled) {
           setFrontNidImageLoding(true)
           setselectFrontSideNid(result.assets[0].uri);
@@ -38,7 +40,7 @@ const NIDPhotoUpload = ({navigation, route}) => {
             setFrontNidImageLoding(false)
           }, 2000);
         }
-      };
+    };  
 
     const pickBackSideImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -47,6 +49,7 @@ const NIDPhotoUpload = ({navigation, route}) => {
         aspect: [3, 2],
         quality: 1,
       });
+
       if (!result.canceled) {
         setBackNidImageLoding(true)
         setselectBackSideNid(result.assets[0].uri);
@@ -100,61 +103,122 @@ const NIDPhotoUpload = ({navigation, route}) => {
 
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-    <View style={{flex: 1, justifyContent: "center"}}>
-      <View style={{marginTop: SIZES.medium}}>
-      <Text style={{fontSize: SIZES.large, color: COLORS.slate600, fontWeight: 500, textAlign: "center"}}>Please Verify Your</Text>
-      <Text style={{fontSize: SIZES.large, color: COLORS.slate600, fontWeight: 500, textAlign: "center"}}>National NID Card</Text>
+      <View style={{flex: 1, justifyContent: "center"}}>
+        <View style={{marginTop: SIZES.medium}}>
+          <Text style={styles.headerTitle}>Please Verify Your</Text>
+          <Text style={styles.headerTitle}>National NID Card</Text>
+        </View>
+        <Text style={styles.nidCardTitle}>Scan the front side of NID card with camera</Text>
+        <View style={styles.nidCardContainer}>
+        {selectFrontSideNid ? 
+          <Image source={{uri: selectFrontSideNid }}  style={styles.nidCardImage}/> : 
+          <Image source={images.frontNid} style={styles.nidCardImage}/>
+        }
+        {frontNidImage ? 
+          <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={styles.nidRemoveBtn}>
+            <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300}/>
+          </TouchableOpacity> : 
+          <TouchableOpacity onPress={pickImage}  style={styles.nidCameraBtn}>
+            {frontNidImageLoding ? 
+              <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
+              <Feather name="camera" size={24} color={COLORS.white500} />}
+          </TouchableOpacity>
+        }
+        </View>
+        <Text style={styles.nidCardTitle}>Scan the front side of NID card with camera</Text>
+        <View  style={styles.nidCardContainer}>
+          {selectBackSideNid ? 
+            <Image source={{ uri: selectBackSideNid }}  style={styles.nidCardImage}/> : 
+            <Image source={images.backnid} style={styles.nidCardImage}/>}
+            {backsideNidPhoto ? 
+              <TouchableOpacity onPress={() =>  setBacksideNidPhoto(null)}  style={styles.nidRemoveBtn}>
+                <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300} />
+              </TouchableOpacity>  : 
+              <TouchableOpacity onPress={pickBackSideImage}  style={styles.nidCameraBtn}>
+                {backNidImageLoding ? 
+                  <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
+                  <Feather name="camera" size={24} color={COLORS.white500} />}
+              </TouchableOpacity>
+          }
+        </View>
       </View>
-      <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
-
-      <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      {selectFrontSideNid ? <Image source={{uri: selectFrontSideNid }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> : 
-      <Image source={images.frontNid} style={{width: "100%", height: 180, borderRadius: 10}}/>}
-      
-      {frontNidImage ? <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
-      <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300}/>
-      </TouchableOpacity>  : <TouchableOpacity onPress={pickImage}  style={{width: 50, height: 50, backgroundColor: COLORS.blue500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 20, right:SIZES.large}}>
-      {frontNidImageLoding ? <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : <Feather name="camera" size={24} color={COLORS.white500} />}
-      </TouchableOpacity>
-      }
-      
+      <View style={{position: "absolute", bottom: 0, width: "100%"}}>
+        <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.bottomActionBtn}>
+            <Text style={styles.bottomNavigationBtnText}>BACK</Text>
+          </TouchableOpacity>
+          <View> 
+            <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>1/3</Text>
+          </View>
+          {
+            (frontNidImage && backsideNidPhoto) ?
+            <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={styles.bottomActionBtn}>
+              <Text style={styles.bottomNavigationBtnText}>NEXT</Text>
+            </TouchableOpacity> :
+            <TouchableOpacity activeOpacity={.7} style={styles.bottomActionBtn}>
+              <Text style={{color: COLORS.slate200, fontWeight: 500, fontSize: SIZES.medium}}>NEXT</Text>
+            </TouchableOpacity>
+          }
+        </View>
       </View>
-
-      <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
-
-      <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      {selectBackSideNid ? <Image source={{ uri: selectBackSideNid }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> : 
-      <Image source={images.backnid} style={{width: "100%", height: 180, borderRadius: 10}}/>}
-      {backsideNidPhoto ? <TouchableOpacity onPress={() =>  setBacksideNidPhoto(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
-      <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300} />
-      </TouchableOpacity>  : <TouchableOpacity onPress={pickBackSideImage}  style={{width: 50, height: 50, backgroundColor: COLORS.blue500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 20, right:SIZES.large}}>
-      {backNidImageLoding ? <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : <Feather name="camera" size={24} color={COLORS.white500} />}
-      </TouchableOpacity>
-      }
-      </View>
-
-    </View>
-    <View style={{position: "absolute", bottom: 0, width: "100%"}}>
-    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
-    <TouchableOpacity onPress={() => navigation.goBack()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>BACK</Text>
-    </TouchableOpacity>
-    <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}> 
-    <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>1/3</Text>
-    </View>
-    {
-      (frontNidImage && backsideNidPhoto) ?
-      <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium}}>NEXT</Text>
-      </TouchableOpacity> :
-      <TouchableOpacity activeOpacity={.7} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-      <Text style={{color: COLORS.slate200, fontWeight: 500, fontSize: SIZES.medium}}>NEXT</Text>
-      </TouchableOpacity>
-    }
-    </View>
-    </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  headerTitle:{
+    fontWeight: 500, 
+    textAlign: "center",
+    fontSize: SIZES.large, 
+    color: COLORS.slate600, 
+  },
+  nidCardImage:{
+    height: 210, 
+    width: "100%", 
+    borderRadius: 10,
+  },
+  nidCardTitle:{
+    textAlign: "center", 
+    color: COLORS.slate300, 
+    marginTop: SIZES.medium,
+  },
+  bottomNavigationBtnText:{
+    fontWeight: 500, 
+    fontSize: SIZES.medium,
+    color: COLORS.white500, 
+  },
+  nidCardContainer:{
+    paddingVertical: SIZES.large,
+    paddingHorizontal: SIZES.medium, 
+  },
+  bottomActionBtn:{
+    alignItems: "center", 
+    justifyContent: "center", 
+    paddingVertical: SIZES.medium,
+    paddingHorizontal: SIZES.large, 
+  },
+  nidCameraBtn:{
+    width: 50, 
+    bottom: 20, 
+    height: 50, 
+    borderRadius: 50, 
+    right:SIZES.large,
+    alignItems: "center", 
+    position: "absolute", 
+    justifyContent: "center", 
+    backgroundColor: COLORS.blue500, 
+  },
+  nidRemoveBtn:{
+    top: 30, 
+    right:24,
+    width: 35, 
+    height: 35, 
+    borderRadius: 50, 
+    position: "absolute", 
+    alignItems: "center", 
+    justifyContent: "center", 
+    backgroundColor: COLORS.slate100, 
+  }
+})
 
 export default NIDPhotoUpload

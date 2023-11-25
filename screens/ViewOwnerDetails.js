@@ -105,6 +105,7 @@ const DevcieOriginText = ({item}) => {
       <Text style={styles.deviceOriginText}>
       {
       item  === "mynewDevice" ? "আমি এই ডিভাইসটি নতুন কিনেছি" :
+      item  === "ibugthtThisSecondHand" ? "আমি এই ডিভাইস টি পুরাতন কিনেছি" :
       item  === "ifoundthisdevice" ? "আমি এই ডিভাইসটি খুজে পেয়েছি" :
       item  === "ilostthisdevice" && "আমি এই ডিভাইসটি হারিয়ে ফেলেছি"
       }

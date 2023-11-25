@@ -1,6 +1,6 @@
 
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { FlatList, Image, RefreshControl, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, RefreshControl, StyleSheet, TextInput, TouchableOpacity, View, Text } from 'react-native';
 import { Tab, TabView } from '@rneui/themed';
 import axios from 'axios';
 import { COLORS, SIZES, icons } from '../constants';
@@ -85,8 +85,8 @@ const AllDevice = ({navigation}) => {
   
       <TabView value={index} onChange={setIndex} animationType="spring">
         <TabView.Item style={{width: '100%' }}>
-        <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
-        <View style={{flexDirection: "row", gap: 10, padding: 10}}>
+        <View style={{minHeight: "100%", backgroundColor: COLORS.white500, padding: 10}}>
+        <View style={{flexDirection: "row", gap: 10}}>
         <Controller control={control} rules={{required: true,}}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput style={styles.inputBox} placeholder="Search imei, Name. . ." onBlur={onBlur} onChangeText={onChange} value={value} />

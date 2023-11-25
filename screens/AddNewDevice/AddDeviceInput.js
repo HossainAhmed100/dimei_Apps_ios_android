@@ -17,181 +17,176 @@ import { MaterialIcons  } from '@expo/vector-icons';
 
 
 const AddDeviceInput = ({navigation, route}) => {
-    const deviceIamge = route.params.deviceIamges;
-    const deviceImeiInput = route.params.deviceImeiInput;
-    const [checked, setChecked] = useState(false);
-    const todyDate = new Date().toISOString();
-    const [firebaseIamge, setFirebaseIamge] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [dropDownValue, setDropDownValue] = useState(null);
-    const [items, setItems] = useState([]);
-    const { user } = useContext(AuthContext);
-    const firstTimeRef = useRef(true);
-    const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
-    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: ""},});
+  const deviceIamge = route.params.deviceIamges;
+  const deviceImeiInput = route.params.deviceImeiInput;
+  const [checked, setChecked] = useState(false);
+  const todyDate = new Date().toISOString();
+  const [firebaseIamge, setFirebaseIamge] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [dropDownValue, setDropDownValue] = useState(null);
+  const [items, setItems] = useState([]);
+  const { user } = useContext(AuthContext);
+  const firstTimeRef = useRef(true);
+  const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
+  const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceNote: "", deviceimei2: ""},});
 
-   const showAlert = () => {
-    setZeroTokenAlert(true)
-    };
-  
-   const hideAlert = () => {
-    setZeroTokenAlert(false)
-    };
-    const toggleCheckbox = () => {setChecked(!checked);};
-    const { data: devciePreview = []} = useQuery({ 
-        queryKey: ['devciePreview', user?.userEmail], 
-        queryFn: async () => {
-          const res = await axios.get(`http://192.168.0.127:5000/checkDeviceImeiNum/${deviceImeiInput}`);
-          return res.data;
-        } 
-    })
+  const showAlert = () => {setZeroTokenAlert(true)};
+  const hideAlert = () => {setZeroTokenAlert(false)};
+  const toggleCheckbox = () => {setChecked(!checked);};
 
-    const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
-        queryKey: ['itemQuantity', user?.userEmail], 
-        queryFn: async () => {
-          const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
-          return res.data;
-        } 
-    })
+  const { data: devciePreview = []} = useQuery({ 
+    queryKey: ['devciePreview', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.0.127:5000/checkDeviceImeiNum/${deviceImeiInput}`);
+      return res.data;
+    } 
+  })
 
-    useFocusEffect(
-      useCallback(() => {
-        if (firstTimeRef.current) {
-            firstTimeRef.current = false;
-            return;
-        }
-        fetchToken()
-      }, [fetchToken])
-    )
+  const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
+    queryKey: ['itemQuantity', user?.userEmail], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
+      return res.data;
+    } 
+  })
 
-    const onSubmit = async (data) => {
-      setLoading(true);
-    try {
-        const uploadPromises = deviceIamge.map(async (uri) => {
-          return await uploadImageAsync(uri);
-        });
-
-        const newFirebaseImages = await Promise.all(uploadPromises);
-        setFirebaseIamge([...newFirebaseImages]);
-        const deviceNote = data.deviceNote;
-        // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-        await addDeviceInDatabase(deviceNote, [...newFirebaseImages]);
-
-      } catch (error) {
-        console.error('Error during addDevice:', error);
-      } finally {
-        setLoading(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstTimeRef.current) {
+          firstTimeRef.current = false;
+          return;
       }
+      fetchToken()
+    }, [fetchToken])
+  )
 
-
-    };
-
-    const addDeviceInDatabase = async (deviceNotes, deviceImgList) => {
+  const onSubmit = async (data) => {
+    const deviceNote = data?.deviceNote;
+    const deviceimei2 = data?.deviceimei2;
     setLoading(true);
-    const secretCode = "";
-    const haveBoxde = false;
-    const daysUsed = todyDate;
-    const isDeviceSell = false;
-    const deviceStatus = "Good";
-    const newOwnerClaim = false;
-    const listingDate = todyDate;
-    const deviceLostStatus = false;
-    const deviceSellingStatus = false;
-    const unauthorizeOwnerQuantity = 0;
-    const deviceImei = deviceImeiInput;
-    const deviceTransferStatus = false;
-    const someonefoundthisdevice = false;
-    const ownerEmail = user?.userEmail;
-    const devcieOrigin = dropDownValue;
-    const ownerPhoto = user?.userProfilePic;
-    const listingAddress = "Dhaka, Bangladesh";
-    const deviceIamges = [{deviceImgList, ownerEmail}];
-    const devcieOwnerSecretOTP = Math.floor(100000 + Math.random() * 900000);
-    const deviceOwnerList = [
-      {
-        ownarStatus: "",
-        ownerPhoto: ownerPhoto,
-        ownerEmail: ownerEmail,
-        deviceImei: deviceImei,
-        deviceNote: deviceNotes,
-        thisIsCurrentOwner: true,
-        ownerName: user?.userName,
-        deviceLostNoteMessage: "",
-        thisIsPreviousOwner: false,
-        deviceOrigin: dropDownValue,
-        deviceListingDate: todyDate,
-        ownerId: user?.userAccountId,
-        deviceTransferDate: todyDate,
-        thisIsUnAuthorizeOwner: false,
-        devcieOwnerSecretOTP: devcieOwnerSecretOTP,
-      }
-    ];   
-    
-    const deviceInfos = {
-      deviceOwnerList, 
-      someonefoundthisdevice, newOwnerClaim, 
-      isDeviceSell, ownerPhoto, secretCode, 
-      devcieOrigin, deviceStatus, listingAddress, 
-      listingDate, daysUsed, deviceImei, haveBoxde, 
-      ownerEmail, deviceTransferStatus, 
-      deviceSellingStatus, deviceLostStatus, 
-      unauthorizeOwnerQuantity, deviceIamges,
-    };
-
     try {
-        const response = await axios.post('http://192.168.0.127:5000/addNewDevice', {deviceInfos})
-        if (response.data.isDeviceisExist) {
-            alert('This Devcie is Alredy Added');
-            navigation.navigate('Home');
-        } else if (response.data.acknowledged) {
-            alert('Check your email');
-            navigation.navigate('Home');
-        } else {
-            alert('Device Add Failed');
-        }
-    } catch (err) {
-        console.error('Error during Add Device To Database:', err);
-        alert('Device Added Feild');
-    } finally {
-        setLoading(false);
-    }
-
-    };
-
-    const uploadImageAsync = async (uri) => {
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function (e) {
-          console.log(e);
-          reject(new TypeError("Network request failed"));
-        };
-        xhr.responseType = "blob";
-        xhr.open("GET", uri, true);
-        xhr.send(null);
+      const uploadPromises = deviceIamge.map(async (uri) => {
+        return await uploadImageAsync(uri);
       });
+      const newFirebaseImages = await Promise.all(uploadPromises);
+      setFirebaseIamge([...newFirebaseImages]);
+      const deviceInfo = {deviceNote, deviceimei2};
+      // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
+      await addDeviceInDatabase(deviceInfo, [...newFirebaseImages]);
+    } catch (error) {
+      console.error('Error during addDevice:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      try{
-        const fileRef = ref(storage, `image/image-${Date.now()}`);
-        const result = await uploadBytes(fileRef, blob);
-      
-        // We're done with the blob, close and release it
-        blob.close();
-      
-        return await getDownloadURL(fileRef);
-      }catch(error) {
-        console.log(error)
+  const addDeviceInDatabase = async (deviceInfo, deviceImgList) => {
+  setLoading(true);
+  const secretCode = "";
+  const haveBoxde = false;
+  const daysUsed = todyDate;
+  const isDeviceSell = false;
+  const deviceStatus = "Good";
+  const newOwnerClaim = false;
+  const listingDate = todyDate;
+  const deviceLostStatus = false;
+  const deviceSellingStatus = false;
+  const unauthorizeOwnerQuantity = 0;
+  const deviceImei = deviceImeiInput;
+  const deviceimei2 = deviceInfo?.deviceimei2;
+  const deviceTransferStatus = false;
+  const someonefoundthisdevice = false;
+  const ownerEmail = user?.userEmail;
+  const devcieOrigin = dropDownValue;
+  const ownerPhoto = user?.userProfilePic;
+  const listingAddress = "Dhaka, Bangladesh";
+  const deviceIamges = [{deviceImgList, ownerEmail}];
+  const devcieOwnerSecretOTP = Math.floor(100000 + Math.random() * 900000);
+  const deviceOwnerList = [
+    {
+      ownarStatus: "",
+      ownerPhoto: ownerPhoto,
+      ownerEmail: ownerEmail,
+      deviceImei: deviceImei,
+      deviceNote: deviceInfo?.deviceNote,
+      thisIsCurrentOwner: true,
+      ownerName: user?.userName,
+      deviceLostNoteMessage: "",
+      thisIsPreviousOwner: false,
+      deviceOrigin: dropDownValue,
+      deviceListingDate: todyDate,
+      ownerId: user?.userAccountId,
+      deviceTransferDate: todyDate,
+      thisIsUnAuthorizeOwner: false,
+      devcieOwnerSecretOTP: devcieOwnerSecretOTP,
+    }
+  ];   
+  
+  const deviceInfos = {
+    deviceOwnerList, deviceimei2,
+    someonefoundthisdevice, newOwnerClaim, 
+    isDeviceSell, ownerPhoto, secretCode, 
+    devcieOrigin, deviceStatus, listingAddress, 
+    listingDate, daysUsed, deviceImei, haveBoxde, 
+    ownerEmail, deviceTransferStatus, 
+    deviceSellingStatus, deviceLostStatus, 
+    unauthorizeOwnerQuantity, deviceIamges,
+  };
+
+  try {
+      const response = await axios.post('http://192.168.0.127:5000/addNewDevice', {deviceInfos})
+      if (response.data.isDeviceisExist) {
+          alert('This Devcie is Alredy Added');
+          navigation.navigate('Home');
+      } else if (response.data.acknowledged) {
+          alert('Check your email');
+          navigation.navigate('Home');
+      } else {
+          alert('Device Add Failed');
       }
-    };  
+  } catch (err) {
+      console.error('Error during Add Device To Database:', err);
+      alert('Device Added Feild');
+  } finally {
+      setLoading(false);
+  }
 
-    const itemsSelect = [
-        {label: "আমি এই ডিভাইসটি নতুন কিনেছি", value: "mynewDevice"},
-        {label: "আমি এই ডিভাইসটি খুজে পেয়েছি", value: "ifoundthisdevice"},
-        {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ilostthisdevice"},
-    ]
+  };
+
+  const uploadImageAsync = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    try{
+      const fileRef = ref(storage, `image/image-${Date.now()}`);
+      const result = await uploadBytes(fileRef, blob);
+    
+      // We're done with the blob, close and release it
+      blob.close();
+    
+      return await getDownloadURL(fileRef);
+    }catch(error) {
+      console.log(error)
+    }
+  };  
+
+  const itemsSelect = [
+      {label: "আমি এই ডিভাইসটি নতুন কিনেছি", value: "mynewDevice"},
+      {label: "আমি এই ডিভাইসটি খুজে পেয়েছি", value: "ifoundthisdevice"},
+      {label: "আমি এই ডিভাইসটি হারিয়ে ফেলেছি", value: "ilostthisdevice"},
+  ]
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
         <View style={{padding: SIZES.small}}>
@@ -212,13 +207,18 @@ const AddDeviceInput = ({navigation, route}) => {
         <View style={{ justifyContent: "space-between", flexDirection: "column" }}>
         <View style={{ gap: SIZES.small }}>
             <View>
-            <Text style={{color: COLORS.slate500}}>Device IMEI *</Text>
-            <TextInput
-                style={styles.inputBox}
-                placeholder="Enter Device imei"
-                autoCapitalize='none' 
-                value={deviceImeiInput}
-            />
+            <Text style={{color: COLORS.slate500}}>Device IMEI 1 *</Text>
+            <TextInput style={styles.inputBox} placeholder="Enter Device imei" autoCapitalize='none'  value={deviceImeiInput} />
+            </View>
+            <View>
+              <Text style={styles.inputTextLabel}>Device IMEI 2 *</Text>
+              <Controller control={control} rules={{required: true,}}
+                render={({ field: { onChange, onBlur, value } }) => (
+                 <TextInput style={styles.noteInputBox} placeholder="Enter Device imei 2" onBlur={onBlur} onChangeText={onChange} value={value}/>
+                )}
+                name="deviceimei2"
+              />
+            {errors.deviceimei2 && <Text style={{color: COLORS.red500}}>Please Enter Device imei 2</Text>}
             </View>
             <View style={{zIndex: 100}}>
             <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device origin *</Text>
@@ -236,7 +236,6 @@ const AddDeviceInput = ({navigation, route}) => {
             mode='BADGE'
             />
             </View>
-            
             {
               (dropDownValue === "ifoundthisdevice" ||  dropDownValue === "ilostthisdevice") &&
             <View>
@@ -251,10 +250,6 @@ const AddDeviceInput = ({navigation, route}) => {
             {errors.deviceNote && <Text style={{color: COLORS.red500}}>Write Some Message Please</Text>}
             </View>
             }
-            <View>
-            <Text style={{color: COLORS.slate500}}>Listing Date *</Text>
-            <TextInput style={styles.inputBox} placeholder="Device Listing Date" value={format(new Date(todyDate), 'yyyy-MM-dd')} />
-            </View>
             
             {/* <View>
             <Text style={{color: COLORS.slate500}}>Reference</Text>
@@ -309,7 +304,7 @@ const AddDeviceInput = ({navigation, route}) => {
               </View>
             }
             
-            <View>
+            <View style={{marginBottom: 30}}>
               <TouchableOpacity onPress={toggleCheckbox}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 

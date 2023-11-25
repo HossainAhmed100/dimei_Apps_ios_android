@@ -4,9 +4,9 @@ import 'react-native-get-random-values';
 import axios from 'axios';
 import { COLORS, SIZES } from '../../constants';
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign } from '@expo/vector-icons';
 import { storage } from '../../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { AntDesign } from '@expo/vector-icons';
 
 const SellingDeviceAction = ({navigation, route}) => {
     const deviceInfo = route.params.deviceInfo;
@@ -150,16 +150,6 @@ const styles = StyleSheet.create({
       justifyContent: "center", 
       flexDirection: "column",
       borderWidth: 1
-    },
-    cardContainer:{
-      borderWidth: 1, 
-      borderColor: COLORS.slate100, 
-      borderRadius: SIZES.xSmall, 
-      flexDirection: "row", 
-      alignItems: "center", 
-      justifyContent: "flex-start", 
-      marginBottom: SIZES.xSmall, 
-      padding: 10
     },
     confirmBtn: {
     backgroundColor: COLORS.blue500,

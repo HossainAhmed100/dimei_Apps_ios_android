@@ -13,9 +13,6 @@ const MyDeviceCrad = ({item, viewMyDeviceDetails}) => {
       item?.newOwnerClaim ? COLORS.red200 : 
       item?.someonefoundthisdevice ? COLORS.red200 : 
       item?.deviceLostStatus ? COLORS.red200 : COLORS.slate100}]}>
-    {item?.devicePicture &&  
-    <Image source={{ uri: item?.devicePicture }} width={120} height={140} resizeMode="cover" style={{ borderRadius: 4, marginRight: 10, }} />}
-      <View>
         {item?.deviceTransferStatus && 
         <View style={[style.alertText, {backgroundColor: COLORS.blue200}]}>
           <Text style={{color: COLORS.blue500, fontSize: 12}}>Transfaring</Text>
@@ -31,7 +28,10 @@ const MyDeviceCrad = ({item, viewMyDeviceDetails}) => {
           <Text style={{color: COLORS.red500, fontSize: 12}}>Lost Item</Text>
         </View>
         }
-       
+    {item?.devicePicture &&  
+    <Image source={{ uri: item?.devicePicture }} width={120} height={140} resizeMode="cover" style={{ borderRadius: 4, marginRight: 10, }} />}
+    
+      <View>
         <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{item?.modelName}</Text>
         <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4}}>
         {item?.newOwnerClaim ?
@@ -48,7 +48,7 @@ const MyDeviceCrad = ({item, viewMyDeviceDetails}) => {
         {item?.daysUsed && <Text style={{color: COLORS.blue500, fontSize: SIZES.xSmall}}>{formatDistanceToNow(new Date(item?.daysUsed))}</Text>}
         </View>
         </View> 
-        {item?.daysUsed && <Text style={style.deviceListText}>{format(new Date(item?.daysUsed), 'yyyy-mm-dd hh:mm a')}</Text>}
+        {item?.daysUsed && <Text style={style.deviceListText}>{format(new Date(item?.daysUsed), 'yyyy-MM-dd hh:mm a')}</Text>}
         <Text style={style.deviceListText}>Variant :  {item?.ram} / {item.storage}</Text>
         <Text style={style.deviceListText}>Brand : {item?.brand}</Text>
         <Text style={style.deviceListText}>Color :  {item?.colorVarient}</Text>
@@ -71,12 +71,12 @@ const style = StyleSheet.create({
     },
     alertText:{
       position: "absolute", 
-      top: -14, 
-      right: -75, 
+      top: 0, 
+      left: 0, 
       padding: 5, 
-      borderBottomLeftRadius: 4,
-      borderTopRightRadius: 4,
-      marginTop: 4
+      borderBottomRightRadius: 4,
+      borderTopLeftRadius: 4,
+      zIndex: 100
     },
     deviceListText:{
       marginBottom: 3, 

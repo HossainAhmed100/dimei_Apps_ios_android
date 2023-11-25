@@ -39,8 +39,8 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   
   const onSubmit = async (data) => {
     const {ownerEmail, deviceImei, thisIsUnAuthorizeOwner} = ownerInfo;
-    const secretCodeForRemoveOwner = data.secretCodeForRemoveOwner;
-    const ownerDetails = {ownerEmail, deviceImei, thisIsUnAuthorizeOwner, secretCodeForRemoveOwner};
+    const devcieOwnerSecretOTP = data.secretCodeForRemoveOwner;
+    const ownerDetails = {ownerEmail, deviceImei, thisIsUnAuthorizeOwner, devcieOwnerSecretOTP};
     setRemoveOwnerBtnLoading(true)
     console.log("🚀 ~ file: ViewDeviceOwnerInfo.js:45 ~ onSubmit ~ ownerDetails:", ownerDetails)
     try {
@@ -150,7 +150,7 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
             <Text style={{fontSize: 14, fontWeight: 600, color: COLORS.slate300}}>Unauthorized Owner OTP</Text>
             <View style={{ paddingHorizontal: 10, alignItems: "center", gap: 5, flexDirection: "row"}}>
             <Text style={{fontSize: 14, fontWeight: 600, color: COLORS.slate300}}>
-            {showUnauthorizedCode ? ownerInfo?.secretCodeForRemoveOwner : "******"}
+            {showUnauthorizedCode ? ownerInfo?.devcieOwnerSecretOTP : "******"}
             </Text>
             <TouchableOpacity onPress={() => setShowUnauthorizedCode(!showUnauthorizedCode)} style={{padding: 5}}>
             {showUnauthorizedCode ? <Feather name="eye" size={16} color={COLORS.slate300} /> :
@@ -186,6 +186,7 @@ const DevcieOriginText = ({item}) => {
         <Text style={styles.deviceOriginText}>
         {
         item  === "mynewDevice" ? "আমি এই ডিভাইসটি নতুন কিনেছি" :
+        item  === "ibugthtThisSecondHand" ? "আমি এই ডিভাইস টি পুরাতন কিনেছি" :
         item  === "ifoundthisdevice" ? "আমি এই ডিভাইসটি খুজে পেয়েছি" :
         item  === "ilostthisdevice" && "আমি এই ডিভাইসটি হারিয়ে ফেলেছি"
         }

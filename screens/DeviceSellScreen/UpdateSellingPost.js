@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, ScrollView, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, useWindowDimensions, FlatList} from 'react-native';
 import 'react-native-get-random-values';
-import { MaterialCommunityIcons  } from '@expo/vector-icons';
 import axios from 'axios';
 import { COLORS, SIZES } from '../../constants';
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { storage } from '../../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useQuery } from "@tanstack/react-query";
@@ -14,13 +13,16 @@ import { useForm, Controller } from "react-hook-form";
 
 
 const UpdateSellingPost = ({navigation, route}) => {
+  const {width} = useWindowDimensions();
   const deviceId = route.params.deviceId;
   const [selectedImages, setSelectedImages] = useState([]);
+  const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const toggleCheckbox = () => {setChecked(!checked);};
   
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
-    queryKey: ['myDevice', deviceId], 
+    queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
       const res = await axios.get(`http://192.168.0.127:5000/updateDevicesellingPost/${deviceId}`);
       return res.data;
@@ -140,15 +142,9 @@ const UpdateSellingPost = ({navigation, route}) => {
         <Text style={{color: COLORS.slate300}}>Add Photo</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5, alignItems: "center", justifyContent: "flex-start" }}>
-        {sellingDevice?.deviceIamges && sellingDevice?.deviceIamges.map((uri, index) => (
-          <View key={index} style={{borderWidth: 1, borderColor: COLORS.slate200, borderRadius: 5}}>
-            <TouchableOpacity style={{position: "absolute", zIndex: 100, backgroundColor: COLORS.slate200, borderBottomRightRadius: 5, padding: 2}}>
-              <AntDesign name="close" size={16} color={COLORS.slate500} /></TouchableOpacity>
-            <Image source={{ uri }} style={{ width: 107, height: 100, resizeMode: "contain" }} />
-          </View>
-        ))}
-      </View>
+      {sellingDevice?.deviceIamges && 
+      <ImageSilderShow sellingDevice={sellingDevice} width={width}/>
+      }
       <Text>{`Selected: ${sellingDevice?.deviceIamges?.length}/10`}</Text>
     </View>
     <View style={{paddingVertical: SIZES.small}}>
@@ -200,16 +196,26 @@ const UpdateSellingPost = ({navigation, route}) => {
       </View>
     }
     </View>
-    <View style={{width: "100%", alignItems: "center", paddingHorizontal: 10}}>
-    <View style={{width: 300}}>
+    <View style={{width: "100%", paddingHorizontal: 10}}>
+    <View style={{marginVertical: 15}}>
+      <TouchableOpacity onPress={toggleCheckbox}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+          <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+          <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
+          <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+    <View>
       {loading ? 
       <TouchableOpacity style={styles.confirmBtn}>
         <ActivityIndicator size="large" color={COLORS.white500}/>
       </TouchableOpacity> :
       <TouchableOpacity onPress={() => nextStep()} style={[styles.button,{ backgroundColor: COLORS.blue500 }]}>
-      <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Confirm To Update</Text>
-      <MaterialCommunityIcons name="progress-upload" size={SIZES.large} color={COLORS.white500} />
-    </TouchableOpacity>
+        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Confirm To Update</Text>
+        <MaterialCommunityIcons name="progress-upload" size={SIZES.large} color={COLORS.white500} />
+      </TouchableOpacity>
       }
     <TouchableOpacity onPress={() => deleteThisPost(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500}]}>
       <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Delete This Post </Text>
@@ -223,15 +229,38 @@ const UpdateSellingPost = ({navigation, route}) => {
   )
 }
 
+const ImageSilderShow = ({sellingDevice, width}) => (
+  <FlatList
+      horizontal
+      data={sellingDevice?.deviceIamges}
+      keyExtractor={(item, index) => `${index}`}
+      renderItem={({ item }) => (
+        <View style={styles.imageBox}>
+          <TouchableOpacity style={styles.imgCloseBtn}>
+          <AntDesign name="close" size={16} color={COLORS.slate500} /></TouchableOpacity>
+          <Image source={{ uri: item }} style={{ width: 107, height: 100, resizeMode: "contain" }} />
+        </View>
+      )}
+      pagingEnabled
+      bounces={false}
+    /> 
+)
+  
+
 const styles = StyleSheet.create({
+  imgCloseBtn:{
+    position: "absolute", zIndex: 100, backgroundColor: COLORS.slate200, borderBottomRightRadius: 5, padding: 2
+  },
+  imageBox:{
+    borderWidth: 1, borderColor: COLORS.slate200, borderRadius: 5, marginRight: 10,
+  },
   button:{
     width: "100%", 
     alignItems: "center", 
     justifyContent: "center", 
-    borderRadius: SIZES.small, 
+    borderRadius: 4, 
     flexDirection: "row", gap: 4, 
     paddingVertical: SIZES.xSmall, 
-    paddingHorizontal: SIZES.large,
     marginVertical: 10, 
   },
   confirmBtnText:{color: COLORS.white500, fontSize: SIZES.medium},

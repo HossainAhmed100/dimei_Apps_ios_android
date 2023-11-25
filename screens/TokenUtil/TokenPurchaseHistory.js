@@ -95,7 +95,7 @@ const ListBox = ({item}) => (
     </View>
     <View style={{flexDirection: "column", alignItems: "flex-end", justifyContent: "center"}}>
       <Text style={{fontSize: SIZES.large, color: COLORS.slate500, fontWeight: 500}}>{item.transtionQuantity}</Text>
-      {item?.date && <Text style={style.deviceListText}>{format(new Date(item?.date), 'yyyy-mm-dd hh:mm a')}</Text>}
+      {item?.date && <Text style={style.deviceListText}>{format(new Date(item?.date), 'yyyy-MM-dd hh:mm a')}</Text>}
     </View>
   </View>
   </View>

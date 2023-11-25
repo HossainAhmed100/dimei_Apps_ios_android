@@ -85,7 +85,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   }
 
   return (
-    <View style={{backgroundColor: COLORS.white500}}>
+    <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
       <View style={{backgroundColor: COLORS.slate100}}>
       {devciePhotos && <ImageSilderShow devciePhotos={devciePhotos} width={width}/>}
       <Divider />
@@ -110,9 +110,9 @@ const PrDeviceDetails = ({navigation, route}) => {
 
     <TabView value={index} onChange={setIndex} animationType="spring">
       <TabView.Item style={{ width: '100%' }}>
-      <ScrollView>
+      <View>
         {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList  item={myDevice}/>}
-      </ScrollView>
+      </View>
       </TabView.Item>
 
       <TabView.Item style={{ width: '100%' }}>
@@ -214,7 +214,7 @@ const ImageSilderShow = ({devciePhotos, width}) => (
       data={devciePhotos}
       keyExtractor={(item, index) => `${index}`}
       renderItem={({ item }) => (
-        <Image source={{ uri: item }} style={{ width: width, height: 230, resizeMode: "contain"}} />
+        <Image source={{ uri: item }} style={{ width: width, height: 200, resizeMode: "contain"}} />
       )}
       pagingEnabled
       bounces={false}
@@ -224,8 +224,13 @@ const ImageSilderShow = ({devciePhotos, width}) => (
 const PhoneDetailsList = ({item}) => (
   <View style={{paddingHorizontal: SIZES.small, flexDirection: "column"}}>
     <View style={styles.listItem}>
-    <Text>IMEI :</Text>
+    <Text>IMEI 1 :</Text>
     <Text>{item?.deviceImei}</Text>
+    </View>
+    <Divider />
+    <View style={styles.listItem}>
+    <Text>IMEI 2 :</Text>
+    <Text>{item?.deviceimei2}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>

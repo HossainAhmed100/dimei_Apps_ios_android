@@ -55,16 +55,16 @@ const TokenTransferInput = ({navigation}) => {
       </ImageBackground>
     <View style={{padding: SIZES.small}}>
     <View>
-    <Text style={{color: COLORS.slate500}}>Account ID</Text>
+    <Text style={{color: COLORS.slate500}}>Receiver Email *</Text>
     <View style={styles.searchContainer}>
         <View style={styles.searchWrapper}>
-            <TextInput style={styles.searchInput} placeholder="Write Tooken receiver Account ID"/>
+            <TextInput style={styles.searchInput} placeholder="Write Receiver Account Email"/>
             <TouchableOpacity><MaterialCommunityIcons name="line-scan" size={24} color={COLORS.slate600} /></TouchableOpacity>
         </View>
     </View>
     </View>
     <View>
-    <Text style={{color: COLORS.slate500}}>Token Quantity</Text>
+    <Text style={{color: COLORS.slate500}}>Token Quantity *</Text>
     <TextInput
         style={styles.inputBox}
         placeholder="Enter Token quantity"
@@ -130,13 +130,13 @@ const TokenTransferInput = ({navigation}) => {
         </TouchableOpacity> :
         itemQuantity?.tokenQuantity === 0 ? 
         <TouchableOpacity onPress={() => showAlert()} style={[styles.loginBtn, {opacity: 0.5}]} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Send</Text>
         </TouchableOpacity> : loading ?
         <TouchableOpacity style={styles.loginBtn}> 
         <ActivityIndicator color={COLORS.white500}/> 
         </TouchableOpacity> :
         <TouchableOpacity onPress={() => onSubmit("OnSubmit")} style={styles.loginBtn} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Send</Text>
         </TouchableOpacity> 
         }
         <AwesomeAlert

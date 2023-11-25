@@ -13,7 +13,6 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const deviceId = route.params.deviceId ;
   const [haveABox, sethaveABox] = useState(false);
   const [checked, setChecked] = useState(false);
-  const toggleHaveABox = () => sethaveABox(!checked);
   const { user, userLoding } = useContext(AuthContext);
   const {control, handleSubmit, formState: { errors }} = useForm();
 
@@ -27,6 +26,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   })
   
   const toggleCheckbox = () => {setChecked(!checked)};
+  const toggleHaveABox = () => {sethaveABox(!haveABox)};
 
   const onSubmit = async (data) => {
     const deviceBrand = sellingDevice?.brand;
@@ -122,13 +122,17 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
       <Text style={{color: COLORS.slate500}}>Battery</Text>
       <TextInput  style={styles.inputBox} value={sellingDevice?.battery} editable={false} />
       </View>
-
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start"}}>
-      <CheckBox checked={haveABox} onPress={toggleHaveABox} iconType="material-community"
-      checkedIcon="checkbox-marked" uncheckedIcon="checkbox-blank-outline" checkedColor={COLORS.blue500}/>
-      <Text style={{marginLeft: 4}}>I Have a Original Box</Text>
-      </View>
       
+      <View>
+        <TouchableOpacity onPress={toggleHaveABox}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {haveABox ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
+            <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
+            <Text style={{marginLeft: 4}}>I Have a Original Box</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
       <View>
         <TouchableOpacity onPress={toggleCheckbox}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>

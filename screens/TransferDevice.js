@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useContext } from "react";  
+import React, { useContext, useState } from "react";  
 import { COLORS, SIZES } from '../constants';
 import { KeyboardAvoidingView } from "react-native";
 import { ActivityIndicator } from "react-native";

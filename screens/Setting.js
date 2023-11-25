@@ -65,7 +65,7 @@ const Setting = ({navigation}) => {
           <TouchableOpacity onPress={() => navigation.navigate('TokenPurchaseHistory')} style={styles.navigationItem}>
               <View style={styles.navigationItemTextandIcon}>
                 <Image source={icons.cart} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Token Purchase History</Text>
+                <Text style={styles.navigationItemText}>Token History</Text>
               </View>
               <Feather name="chevron-right" size={24} color="#B0B0B0" />
           </TouchableOpacity>
