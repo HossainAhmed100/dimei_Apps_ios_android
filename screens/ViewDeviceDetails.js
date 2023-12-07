@@ -17,7 +17,7 @@ const ViewDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.154:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -25,7 +25,7 @@ const ViewDeviceDetails = ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, deviceOwnerEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: deviceOwnerEmail}});
+      const res = await axios.get(`http://192.168.0.154:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: deviceOwnerEmail}});
       return res.data;
     } 
   })

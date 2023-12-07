@@ -14,7 +14,7 @@ const ViewOwnerDetails =  ({navigation, route}) => {
   const { isLoading, data: ownerData = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/getDeviceOwnerList/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.154:5000/getDeviceOwnerList/${deviceId}`);
       return res.data;
     } 
   })

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PhoneBik",
-    "slug": "PhoneBik",
+    "slug": "phonebik",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -40,8 +40,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "b1f13785-d014-4fda-931a-3f5ebce35d24"
+        "projectId": "c8c2a556-6e78-4aa0-b8d1-89a19ef5500e"
       }
-    }
+    },
+    "owner": "hossainahmed"
   }
 }

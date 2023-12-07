@@ -74,13 +74,13 @@ const ProfilePhotoSelection = ({navigation, route}) => {
   }
 
   const sinOut = () => {
-    logOut()
-    .then(() => {
-      navigation.navigate('Login')
-    })
+      logOut()
+      .then(() => {
+        navigation.navigate('Login')
+      })
   };
 
-  const nextStep = async () => {
+  const consfirmToAdd = async () => {
     const userNikName = accountInfo.userName;
     const userProfilePic = profilePhoto;
     const userAddress = accountInfo.nidData.niduserpresentsaddress;
@@ -101,7 +101,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
           const users = userCredential.user;
           if (users.uid){
             const newuser = async () => {
-              await axios.post('http://192.168.0.127:5000/addNewUser', {userInfo})
+              await axios.post('http://192.168.0.154:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                   navigation.navigate('Login')
@@ -127,53 +127,55 @@ const ProfilePhotoSelection = ({navigation, route}) => {
       <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
 
         <View style={{paddingVertical: 20}}>
-          
-        <View style={{justifyContent: "center", alignItems: "center", paddingVertical: SIZES.xSmall}}>
-
-      {profilePhoto ? <Image source={{uri: profilePhoto}} style={{width: 100, height: 100, borderRadius: 50, borderWidth: 1, borderColor: COLORS.slate200}}/> : 
-      <Image source={{uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwVLdSDmgrZN7TkzbHJb8dD0_7ASUQuERL2A&usqp=CAU"}} style={{width: 100, height: 100, borderRadius: 50, borderWidth: 1, borderColor: COLORS.slate200}}/>}
-
-      {
-      profilePhoto ? 
-      <TouchableOpacity onPress={() =>  setProfilePhoto(null)} style={styles.photoActionBtn}>
-      <Ionicons name="ios-close-sharp" size={24} color={COLORS.white500}/>
-      </TouchableOpacity> : 
-      <TouchableOpacity onPress={pickImage}  style={styles.photoActionBtn}>
-      {
-      profilePhotoLoading ? 
-      <ActivityIndicator size={"small"} color={COLORS.white500} animating/> : 
-      <Feather name="camera" size={16} color={COLORS.white500} />
-      }
-      </TouchableOpacity>
-      }
-
-        </View>
+          <View style={{justifyContent: "center", alignItems: "center", paddingVertical: SIZES.xSmall}}>
+            {profilePhoto ? 
+             <Image source={{uri: profilePhoto}} style={{width: 100, height: 100, borderRadius: 50, borderWidth: 1, borderColor: COLORS.slate200}}/> : 
+              <Image source={{uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwVLdSDmgrZN7TkzbHJb8dD0_7ASUQuERL2A&usqp=CAU"}} 
+              style={{width: 100, height: 100, borderRadius: 50, borderWidth: 1, borderColor: COLORS.slate200}}/>
+            }
+            {
+            profilePhoto ? 
+            <TouchableOpacity onPress={() =>  setProfilePhoto(null)} style={styles.photoActionBtn}>
+              <Ionicons name="ios-close-sharp" size={24} color={COLORS.white500}/>
+            </TouchableOpacity> : 
+            <TouchableOpacity onPress={pickImage}  style={styles.photoActionBtn}>
+              {
+              profilePhotoLoading ? 
+                <ActivityIndicator size={"small"} color={COLORS.white500} animating/> : 
+                <Feather name="camera" size={16} color={COLORS.white500} />
+              }
+            </TouchableOpacity>
+            }
+          </View>
         </View>
 
         <View style={{flexDirection: "column", alignItems: "flex-start", gap: 20, paddingHorizontal: 50}}>
-        <View style={styles.listItem}>
-        <View style={styles.numberBox}><Text style={styles.itemTextTitle}>1</Text></View><Text style={styles.itemTextTitle}>Remove your eye glass (if have any).</Text>
+          <View style={styles.listItem}>
+            <View style={styles.numberBox}><Text style={styles.itemTextTitle}>1</Text></View><Text style={styles.itemTextTitle}>Remove your eye glass (if have any).</Text>
+          </View>
+          <View style={styles.listItem}>
+            <View style={styles.numberBox}><Text style={styles.itemTextTitle}>2</Text></View><Text style={styles.itemTextTitle}>Place your face in photo frame.</Text>
+          </View>
+          <View style={styles.listItem}>
+            <View style={styles.numberBox}><Text style={styles.itemTextTitle}>3</Text></View><Text style={styles.itemTextTitle}>Make sure there is enough light around.</Text>
+          </View>
+          <View style={styles.listItem}>
+            <View style={styles.numberBox}><Text style={styles.itemTextTitle}>4</Text></View><Text style={styles.itemTextTitle}>Do not shake your face when capturing photo.</Text>
+          </View>
+          <View style={styles.listItem}>
+            <View style={styles.numberBox}><Text style={styles.itemTextTitle}>5</Text></View><Text style={styles.itemTextTitle}>Blink your eyes several times to capture photo.</Text>
+          </View>
         </View>
-        <View style={styles.listItem}>
-        <View style={styles.numberBox}><Text style={styles.itemTextTitle}>2</Text></View><Text style={styles.itemTextTitle}>Place your face in photo frame.</Text>
-        </View>
-        <View style={styles.listItem}>
-        <View style={styles.numberBox}><Text style={styles.itemTextTitle}>3</Text></View><Text style={styles.itemTextTitle}>Make sure there is enough light around.</Text>
-        </View>
-        <View style={styles.listItem}>
-        <View style={styles.numberBox}><Text style={styles.itemTextTitle}>4</Text></View><Text style={styles.itemTextTitle}>Do not shake your face when capturing photo.</Text>
-        </View>
-        <View style={styles.listItem}>
-        <View style={styles.numberBox}><Text style={styles.itemTextTitle}>5</Text></View><Text style={styles.itemTextTitle}>Blink your eyes several times to capture photo.</Text>
-        </View>
-        
-        </View>
-        <View style={{width: 300, paddingVertical: 30}}>
-          {loading ? <TouchableOpacity style={styles.confirmBtn}>
-            <ActivityIndicator color={COLORS.white500}/>
-          </TouchableOpacity> : <TouchableOpacity onPress={() => nextStep()} style={styles.confirmBtn}>
-            <Text style={styles.confirmBtnText}>CONFIRM</Text>
-          </TouchableOpacity>}
+        <View style={{width: 300, marginVertical: 30}}>
+          {
+            loading ? 
+            <TouchableOpacity style={styles.loginBtn}> 
+              <ActivityIndicator color={COLORS.white500}/> 
+            </TouchableOpacity> :
+            <TouchableOpacity onPress={() => consfirmToAdd()} style={styles.loginBtn} >
+              <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm </Text>
+            </TouchableOpacity> 
+          }
         </View>
       </View>
     </View>
@@ -182,17 +184,34 @@ const ProfilePhotoSelection = ({navigation, route}) => {
 
 
 const styles = StyleSheet.create({
-  listItem:{flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10},
-  numberBox:{backgroundColor: COLORS.slate200, padding: 2, borderRadius: 50, width: 25, height: 25, alignItems: "center", justifyContent: "center"},
-  itemTextTitle:{color: COLORS.slate300},
-  photoActionBtn:{
-    width: 30, height: 30, 
-    backgroundColor: COLORS.blue500, 
+  listItem:{
+    gap: 10,
+    flexDirection: "row", 
     alignItems: "center", 
-    justifyContent: "center", 
-    position: "absolute", 
+    justifyContent: "flex-start", 
+  },
+  numberBox:{
+    backgroundColor: COLORS.slate200, 
+    width: 25, 
+    height: 25, 
+    padding: 2,
     borderRadius: 50, 
-    bottom: 20, right: 0
+    alignItems: "center", 
+    justifyContent: "center",
+  },
+  itemTextTitle:{
+    color: COLORS.slate300
+  },
+  photoActionBtn:{
+    right: 0,
+    width: 30, 
+    bottom: 20, 
+    height: 30, 
+    borderRadius: 50, 
+    alignItems: "center", 
+    position: "absolute", 
+    justifyContent: "center", 
+    backgroundColor: COLORS.blue500, 
   },
   confirmBtn: {
     padding: 10,
@@ -202,6 +221,21 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     backgroundColor: COLORS.blue500, 
   },
-  confirmBtnText:{color: COLORS.white500, fontSize: 18, fontWeight: 400}
+  loginBtn: {
+    backgroundColor: COLORS.blue500,
+    width: "100%",
+    paddingVertical: SIZES.small,
+    paddingHorizontal: SIZES.large,
+    borderRadius: SIZES.small,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.blue500,
+    borderWidth: 1,
+  },
+  confirmBtnText:{
+    fontSize: 16, 
+    fontWeight: 400,
+    color: COLORS.white500, 
+  }
 })
 export default ProfilePhotoSelection

@@ -21,7 +21,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.154:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })
@@ -29,7 +29,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
+      const res = await axios.get(`http://192.168.0.154:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
       return res.data;
     } 
   })
@@ -47,7 +47,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.0.127:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.0.154:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })
@@ -76,9 +76,8 @@ const PrDeviceDetails = ({navigation, route}) => {
     navigation.navigate('Claimownershipagain', {deviceId: did})
   }
   const claimownershipagain = (did, unauthorizeOwnerQuantity) => {
-    console.log(did, unauthorizeOwnerQuantity)
     if(unauthorizeOwnerQuantity > 0){
-      alert("Please Remove the Unauthorise Owner in this devcie")
+      alert("Please Remove the Unauthorise Owner in this devcie before try Again")
     }else{
       navigation.navigate('Claimownershipagain', {deviceId: did})
     }
@@ -167,7 +166,7 @@ const PrDeviceDetails = ({navigation, route}) => {
         { myDevice?.ownerEmail === user?.userEmail && 
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
         
-        {myDevice?.someonefoundthisdevice ? 
+        {(myDevice?.someonefoundthisdevice || myDevice?.newOwnerClaim) ? 
           <TouchableOpacity onPress={() => claimownershipagain(deviceId, myDevice?.unauthorizeOwnerQuantity)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
             <Text style={styles.whiteText}>Claim your ownership again</Text>
             <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
@@ -210,72 +209,73 @@ const PrDeviceDetails = ({navigation, route}) => {
 
 const ImageSilderShow = ({devciePhotos, width}) => (
   <FlatList
-      horizontal
-      data={devciePhotos}
-      keyExtractor={(item, index) => `${index}`}
-      renderItem={({ item }) => (
-        <Image source={{ uri: item }} style={{ width: width, height: 200, resizeMode: "contain"}} />
-      )}
-      pagingEnabled
-      bounces={false}
-    /> 
+  horizontal
+  pagingEnabled
+  bounces={false}
+  data={devciePhotos}
+  showsHorizontalScrollIndicator={false}
+  keyExtractor={(item, index) => `${index}`}
+  renderItem={({ item }) => (
+    <Image source={{ uri: item }} style={{ width: width, height: 200, resizeMode: "contain"}} />
+  )}
+  /> 
 )
 
 const PhoneDetailsList = ({item}) => (
   <View style={{paddingHorizontal: SIZES.small, flexDirection: "column"}}>
     <View style={styles.listItem}>
-    <Text>IMEI 1 :</Text>
-    <Text>{item?.deviceImei}</Text>
+      <Text>IMEI 1 :</Text>
+      <Text>{item?.deviceImei}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>IMEI 2 :</Text>
-    <Text>{item?.deviceimei2}</Text>
+      <Text>IMEI 2 :</Text>
+      <Text>{item?.deviceimei2}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Model Name :</Text>
-    <Text>{item.modelName}</Text>
+      <Text>Model Name :</Text>
+      <Text>{item.modelName}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Announced :</Text>
-    <Text>{item?.AnnouncedDate}</Text>
+      <Text>Announced :</Text>
+      <Text>{item?.AnnouncedDate}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Brand :</Text>
-    <Text>{item.brand}</Text>
+      <Text>Brand :</Text>
+      <Text>{item.brand}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Ram :</Text>
-    <Text>{item.ram}</Text>
+      <Text>Ram :</Text>
+      <Text>{item.ram}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Rom :</Text>
-    <Text>{item.storage}</Text>
+      <Text>Rom :</Text>
+      <Text>{item.storage}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Color Varient :</Text>
-    <Text>{item.colorVarient}</Text>
+      <Text>Color Varient :</Text>
+      <Text>{item.colorVarient}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Battery :</Text>
-    <Text>{item.battery}</Text>
+      <Text>Battery :</Text>
+      <Text>{item.battery}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Battery Type:</Text>
-    <Text>{item?.batteryRemovable ? "(removable)" : "(non-removable)"}</Text>
+      <Text>Battery Type:</Text>
+      <Text>{item?.batteryRemovable ? "(removable)" : "(non-removable)"}</Text>
     </View>
     <Divider />
     <View style={styles.listItem}>
-    <Text>Days Used :</Text>
-    {item?.daysUsed ? <Text>{formatDistanceToNow(new Date(item?.daysUsed))}</Text> : <ActivityIndicator />}
+      <Text>Days Used :</Text>
+      {item?.daysUsed ? <Text>{formatDistanceToNow(new Date(item?.daysUsed))}</Text> : <ActivityIndicator />}
     </View>
     <Divider />
   </View>

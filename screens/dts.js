@@ -1,273 +1,264 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, StyleSheet, FlatList, useWindowDimensions} from 'react-native';
-import React, { useCallback, useContext, useRef } from 'react';
-import { COLORS, SIZES } from '../constants';
+import { FlatList, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native'
+import React, { useContext, useState } from 'react'
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
-import { Entypo, MaterialCommunityIcons  } from '@expo/vector-icons';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useFocusEffect } from '@react-navigation/native';
+import { COLORS, SIZES } from '../constants';
+import { Entypo,Feather  } from '@expo/vector-icons';
+import { format, formatDistanceToNow } from 'date-fns';
 import { AuthContext } from '../context/AuthProvider';
-import { formatDistanceToNow } from 'date-fns';
+import { ActivityIndicator } from 'react-native';
+import { useForm, Controller } from "react-hook-form";
 
-const dts = ({navigation, route}) => {
+const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   const {user} = useContext(AuthContext);
-  const {width} = useWindowDimensions()
-  const queryClient = useQueryClient()
-  const deviceId = route.params.deviceId ;
-  const firstTimeRef = useRef(true)
-
-  const { isLoading, data: myDevice = [], refetch } = useQuery({ 
-    queryKey: ['myDevice', deviceId], 
-    queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/myDeviceDetails/${deviceId}`);
-      return res.data;
-    } 
-  })
+  const paramsInfo = route.params.paramsInfo;
+  const ownerInfo = paramsInfo?.ownerInfo;
+  const deviceId = paramsInfo?.deviceId;
+  const deviceOwnerEmail = paramsInfo?.ownerEmail;
+  const {width} = useWindowDimensions();
+  const [showUnauthorizedCode, setShowUnauthorizedCode] = useState(false);
+  const [removeOwnerBtnLoading, setRemoveOwnerBtnLoading] = useState(false);
+  const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {secretCodeForRemoveOwner: ""},})
 
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
-    queryKey: ['devciePhotos', deviceId, user?.userEmail], 
+    queryKey: ['devciePhotos', deviceId, ownerInfo?.ownerEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
+      const res = await axios.get(`http://192.168.0.154:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: ownerInfo?.ownerEmail}});
       return res.data;
     } 
   })
   
-
-  useFocusEffect(
-    useCallback(() => {
-      if (firstTimeRef.current) {
-         firstTimeRef.current = false;
-         return;
-      }
-      refetch()
-    }, [refetch])
-  )
-
-  const canselTransferDevice = async () => {
-    const secretCode = "";
-    const infoData = {deviceId, secretCode}
+  const onSubmit = async (data) => {
+    const {ownerEmail, deviceImei, thisIsUnAuthorizeOwner} = ownerInfo;
+    const devcieOwnerSecretOTP = data.secretCodeForRemoveOwner;
+    const ownerDetails = {ownerEmail, deviceImei, thisIsUnAuthorizeOwner, devcieOwnerSecretOTP};
+    setRemoveOwnerBtnLoading(true)
+    console.log("🚀 ~ file: ViewDeviceOwnerInfo.js:45 ~ onSubmit ~ ownerDetails:", ownerDetails)
     try {
-        await axios.put(`http://192.168.0.127:5000/cancelDeviceTransferStatus/`, {infoData})
-        .then((res) => {
-          if(res.data.transferSuccess){
-            queryClient.invalidateQueries({ queryKey: ['myDevice'] })
-        }})
-    } catch (err) {
-        console.log(err);
-    } finally {
+      const res = await axios.delete(`http://192.168.0.154:5000/deleteUnauthorizedOwner`, {params: { ownerDetails }});
+      if(res.data.ownerDeletedSuccess){
+        alert("Unauthorized Owner Remove Successfully")
+        navigation.popToTop();
+      }else if(res.data.unauthorizeOwnerQuantityIsZero){
+        alert("Unauthorized Quantity is 0")
+      }else if(res.data.secretCodeisWrong){
+        alert("Unauthorized Owner OTP is Wrong")
+      }else if(res.data.thisIsNotUnauthorizedOwner){
+        alert("Unauthorized Owner OTP is Wrong")
+      }else if(res.data.ownerRemoveFeilds){
+        alert("Somthing is Wrong!")
+      }else{
+        console.log(res.data);
+      }
+      setRemoveOwnerBtnLoading(false)
+    } catch (error) {
+      setRemoveOwnerBtnLoading(false)
+      console.error(error);
     }
   }
-  const updateSellingPost = async (did) => {
-    navigation.navigate('UpdateSellingPost', {deviceId: did})
-  }
-  const transferDevice = (did) => {
-    navigation.navigate('TransferDevice', {deviceId: did})
-  }
-  const sellDevice = (did) => {
-    navigation.navigate('SellDevice', {deviceId: did})
-  }
-  const viewOwnerDetails = (did) => {
-    navigation.navigate('ViewOwnerDetails', {deviceId: did})
-  }
-  const lostThisDevice = (did) => {
-    navigation.navigate('DeviceLostScreen', {deviceId: did})
-  }
-  const mydevicehasbeenfound = (did) => {
-    navigation.navigate('DeviceLostScreen', {deviceId: did})
-  }
-  return (
-    <ScrollView style={{backgroundColor: COLORS.white500, minHeight: "100%"}} showsVerticalScrollIndicator={false}>
-    <View showsVerticalScrollIndicator={false}>
-    <View>
-      <View style={{backgroundColor: COLORS.slate100}}>
-      {devciePhotos && <ImageSilderShow devciePhotos={devciePhotos} width={width}/>}
-      <Divider />
-      </View>
-      { myDevice?.deviceTransferStatus && 
-      <View style={{padding: 10, borderWidth: 1, borderColor: COLORS.blue500, margin: 10, borderRadius: 10, backgroundColor: COLORS.blue500}}>
-        <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
-          <Text style={{color: COLORS.white500}}>Device Security Code : </Text>
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'center'}}> 
-          <Text style={{marginRight: 10, color: COLORS.white500}}>{myDevice?.secretCode}</Text> 
-          <MaterialCommunityIcons name="content-copy" size={18} color={COLORS.white500} />
-          </View>
-        </View>
-      </View>
-      }
-    <View>
-      {isLoading ? <ActivityIndicator size={"large"}/> : <PhoneDetailsList  item={myDevice}/>}
-    </View>
-    {!isLoading && 
-      <View style={{flexDirection: "column", gap: SIZES.small, paddingVertical: 15, paddingHorizontal: 10}}>
-      { myDevice?.ownerEmail !== user?.userEmail ? 
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={[styles.actionButton,{ backgroundColor: COLORS.red200 }]}>
-      <Text style={{color: COLORS.red500, fontSize: 14}}>This is not your Device, see the device owner</Text>
-      <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.red500} />
-      </TouchableOpacity> :
-      <View style={{flexDirection: "column",gap: SIZES.small}}>
-        {
-        myDevice?.newOwnerClaim ? 
-        <View style={{backgroundColor: COLORS.red200, padding: 10, borderRadius: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-        <Text style={{color: COLORS.red500, fontSize: 14}}>Someone claimed this device ownership</Text>
-        <MaterialCommunityIcons name="alert-circle-outline" size={SIZES.large} color={COLORS.red500} />
-        </View> : myDevice?.someonefoundthisdevice &&
-        <View style={{backgroundColor: COLORS.red200, padding: 10, borderRadius: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-        <Text style={{color: COLORS.red500, fontSize: 14}}>Someone found this device. view Owner info</Text>
-        <MaterialCommunityIcons name="alert-circle-outline" size={SIZES.large} color={COLORS.red500} />
-        </View>
-        }
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: SIZES.small}}>
-      <TouchableOpacity onPress={() => viewOwnerDetails(deviceId)} style={styles.actionButton}>
-        <Text style={{color: COLORS.slate500, fontSize: SIZES.medium}}>Owner info</Text>
-        {myDevice?.newOwnerClaim &&  
-        <View style={{padding: 5, borderRadius: 5, backgroundColor: COLORS.red200}}>
-          <MaterialCommunityIcons name="account-alert" size={SIZES.medium} color={COLORS.red500} />
-        </View>}
-        <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500} />
-      </TouchableOpacity>
-      {
-        !myDevice?.deviceLostStatus &&
-        (!myDevice?.deviceTransferStatus || !myDevice?.isDeviceSell) && 
-        (
-          <TouchableOpacity onPress={() => lostThisDevice(deviceId)} style={styles.actionButton}>
-          <Text style={{ color: COLORS.slate500, fontSize: SIZES.medium }}>Lost This Device</Text>
-          <MaterialCommunityIcons name="chevron-right" size={SIZES.large} color={COLORS.slate500}/>
-        </TouchableOpacity>
-        )
-      }
-      </View>
-      </View>
-      }
-      
 
-      
-      { myDevice?.ownerEmail === user?.userEmail && 
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
-      
-      {myDevice?.someonefoundthisdevice ? 
-        <TouchableOpacity onPress={() => mydevicehasbeenfound(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-          <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Claim your ownership again</Text>
-          <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity> : myDevice?.deviceLostStatus ? 
-        <TouchableOpacity onPress={() => mydevicehasbeenfound(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-          <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>My device has been found</Text>
-          <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-        </TouchableOpacity> : myDevice.deviceTransferStatus ? 
-      <TouchableOpacity onPress={() => canselTransferDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.red500 }]}>
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Cencel Transfer </Text>
-        <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-      </TouchableOpacity> : myDevice?.isDeviceSell ? 
-      <TouchableOpacity onPress={() => updateSellingPost(deviceId)} style={[styles.button,{ backgroundColor: COLORS.green500 }]}>
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Update Selling Post </Text>
-        <MaterialCommunityIcons name="square-edit-outline"  size={SIZES.large} color={COLORS.white500} />
-      </TouchableOpacity> :
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SIZES.small}}>
-      <TouchableOpacity onPress={() => transferDevice(deviceId)}  style={[styles.button,{ backgroundColor: COLORS.blue500 }]}>
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium}}>Transfer </Text>
-        <MaterialCommunityIcons name="cube-send"  size={SIZES.large} color={COLORS.white500} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => sellDevice(deviceId)} style={[styles.button,{ backgroundColor: COLORS.blue200 }]}>
-      <Text style={{color: COLORS.blue500, fontSize: SIZES.medium}}>Sell now</Text>
-      <Entypo name="shop" size={SIZES.medium} color={COLORS.blue500} />
-      </TouchableOpacity>
-      </View>
-      }
-      </View>
-      }
-    </View> 
-    }
-    </View>
-    </View>
+  const viewProfile = (email) => {
+    navigation.navigate('ViewUserProfile', {userEmail: email})
+  }
+
+  return (
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
+        <View style={{backgroundColor: COLORS.slate100}}>
+            {devciePhotos && <ImageSilderShow devciePhotos={devciePhotos} width={width}/>}
+            <Divider />
+        </View>
+        <View style={{padding: 10, gap: 10}}>
+          <View>
+          <OwnerCard ownerInfo={ownerInfo} viewProfile={viewProfile}/>
+          </View>
+
+
+          { 
+          ownerInfo?.thisIsUnAuthorizeOwner && 
+          user?.userEmail === deviceOwnerEmail ? 
+          ownerInfo?.thisIsCurrentOwner ? <View></View> :
+          <KeyboardAvoidingView>
+          <View style={{backgroundColor: COLORS.red100, borderRadius: 4, borderWidth:2, borderColor: COLORS.red200}}>
+            <View style={{paddingVertical: 15, paddingHorizontal: 10}}>
+              <Text style={{fontSize: 14, fontWeight: 600, color: "#CB4242"}}>Denger Zone</Text>
+            </View>
+            <Divider />
+            <View style={{paddingVertical: 15, paddingHorizontal: 10, flexDirection: "column", gap: 5}}>
+              <View>
+                <Text>Remove Unauthorized Owner</Text>
+                <Controller control={control} rules={{required: true,}}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput style={styles.inputBox} placeholder='Type Unauthorized Owner OTP' onBlur={onBlur} onChangeText={onChange} value={value} />
+                  )}
+                  name="secretCodeForRemoveOwner"
+                />
+                {errors.secretCodeForRemoveOwner && <Text style={{color: COLORS.red500}}>Unauthorized Owner OTP required.</Text>}
+              </View>
+              {removeOwnerBtnLoading ? 
+                <TouchableOpacity style={styles.ownerRemoveBtn}>
+                  <ActivityIndicator size="small" color="#ffffff"/>
+                </TouchableOpacity> :
+                <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.ownerRemoveBtn}>
+                  <Text style={{color: COLORS.white500, fontWeight: 500}}>Remove</Text>
+                </TouchableOpacity>
+              }
+            </View> 
+          </View>
+          </KeyboardAvoidingView>   : 
+          (user?.userEmail === ownerInfo?.ownerEmail && ownerInfo?.thisIsUnAuthorizeOwner) ?
+          <View style={{backgroundColor: COLORS.red200, borderRadius: 4}}>
+            <View style={{paddingVertical: 15, paddingHorizontal: 10}}>
+              <Text Text style={{fontSize: 14, fontWeight: 600, color: "#CB4242"}}>Denger Zone</Text>
+            </View>
+            <Divider />
+            <View style={{paddingVertical: 15, paddingHorizontal: 10, alignItems: "center", justifyContent: "space-between", flexDirection: "row"}}>
+              <Text style={{fontSize: 14, fontWeight: 600, color: COLORS.slate300}}>Unauthorized Owner OTP</Text>
+              <View style={{ paddingHorizontal: 10, alignItems: "center", gap: 5, flexDirection: "row"}}>
+                <Text style={{fontSize: 14, fontWeight: 600, color: COLORS.slate300}}>
+                  {showUnauthorizedCode ? ownerInfo?.devcieOwnerSecretOTP : "******"}
+                </Text>
+                <TouchableOpacity onPress={() => setShowUnauthorizedCode(!showUnauthorizedCode)} style={{padding: 5}}>
+                  {showUnauthorizedCode ? <Feather name="eye" size={16} color={COLORS.slate300} /> :
+                  <Feather name="eye-off" size={16} color={COLORS.slate300} />}
+                </TouchableOpacity>
+              </View> 
+            </View> 
+          </View>  :
+          <View></View>
+          }
+        </View>   
     </ScrollView>
   )
 }
 
+const OwnerCard = ({item, viewProfile}) => {
+  const formattedDate = (date) => {
+    const distance = formatDistanceToNow(new Date(date));
+    const formatted = format(new Date(date), "MMMM d, yyyy h:mm a"); // Adjust the format as needed
+    return `${distance} - ${formatted}`;
+  };
+  return(
+    <View style={[styles.cardContainer, {borderColor: item?.thisIsUnAuthorizeOwner ? COLORS.red200 : COLORS.slate100}]}>
+    <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 10}}>
+    <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
+    {item?.ownerPhoto && <Image source={{uri: item?.ownerPhoto}} style={{width: 50, height: 50, borderRadius: 6,  resizeMode: "cover"}}/>}
+    <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>{item?.ownerName}</Text>
+      <Text style={styles.dateText}>ID: {item.ownerId}</Text>
+    </View>
+    </View>
+    {item?.thisIsPreviousOwner ? 
+    <View style={[styles.ownerAlertBg, {backgroundColor: COLORS.blue100}]}>
+     <Text style={[styles.ownerAlertText, {color: COLORS.blue500}]}>Previous Owner</Text>
+    </View> : item?.thisIsCurrentOwner ?
+     <View style={[styles.ownerAlertBg, {backgroundColor: COLORS.green100}]}>
+      <Text style={[styles.ownerAlertText, {color: COLORS.green500}]}>Current Owner</Text>
+    </View> :
+     <View style={[styles.ownerAlertBg, {backgroundColor: COLORS.red100}]}>
+      <Text style={[styles.ownerAlertText, {color: COLORS.red500}]}>Unauthorized Owner</Text>
+    </View>
+    }
+    </View>
+    {item?.deviceOrigin && <DevcieOriginText item={item?.deviceOrigin}/>}
+    <Divider />
+    <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
+    <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>Listing Date</Text>
+      {item?.deviceTransferDate ? <Text style={styles.dateText}>{formattedDate(item?.deviceTransferDate)}</Text>: <ActivityIndicator />}
+    </View>
+    <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>
+        {item?.thisIsPreviousOwner ? "Transfer Date" : item?.thisIsCurrentOwner ? "Received Date" : "Unauthorized Listing Date"}
+      </Text>  
+      {item?.deviceTransferDate ? <Text style={styles.dateText}>{formattedDate(item?.deviceTransferDate)}</Text>: <ActivityIndicator />}
+    </View>
+    </View>
+    <Divider />
+    <View style={{flexDirection: "row", gap: 10}}>
+    <TouchableOpacity onPress={() => viewProfile(item.ownerEmail)} style={{borderRadius: 6, alignItems: "flex-end", padding: 6, justifyContent: "center"}}>
+      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>View Details</Text>
+    </TouchableOpacity>
+    </View>
+  </View>
+  )
+}
+
+const DevcieOriginText = ({item}) => {
+  return(
+    <View style={styles.deviceOriginBox}>
+      <Entypo name="text" size={SIZES.medium} color={COLORS.slate300} />
+      <Text style={styles.deviceOriginText}>
+      {
+      item  === "mynewDevice" ? "আমি এই ডিভাইসটি নতুন কিনেছি" :
+      item  === "ibugthtThisSecondHand" ? "আমি এই ডিভাইস টি পুরাতন কিনেছি" :
+      item  === "ifoundthisdevice" ? "আমি এই ডিভাইসটি খুজে পেয়েছি" :
+      item  === "ilostthisdevice" && "আমি এই ডিভাইসটি হারিয়ে ফেলেছি"
+      }
+      </Text>
+    </View>
+  )
+}
+
+
+
 const ImageSilderShow = ({devciePhotos, width}) => (
   <FlatList
-      horizontal
-      data={devciePhotos}
-      keyExtractor={(item, index) => `${index}`}
-      renderItem={({ item }) => (
-        <Image source={{ uri: item }} style={{ width: width, height: 230, resizeMode: "contain"}} />
-      )}
-      pagingEnabled
-      bounces={false}
-    /> 
-)
-
-const PhoneDetailsList = ({item}) => (
-  <View style={{paddingHorizontal: SIZES.small, flexDirection: "column"}}>
-    <View style={styles.listItem}>
-    <Text>IMEI :</Text>
-    <Text>{item?.deviceImei}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Model Name :</Text>
-    <Text>{item.modelName}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Brand :</Text>
-    <Text>{item.brand}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Color Varient :</Text>
-    <Text>{item.colorVarient}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Ram :</Text>
-    <Text>{item.ram}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Rom :</Text>
-    <Text>{item.storage}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Battery :</Text>
-    <Text>{item.battery}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-    <Text>Days Used :</Text>
-    {item?.daysUsed ? <Text>{formatDistanceToNow(new Date(item?.daysUsed))}</Text> : <ActivityIndicator />}
-    </View>
-    <Divider />
-  </View>
+    horizontal
+    pagingEnabled
+    bounces={false}
+    data={devciePhotos}
+    showsHorizontalScrollIndicator={false}
+    keyExtractor={(item, index) => `${index}`}
+    renderItem={({ item }) => (
+      <Image source={{ uri: item }} style={{ width: width, height: 230, resizeMode: "contain"}} />
+    )}
+  /> 
 )
 
 const styles = StyleSheet.create({
-  listItem: {
-    paddingVertical: 10,
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: 'space-between', 
+  inputBox: {
+    marginTop: 6,
+    borderWidth: 1,
+    borderRadius: 6,
+    borderColor: COLORS.slate200,
+    paddingVertical: SIZES.xSmall,
+    paddingHorizontal: SIZES.medium,
   },
-  button:{
-    flex: 1, 
-    borderWidth: 1, 
-    alignItems: "center", 
-    justifyContent: "center", 
-    borderRadius: 5, 
-    flexDirection: "row", gap: 4, 
-    borderColor: COLORS.white500,
-    paddingVertical: 12, 
-    paddingHorizontal: SIZES.large, 
+  ownerAlertBg:{
+    borderRadius: 6,
+    paddingVertical: 6, 
+    paddingHorizontal: 12, 
   },
-  actionButton:{
-    backgroundColor: COLORS.slate100,
+  ownerAlertText:{
+    fontSize: 12, 
+    fontWeight: 500
+  },
+  dateText:{
+    fontSize: 14, 
+    color: "#808080", 
+    fontWeight: "400"
+  },
+  deviceOriginText: {
+    fontSize: 14,
+    color: COLORS.slate300, 
+  },
+  deviceOriginBox: {
+    gap: 6,
     alignItems: "center", 
-    justifyContent: "space-between", 
-    borderRadius: 5, 
     flexDirection: "row", 
-    paddingVertical: 10, 
-    paddingHorizontal: SIZES.xSmall, 
-    flex: 1
+    justifyContent: "flex-start",
+    padding: 10, borderRadius: 4, 
+    backgroundColor: COLORS.slate100, 
+  },
+  ownerRemoveBtn:{
+    width: 100,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SIZES.xSmall,
+    backgroundColor: COLORS.red500, 
+    paddingHorizontal: SIZES.medium,
   }
-})
-
-export default dts
+});
+export default ViewDeviceOwnerInfo;

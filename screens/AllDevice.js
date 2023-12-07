@@ -23,7 +23,7 @@ const AllDevice = ({navigation}) => {
   const { isLoading, isError, data: myDevice = [], refetch: refetchMyDevice } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/myalldevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.154:5000/myalldevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -31,7 +31,7 @@ const AllDevice = ({navigation}) => {
   const { isLoading: reciveDeviceLoading, data: reciveDevice = [], refetch } = useQuery({ 
     queryKey: ['reciveDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/reciveTransferDevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.154:5000/reciveTransferDevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -86,24 +86,26 @@ const AllDevice = ({navigation}) => {
       <TabView value={index} onChange={setIndex} animationType="spring">
         <TabView.Item style={{width: '100%' }}>
         <View style={{minHeight: "100%", backgroundColor: COLORS.white500, padding: 10}}>
-        <View style={{flexDirection: "row", gap: 10}}>
-        <Controller control={control} rules={{required: true,}}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput style={styles.inputBox} placeholder="Search imei, Name. . ." onBlur={onBlur} onChangeText={onChange} value={value} />
-          )}
-          name="inputdeviceimei"
-        />
-        {inputdeviceimei ?
-        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
-        <Image source={icons.search} style={{resizeMode: "contain", width: 20, height: 20, tintColor: COLORS.white500}}/>
-        </TouchableOpacity> :
-        <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
-        <MaterialCommunityIcons name="line-scan" size={20} color={COLORS.white500} />
-        </TouchableOpacity>
-        }
+        <View style={{gap: 5, marginBottom: 10}}>
+          <View style={{flexDirection: "row", gap: 10}}>
+          <Controller control={control} rules={{required: true,}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput style={styles.inputBox} placeholder="Search imei, Name. . ." onBlur={onBlur} onChangeText={onChange} value={value} />
+            )}
+            name="inputdeviceimei"
+          />
+          {inputdeviceimei ?
+            <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
+              <Image source={icons.search} style={{resizeMode: "contain", width: 20, height: 20, tintColor: COLORS.white500}}/>
+            </TouchableOpacity> :
+            <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.inputBoxBtn}>
+              <MaterialCommunityIcons name="line-scan" size={20} color={COLORS.white500} />
+            </TouchableOpacity>
+          }
+          </View>
+          {errors.inputdeviceimei && <Text style={{color: COLORS.red500}}>Please Enter your Device IMEI number</Text>}
         </View>
-        {errors.inputdeviceimei && <Text style={{color: COLORS.red500}}>Please Enter your Device IMEI number</Text>}
-        <View style={{paddingHorizontal: SIZES.small, marginBottom: 200}}>
+        <View style={{marginBottom: 200}}>
         <FlatList style={{minHeight: "100%"}} data={myDevice} keyExtractor={item => item._id}
         renderItem={({item}) => (<MyDeviceCrad viewMyDeviceDetails={viewMyDeviceDetails} userEmail={user?.userEmail} item={item}/>)}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

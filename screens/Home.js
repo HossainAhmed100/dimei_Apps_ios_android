@@ -26,7 +26,7 @@ const Home = ({navigation}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/myalldevice/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.154:5000/myalldevice/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -34,7 +34,7 @@ const Home = ({navigation}) => {
   const { data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
     queryKey: ['itemQuantity', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.154:5000/useritemQuantity/${user?.userEmail}`);
       return res.data;
     } 
   })

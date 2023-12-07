@@ -33,7 +33,7 @@ const NIDDetailsShow = ({navigation, route}) => {
     }
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-     <View style={{flex: 1, alignItems: "center", paddingVertical: SIZES.small}}>
+     <View style={{flex: 1, padding: SIZES.small}}>
      <View style={{ gap: 20 }}>
           <View>
             <Text style={styles.inputTextLabel}>NID Number</Text>
@@ -136,8 +136,8 @@ const NIDDetailsShow = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   inputBox: {
-    width: 300,
     fontSize: 16,
+    width: "100%",
     paddingVertical: 6,
     borderBottomWidth: 1,
     color: COLORS.slate500,

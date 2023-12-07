@@ -66,7 +66,7 @@ const style = StyleSheet.create({
       alignItems: "center", 
       justifyContent: "flex-start", 
       marginBottom: SIZES.xSmall, 
-      paddingVertical: 4,
+      paddingVertical: 10,
       paddingHorizontal: 10,
     },
     alertText:{

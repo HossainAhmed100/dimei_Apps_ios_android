@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   nidCameraBtn:{
     width: 50, 
-    bottom: 20, 
+    bottom: 30, 
     height: 50, 
     borderRadius: 50, 
     right:SIZES.large,

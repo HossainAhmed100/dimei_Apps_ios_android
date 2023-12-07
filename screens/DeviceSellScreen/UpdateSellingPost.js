@@ -24,11 +24,19 @@ const UpdateSellingPost = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/updateDevicesellingPost/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.154:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });
 
+  const { data: sellingDeviceImages = [] } = useQuery({ 
+    queryKey: ['sellingDeviceImages', deviceId], 
+    queryFn: async () => {
+      const res = await axios.get(`http://192.168.0.154:5000/getSellingDevcieImages/${deviceId}`);
+      return res.data;
+    } 
+  });
+  console.log(sellingDeviceImages)
   const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {
     sellingTitle: sellingDevice?.sellingTitle,
     devciePrice: sellingDevice?.devciePrice,
@@ -66,7 +74,7 @@ const UpdateSellingPost = ({navigation, route}) => {
     newArray.deviceIamges = deviceIamges;
     try {
       const sellingDevInfo = newArray;
-      const response = await axios.post('http://192.168.0.127:5000/addDevcieSellingList', {sellingDevInfo});
+      const response = await axios.post('http://192.168.0.154:5000/addDevcieSellingList', {sellingDevInfo});
   
       if (response.data.acknowledged) {
         alert('Check your email');
@@ -119,7 +127,7 @@ const UpdateSellingPost = ({navigation, route}) => {
 
    const deleteThisPost = async (deviceId) => {
     try {
-      await axios.delete(`http://192.168.0.127:5000/deleteDevcieSellingPost/${deviceId}`)
+      await axios.delete(`http://192.168.0.154:5000/deleteDevcieSellingPost/${deviceId}`)
       .then((res) => {
         if(res.data.transferSuccess){
           navigation.navigate('Home')
@@ -142,15 +150,15 @@ const UpdateSellingPost = ({navigation, route}) => {
         <Text style={{color: COLORS.slate300}}>Add Photo</Text>
         </TouchableOpacity>
       </View>
-      {sellingDevice?.deviceIamges && 
-      <ImageSilderShow sellingDevice={sellingDevice} width={width}/>
+      {sellingDeviceImages && 
+      <ImageSilderShow deviceIamges={sellingDeviceImages} width={width}/>
       }
-      <Text>{`Selected: ${sellingDevice?.deviceIamges?.length}/10`}</Text>
+      <Text>{`Selected: ${sellingDeviceImages.length}/10`}</Text>
     </View>
     <View style={{paddingVertical: SIZES.small}}>
     <Divider />
     </View>
-    <View style={{flex: 1, alignItems: "center", padding: SIZES.small}}>
+    <View style={{flex: 1, padding: SIZES.small}}>
     {isLoading ? <ActivityIndicator /> : 
       <View style={{ gap: 20 }}>
           <View>
@@ -229,10 +237,10 @@ const UpdateSellingPost = ({navigation, route}) => {
   )
 }
 
-const ImageSilderShow = ({sellingDevice, width}) => (
+const ImageSilderShow = ({deviceIamges, width}) => (
   <FlatList
       horizontal
-      data={sellingDevice?.deviceIamges}
+      data={deviceIamges}
       keyExtractor={(item, index) => `${index}`}
       renderItem={({ item }) => (
         <View style={styles.imageBox}>
@@ -249,52 +257,63 @@ const ImageSilderShow = ({sellingDevice, width}) => (
 
 const styles = StyleSheet.create({
   imgCloseBtn:{
-    position: "absolute", zIndex: 100, backgroundColor: COLORS.slate200, borderBottomRightRadius: 5, padding: 2
+    padding: 2,
+    zIndex: 100, 
+    position: "absolute", 
+    borderBottomRightRadius: 5, 
+    backgroundColor: COLORS.slate200, 
   },
   imageBox:{
-    borderWidth: 1, borderColor: COLORS.slate200, borderRadius: 5, marginRight: 10,
+    borderWidth: 1, 
+    borderRadius: 5, 
+    marginRight: 10,
+    borderColor: COLORS.slate200, 
   },
   button:{
     width: "100%", 
+    borderRadius: 4, 
+    marginVertical: 10, 
     alignItems: "center", 
     justifyContent: "center", 
-    borderRadius: 4, 
     flexDirection: "row", gap: 4, 
     paddingVertical: SIZES.xSmall, 
-    marginVertical: 10, 
   },
-  confirmBtnText:{color: COLORS.white500, fontSize: SIZES.medium},
+  confirmBtnText:{
+    color: COLORS.white500, 
+    fontSize: SIZES.medium
+  },
   inputBox: {
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    width: 320,
-    borderColor: COLORS.slate500,
-    color: COLORS.slate500,
-    fontSize: 16
+    marginTop: 6,
+    width: "100%",
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: COLORS.slate200,
+    paddingVertical: SIZES.xSmall,
+    paddingHorizontal: SIZES.medium,
   },
   inputTextLabel: {
+    fontSize: 12,
     color: COLORS.slate400,
-    fontSize: 12
   },
   selectPhotoBtn:{
     width: "100%", 
-    paddingVertical: SIZES.xxLarge, 
-    borderColor: COLORS.slate200, 
+    borderWidth: 1,
     borderRadius: 6, 
     alignItems: "center", 
-    justifyContent: "center", 
     flexDirection: "column",
-    borderWidth: 1
+    justifyContent: "center", 
+    borderColor: COLORS.slate200, 
+    paddingVertical: SIZES.xxLarge, 
   },
   cardContainer:{
+    padding: 10,
     borderWidth: 1, 
-    borderColor: COLORS.slate100, 
-    borderRadius: SIZES.xSmall, 
-    flexDirection: "row", 
     alignItems: "center", 
-    justifyContent: "flex-start", 
+    flexDirection: "row", 
+    borderRadius: SIZES.xSmall, 
     marginBottom: SIZES.xSmall, 
-    padding: 10
+    borderColor: COLORS.slate100, 
+    justifyContent: "flex-start", 
   },
 });
 

@@ -11,7 +11,7 @@ const ViewUserProfile = ({route}) => {
     const { isLoading, isError, data: user = [], error } = useQuery({ 
         queryKey: [userEmail],
         queryFn: async () => {
-          const res =  await axios.get(`http://192.168.0.127:5000/signleUser/${userEmail}`);
+          const res =  await axios.get(`http://192.168.0.154:5000/signleUser/${userEmail}`);
           return res.data;
         } 
       })

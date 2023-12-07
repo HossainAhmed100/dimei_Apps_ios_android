@@ -19,7 +19,7 @@ const Shop = ({navigation}) => {
 
   const [searchInput, setSearchInput] = useState("iphone");
   const [refreshing, setRefreshing] = useState(false);
-  const url = `http://192.168.0.127:5000/getAllSellingDevice`;
+  const url = `http://192.168.0.154:5000/getAllSellingDevice`;
 
   const { isLoading, data: sellingDeviceList = [], refetch } = useQuery({ 
     queryKey: ['sellingDeviceList', refreshing], 

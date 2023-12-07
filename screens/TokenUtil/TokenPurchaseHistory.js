@@ -14,7 +14,7 @@ const TokenPurchaseHistory = ({navigation}) => {
   const {data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
     queryKey: ['itemQuantity', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.127:5000/useritemQuantity/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.154:5000/useritemQuantity/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -22,7 +22,7 @@ const TokenPurchaseHistory = ({navigation}) => {
   const { isLoading, data: trsnData = [], refetch } = useQuery({ 
     queryKey: ['trsnData'],
     queryFn: async () => {
-      const res =  await axios.get(`http://192.168.0.127:5000/userTranstion/${user?.userEmail}`);
+      const res =  await axios.get(`http://192.168.0.154:5000/userTranstion/${user?.userEmail}`);
       return res.data;
     } 
   })

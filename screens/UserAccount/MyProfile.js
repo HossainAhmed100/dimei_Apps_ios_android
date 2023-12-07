@@ -8,6 +8,7 @@ import { COLORS, SIZES } from '../../constants';
 const MyProfile = ({ navigation })  => {
   const { user } = useContext(AuthContext);
   const [firstName, setFirstName] = useState("")
+  const [address, setAddress] = useState("")
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: COLORS.white500, flex: 1, minHeight: "100%"}}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
