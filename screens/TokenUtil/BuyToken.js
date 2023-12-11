@@ -1,20 +1,20 @@
 import { View, Text, ScrollView, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import { SimpleLineIcons  } from '@expo/vector-icons';
 import { COLORS, SIZES, icons, images } from '../../constants';
+import { AuthContext } from '../../context/AuthProvider';
+import { SimpleLineIcons  } from '@expo/vector-icons';
 import { Divider } from '@rneui/themed';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthProvider';
 
 const BuyToken = ({navigation}) => {
   const {user} = useContext(AuthContext);
   const tokenPriceList = [
-    {"tokenQuntaty": 1,"price": 1},
-    {"tokenQuntaty": 3,"price": 2},
-    {"tokenQuntaty": 5,"price": 3},
-    {"tokenQuntaty": 10,"price": 4},
-    {"tokenQuntaty": 30,"price": 5},
-    {"tokenQuntaty": 50,"price": 6}
+    {"tokenQuntaty": 1,"price": 100},
+    {"tokenQuntaty": 3,"price": 270},
+    {"tokenQuntaty": 5,"price": 450},
+    {"tokenQuntaty": 10,"price": 800},
+    {"tokenQuntaty": 30,"price": 2600},
+    {"tokenQuntaty": 50,"price": 4200}
   ];
 
   const [selectedPrice, setSelectedPrice] = useState(null);
