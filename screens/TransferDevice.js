@@ -1,21 +1,30 @@
 import { Image, StyleSheet, Text, View, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useContext, useState } from "react";  
-import { COLORS, SIZES } from '../constants';
-import { KeyboardAvoidingView } from "react-native";
-import { ActivityIndicator } from "react-native";
-import { useForm, Controller } from "react-hook-form";
+import React, { useContext, useState, useRef } from "react";  
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
-import { AuthContext } from '../context/AuthProvider';
 import { format } from 'date-fns';
-import { MaterialIcons  } from '@expo/vector-icons';
+import { storage } from '../FirebaseConfig';
+import { COLORS, SIZES } from '../constants';
+import * as FileSystem from 'expo-file-system';
+import { useQuery } from '@tanstack/react-query';
+import { ActivityIndicator } from "react-native";
+import { KeyboardAvoidingView } from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import { AuthContext } from '../context/AuthProvider';
+import { MaterialIcons, Entypo } from '@expo/vector-icons';
+import SignatureScreen from "react-native-signature-canvas";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 
 const TransferDevice =  ({navigation, route}) => {
+    const signatureRef = useRef();
     const deviceId = route.params.deviceId ;
-    const [checked, setChecked] = useState(false);
-    const todyDate = new Date().toISOString();
-    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}});
     const { user } = useContext(AuthContext);
+    const todyDate = new Date().toISOString();
+    const [loading, setLoading] = useState(false);
+    const [checked, setChecked] = useState(false);
+    const [signatureSign, setSignatureSign] = useState(null);
+    const [transferDataObj, setTransferDataObj] = useState(null);
+    const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {reciverAccountEmail: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}});
 
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 
@@ -24,54 +33,136 @@ const TransferDevice =  ({navigation, route}) => {
         return res.data;
         } 
     })
-    const { data: itemQuantity = [] } = useQuery({ 
-        queryKey: ['itemQuantity', user?.userEmail], 
-        queryFn: async () => {
-          const res = await axios.get(`http://192.168.0.154:5000/useritemQuantity/${user?.userEmail}`);
-          return res.data;
-        } 
-      })
-
     const toggleCheckbox = () => {setChecked(!checked)};
-
-    const onSubmit = async (data) => {
-    const ownerEmail = user?.userEmail;
-    const ownerPicture = user?.userProfilePic;
-    const ownerName = user?.userName;
-    const reciverAccountEmail = data.reciverAccountEmail;
-    const transferDate = todyDate;
-    const deviceModelName =  myDevice?.modelName;
-    const brand = myDevice?.brand;
-    const deviceImei = myDevice?.deviceImei;
-    const colorVarient = myDevice?.colorVarient;
-    const ram = myDevice?.ram;
-    const storage = myDevice?.storage;
-    const devicePicture = myDevice?.devicePicture;
-    const deviceStatus = "OwnerShip Transfer";
-    const secretCode = Math.floor(100000 + Math.random() * 900000);
-    const transferDeviceInfo = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand, colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId, deviceImei}
-    const infoData = {deviceId, secretCode}
-    if(user){
-    await axios.put(`http://192.168.0.154:5000/devicetransferStatusUpdate/`,{infoData})
-    .then((res) => {
-    if (res.data.modifiedCount === 1){
-        try{
-            axios.post(`http://192.168.0.154:5000/reciveTransferDevice/`, {transferDeviceInfo})
+    const handUndo = () => {signatureRef.current.undo()};
+    const handleRedo = () => {signatureRef.current.redo()};
+    const handleOK = (signature) => {
+        setSignatureSign(signature); 
+        if(signature){
+        const path = FileSystem.cacheDirectory + "sign.png";
+        FileSystem.writeAsStringAsync(
+            path,
+            signature.replace("data:image/png;base64,", ""),
+            { encoding: FileSystem.EncodingType.Base64 }
+        )
+        .then(() => FileSystem.getInfoAsync(path))
+        .then(async (datas) => {
+            const {uri} = datas;
+            const ownerSign = uri;   
+            const ownerSignUrl = await uploadImageAsync(ownerSign);
+            if(ownerSignUrl){
+            const transferDeviceObj = transferDataObj?.transferDeviceObj;
+            const infoData = transferDataObj?.infoData;
+            const transferDeviceInfo = {...transferDeviceObj, ownerSignUrl};
+            await axios.put(`http://192.168.0.154:5000/devicetransferStatusUpdate/`,{infoData})
             .then((res) => {
-            if (res.data.acknowledged){
-            alert("Please Copy Your Device Transfer Security Code and Share Your Reciver")
-            navigation.navigate('Home')
+            if (res.data.modifiedCount === 1){
+                try{
+                    axios.post(`http://192.168.0.154:5000/reciveTransferDevice/`, {transferDeviceInfo})
+                    .then((res) => {
+                    if (res.data.acknowledged){
+                    alert("Please Copy Your Device Transfer Security Code and Share Your Reciver");
+                    setLoading(false);
+                    navigation.navigate('Home')
+                    }
+                })
+                }catch (err) {
+                    setLoading(false);
+                    console.log(err);
+                    alert('Device Added Feild');
+                } finally {setLoading(false);}
+            }}
+            )
             }
         })
-        }catch (err) {
-            console.log(err);
-            alert('Device Added Feild');
-        } finally {}
-    }})
+        .catch(console.error);
+        }
+    }
+    const handleReset = () => {signatureRef.current.clearSignature();};
+    const imgWidth = "100%";
+    const imgHeight = 200;
+    const style = ` 
+    .m-signature-pad--footer {display: none; margin: 0px;}
+    body,html {width: ${imgWidth}px; height: ${imgHeight}px;}
+    `;
+
+    const onSubmit = async (data) => {
+    setLoading(true);
+    await signatureRef.current.readSignature();
+    const ram = myDevice?.ram;
+    const transferDate = todyDate;
+    const brand = myDevice?.brand;
+    const ownerName = user?.userName;
+    const storage = myDevice?.storage;
+    const ownerEmail = user?.userEmail;
+    const deviceImei = myDevice?.deviceImei;
+    const deviceStatus = "OwnerShip Transfer";
+    const ownerPicture = user?.userProfilePic;
+    const colorVarient = myDevice?.colorVarient;
+    const deviceModelName =  myDevice?.modelName;
+    const devicePicture = myDevice?.devicePicture;
+    const reciverAccountEmail = data.reciverAccountEmail;
+    const secretCode = Math.floor(100000 + Math.random() * 900000);
+    const transferDeviceObj = {ownerEmail, ownerName, ownerPicture, reciverAccountEmail, transferDate, deviceModelName, brand,   colorVarient, ram, storage, devicePicture, deviceStatus, secretCode, deviceId, deviceImei};
+    const infoData = {deviceId, secretCode};
+    setTransferDataObj({transferDeviceObj, infoData});
+    }
+
+    const uploadImageAsync = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+        resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
+    });
+    try{
+        const fileRef = ref(storage, `image/image-${Date.now()}`);
+        const result = await uploadBytes(fileRef, blob);
+        // We're done with the blob, close and release it
+        blob.close();
+        return await getDownloadURL(fileRef);
+    }catch(error) {
+        alert(`Error 1 : ${error}`)
+        console.log(error)
     }
     }
 
-
+    const tranferDeviceInToServer = async (transferDeviceObj, infoData, ownerSign) => {
+        console.log("🚀 ~ file: TransferDevice.js:114 ~ tranferDeviceInToServer ~ ownerSign:", ownerSign)
+        setLoading(true);
+        const ownerSignUrl = await uploadImageAsync(ownerSign);
+        if(ownerSignUrl){
+            console.log("🚀 ~ file: TransferDevice.js:118 ~ tranferDeviceInToServer ~ ownerSignUrl:", ownerSignUrl)
+            const transferDeviceInfo = {...transferDeviceObj, ownerSignUrl};
+        await axios.put(`http://192.168.0.154:5000/devicetransferStatusUpdate/`,{infoData})
+        .then((res) => {
+        if (res.data.modifiedCount === 1){
+            try{
+                console.log("🚀 ~ file: TransferDevice.js:126 ~ .then ~ transferDeviceInfo:", transferDeviceInfo)
+                axios.post(`http://192.168.0.154:5000/reciveTransferDevice/`, {transferDeviceInfo})
+                .then((res) => {
+                if (res.data.acknowledged){
+                alert("Please Copy Your Device Transfer Security Code and Share Your Reciver");
+                setLoading(false);
+                navigation.navigate('Home')
+                }
+            })
+            }catch (err) {
+                setLoading(false);
+                console.log(err);
+                alert('Device Added Feild');
+            } finally {setLoading(false);}
+        }}
+        )
+        }
+    }
 
   return (
     <ScrollView style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
@@ -109,19 +200,33 @@ const TransferDevice =  ({navigation, route}) => {
             {errors.transferDate && <Text style={{color: COLORS.red500}}>Date is required</Text>}
             </View>
             <View>
-                <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Device Transfer Fee</Text>
-                <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
-                <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Total Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity} Token</Text>
+                <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Draw Your Signature</Text>
+                <View style={styles.signCanvasContainer}>
+                <View style={{ height: imgHeight, width: imgWidth, paddingVertical: 20, borderWidth: 1,borderColor: COLORS.slate200,borderRadius: 4, }}>
+                <SignatureScreen
+                ref={signatureRef}
+                webStyle={style}
+                descriptionText="Sign"
+                onOK={handleOK}
+                />
                 </View>
-                <View style={{paddingHorizontal: SIZES.small, borderBottomColor: COLORS.slate200, borderBottomWidth: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Transfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>0 Token</Text>
-                </View>
-                <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500}}>Available Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{user?.tokenQuantity && itemQuantity?.tokenQuantity - 0} Token</Text>
-                </View>
+                <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10}}>
+                <TouchableOpacity style={styles.signBtn}  onPress={handleReset} >
+                <Entypo name="eraser" size={18} color={COLORS.white500} />
+                <Text style={{color: COLORS.white500}}>Reset</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.signBtn}  onPress={handUndo}>
+                <MaterialIcons name="undo" size={18} color={COLORS.white500} />
+                <Text style={{color: COLORS.white500}}>Undo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.signBtn}  onPress={handleRedo}>
+                <MaterialIcons name="redo" size={18} color={COLORS.white500} />
+                <Text style={{color: COLORS.white500}}>Redo</Text>
+                </TouchableOpacity>
                 </View>
             </View>
+            </View>
+            
             <View>
                 <TouchableOpacity onPress={toggleCheckbox}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -136,9 +241,9 @@ const TransferDevice =  ({navigation, route}) => {
         </KeyboardAvoidingView>
         <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 30 }}>
         {
-        isLoading ? 
+        loading ? 
         <Pressable style={styles.loginBtn}> 
-        <ActivityIndicator size="large" color={COLORS.white500}/> 
+        <ActivityIndicator color={COLORS.white500}/> 
         </Pressable> : 
         <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
         <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to Transfer</Text>
@@ -165,6 +270,10 @@ const styles = StyleSheet.create({
         marginBottom: SIZES.xSmall, 
         padding: 10
     },
+    signCanvasContainer:{
+        flexDirection:"column",
+        gap: 10
+    },
     searchContainer: {
         alignItems: "center",
         flexDirection: "row",
@@ -186,8 +295,8 @@ const styles = StyleSheet.create({
     },
     container: {
         backgroundColor: COLORS.white500,
-        },
-        inputBox: {
+    },
+    inputBox: {
         paddingVertical: SIZES.xSmall,
         paddingHorizontal: SIZES.medium,
         borderRadius: SIZES.xSmall,
@@ -195,8 +304,8 @@ const styles = StyleSheet.create({
         width: "100%",
         borderWidth: 1,
         borderColor: COLORS.slate200,
-        },
-        referenceInputBox: {
+    },
+    referenceInputBox: {
         paddingVertical: SIZES.medium,
         paddingHorizontal: SIZES.medium,
         borderRadius: SIZES.xSmall,
@@ -204,8 +313,8 @@ const styles = StyleSheet.create({
         width: 300,
         borderWidth: 1,
         borderColor: COLORS.slate200,
-        },
-        loginBtn: {
+    },
+    loginBtn: {
         backgroundColor: COLORS.blue500,
         width: "100%",
         paddingVertical: SIZES.small,
@@ -215,31 +324,20 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderColor: COLORS.blue500,
         borderWidth: 1,
-        },
-        disableBtn: {
+    },
+    signBtn: {
         backgroundColor: COLORS.blue500,
-        width: "100%",
-        paddingVertical: SIZES.small,
-        paddingHorizontal: SIZES.large,
-        borderRadius: SIZES.small,
+        flex: 1,
+        paddingVertical: 8,
+        paddingHorizontal: SIZES.small,
+        borderRadius: 6,
         alignItems: "center",
         justifyContent: "center",
         borderColor: COLORS.blue500,
         borderWidth: 1,
-        opacity: 0.5,
-        },
-        googleLoginBtn: {
-        backgroundColor: COLORS.white500,
-        width: 300,
-        paddingVertical: SIZES.small,
-        borderRadius: SIZES.xSmall,
         flexDirection: "row",
-        gap: SIZES.small,
-        alignItems: "center",
-        justifyContent: "center",
-        borderColor: COLORS.slate200,
-        borderWidth: 1,
-        }
+        gap: 5,
+    }
 });
 
 export default TransferDevice

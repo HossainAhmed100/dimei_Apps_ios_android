@@ -36,7 +36,6 @@ const UpdateSellingPost = ({navigation, route}) => {
       return res.data;
     } 
   });
-  console.log(sellingDeviceImages)
   const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {
     sellingTitle: sellingDevice?.sellingTitle,
     devciePrice: sellingDevice?.devciePrice,
@@ -165,7 +164,7 @@ const UpdateSellingPost = ({navigation, route}) => {
             <Text style={styles.inputTextLabel}>Selling Post Title *</Text>
             <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput style={styles.inputBox} placeholder="Enter NID Number" onBlur={onBlur} onChangeText={onChange} value={sellingDevice?.sellingTitle} />
+                <TextInput style={styles.inputBox} placeholder="Write Post Title" onBlur={onBlur} onChangeText={onChange} value={sellingDevice?.sellingTitle} />
               )}
               name="sellingTitle"
             />
@@ -195,7 +194,7 @@ const UpdateSellingPost = ({navigation, route}) => {
             <Text style={styles.inputTextLabel}>Picup Address *</Text>
             <Controller control={control} rules={{required: true,}}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput style={styles.inputBox} placeholder="Enter your Motherr's Name" onBlur={onBlur} onChangeText={onChange} value={sellingDevice?.listingAddress} />
+                <TextInput style={styles.inputBox} placeholder="Write Pickup Address" onBlur={onBlur} onChangeText={onChange} value={sellingDevice?.listingAddress} />
               )}
               name="listingAddress"
             />
