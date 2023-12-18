@@ -134,36 +134,6 @@ const TransferDevice =  ({navigation, route}) => {
     }
     }
 
-    const tranferDeviceInToServer = async (transferDeviceObj, infoData, ownerSign) => {
-        console.log("🚀 ~ file: TransferDevice.js:114 ~ tranferDeviceInToServer ~ ownerSign:", ownerSign)
-        setLoading(true);
-        const ownerSignUrl = await uploadImageAsync(ownerSign);
-        if(ownerSignUrl){
-            console.log("🚀 ~ file: TransferDevice.js:118 ~ tranferDeviceInToServer ~ ownerSignUrl:", ownerSignUrl)
-            const transferDeviceInfo = {...transferDeviceObj, ownerSignUrl};
-        await axios.put(`http://192.168.0.154:5000/devicetransferStatusUpdate/`,{infoData})
-        .then((res) => {
-        if (res.data.modifiedCount === 1){
-            try{
-                console.log("🚀 ~ file: TransferDevice.js:126 ~ .then ~ transferDeviceInfo:", transferDeviceInfo)
-                axios.post(`http://192.168.0.154:5000/reciveTransferDevice/`, {transferDeviceInfo})
-                .then((res) => {
-                if (res.data.acknowledged){
-                alert("Please Copy Your Device Transfer Security Code and Share Your Reciver");
-                setLoading(false);
-                navigation.navigate('Home')
-                }
-            })
-            }catch (err) {
-                setLoading(false);
-                console.log(err);
-                alert('Device Added Feild');
-            } finally {setLoading(false);}
-        }}
-        )
-        }
-    }
-
   return (
     <ScrollView style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
         <View style={{padding: SIZES.small}}>

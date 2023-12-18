@@ -1,36 +1,36 @@
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, View, Image } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthProvider';
-import { useForm, Controller } from "react-hook-form";
-import { COLORS, SIZES } from '../../constants';
 import { format } from 'date-fns';
-import * as ImagePicker from 'expo-image-picker';
+import { Divider } from '@rneui/themed';
 import { storage } from '../../FirebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { COLORS, SIZES } from '../../constants';
+import { useQuery } from '@tanstack/react-query';
+import * as ImagePicker from 'expo-image-picker';
+import { useForm, Controller } from "react-hook-form";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { AuthContext } from '../../context/AuthProvider';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons, AntDesign  } from '@expo/vector-icons';
-import { Divider } from '@rneui/themed';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 const VerifyDeviceAcceft = ({navigation, route})  => {
-  const transferDeviceId = route.params.transferDeviceId;
-  const [checked, setChecked] = useState(false);
-  const [acceptStatus, setAcceptStatus] = useState("");
-  const [firebaseIamge, setFirebaseIamge] = useState([]);
-  const [selectedImages, setSelectedImages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const firstTimeRef = useRef(true);
   const { user } = useContext(AuthContext);
   const todyDate = new Date().toISOString();
-  const firstTimeRef = useRef(true);
+  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [acceptStatus, setAcceptStatus] = useState("");
+  const [firebaseIamge, setFirebaseIamge] = useState([]);
+  const transferDeviceId = route.params.transferDeviceId;
+  const [selectedImages, setSelectedImages] = useState([]);
   const [zeroTokenAlert, setZeroTokenAlert] = useState(false);
   const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {deviceSecrentCode: "", transferDate: format(new Date(todyDate), 'yyyy-MM-dd')}})
   
-  const toggleCheckbox = () => {setChecked(!checked)};
   const showAlert = () => {setZeroTokenAlert(true)};
   const hideAlert = () => {setZeroTokenAlert(false)};
+  const toggleCheckbox = () => {setChecked(!checked)};
 
   const { data: itemQuantity = [], refetch } = useQuery({ 
     queryKey: ['itemQuantity', user?.userEmail], 
@@ -82,7 +82,6 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
           const uploadPromises = selectedImages.map(async (uri) => {
             return await uploadImageAsync(uri);
           });
-      
           const newFirebaseImages = await Promise.all(uploadPromises);
           setFirebaseIamge([...newFirebaseImages]);
           const deviceImgList = [...newFirebaseImages];
@@ -121,8 +120,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     } finally {
       setLoading(false);
     }
-   };
-
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -186,6 +184,17 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
 
   return (
     <ScrollView style={{padding: SIZES.medium, backgroundColor: COLORS.white500, minHeight: "100%"}}>
+        <View View style={styles.cardContainer}>
+        {acceptDevice?.devicePicture && 
+        <Image source={{uri: acceptDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
+        <View>
+            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{acceptDevice?.deviceModelName}</Text>
+            <Text style={styles.phoneDetailsText}>IMEI : {acceptDevice?.deviceImei}</Text>
+            <Text style={styles.phoneDetailsText}>Internal : {acceptDevice?.ram} / {acceptDevice?.storage}</Text>
+            <Text style={styles.phoneDetailsText}>Brand : {acceptDevice?.brand}</Text>
+            <Text style={styles.phoneDetailsText}>Color : {acceptDevice?.colorVarient}</Text>
+        </View>
+        </View>
         <View style={{gap: 10}}>
           <View>
             <TouchableOpacity style={styles.selectPhotoBtn} onPress={pickImage}>
@@ -204,17 +213,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
           <Text>{`Selected: ${selectedImages.length}/10`}</Text>
         </View>
         <View style={{paddingVertical:10}}><Divider /></View>
-        <View View style={styles.cardContainer}>
-        {acceptDevice?.devicePicture && 
-        <Image source={{uri: acceptDevice?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/>} 
-        <View>
-            <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{acceptDevice?.deviceModelName}</Text>
-            <Text style={styles.phoneDetailsText}>IMEI : {acceptDevice?.deviceImei}</Text>
-            <Text style={styles.phoneDetailsText}>Internal : {acceptDevice?.ram} / {acceptDevice?.storage}</Text>
-            <Text style={styles.phoneDetailsText}>Brand : {acceptDevice?.brand}</Text>
-            <Text style={styles.phoneDetailsText}>Color : {acceptDevice?.colorVarient}</Text>
-        </View>
-        </View>
+        
         <View style={{gap: 10}}>
         <View>
         <Text style={{color: COLORS.slate500}}>Write Device Transfer Secret Code *</Text>
