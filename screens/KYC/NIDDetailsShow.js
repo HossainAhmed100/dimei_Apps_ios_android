@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
 import React from 'react'
 import { COLORS, SIZES } from '../../constants';
 import { useForm, Controller } from "react-hook-form";
@@ -11,9 +11,14 @@ const NIDDetailsShow = ({navigation, route}) => {
     const toggleCheckbox = () => {setChecked(!checked)};
     const nidData = {
       nidnumber: "5154895645", 
-      usernidname: "Hossain Ahmed", 
-      niduserfathersname: "Hidden", 
+      usernidname: userData?.userName, 
+      nameinBangla: userData?.nameinBangla, 
+      town: "সদর", 
+      city: "ময়মনসিংহ", 
+      unionWard: "৪ং", 
+      villageBlock: "চর চিফালী", 
       nidusermothersname: "Hidden", 
+      niduserfathersname: "Hidden", 
       niduserdateofbirth: "19/02/2000",
       niduserpresentsaddress: "বাসা হোল্ডিং নাই বাড়ি, গ্রাম/রাস্তা: চর চিফালী, ডাকঘর: সুকদেব - ১৩০০,",
       niduserpermanentaddress: "বাসা হোল্ডিং নাই বাড়ি, গ্রাম/রাস্তা: চর চিফালী, ডাকঘর: সুকদেব - ১৩০০,",
@@ -33,7 +38,7 @@ const NIDDetailsShow = ({navigation, route}) => {
     }
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-     <View style={{flex: 1, padding: SIZES.small}}>
+     <ScrollView style={{flex: 1, padding: SIZES.small}}>
      <View style={{ gap: 20 }}>
           <View>
             <Text style={styles.inputTextLabel}>NID Number</Text>
@@ -105,7 +110,8 @@ const NIDDetailsShow = ({navigation, route}) => {
             />
           {errors.userPassword && <Text style={{color: COLORS.red500}}>Your Parmanent Addres is required.</Text>}
           </View>
-          <View>
+          <View style={{paddingBottom: 80
+          }}>
             <TouchableOpacity onPress={toggleCheckbox}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
@@ -116,7 +122,7 @@ const NIDDetailsShow = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
     </View>
-    </View>
+    </ScrollView>
     <View style={{position: "absolute", bottom: 0, width: "100%"}}>
     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.actionBtn}>

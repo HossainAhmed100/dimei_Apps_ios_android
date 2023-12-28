@@ -1,5 +1,5 @@
 
-const OwnerTransferInvoice = () => `
+const OwnerTransferInvoice = (deviceOwnerData, reciverOwnerSign, reciverOwnerData, deviceOwnerSign, transDevcieInfo, invoiceId) => `
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
@@ -15,7 +15,7 @@ const OwnerTransferInvoice = () => `
             PhoneBik.com<br>
         </div>
         <div style=" display: flex; flex-direction: column; align-items: flex-start;">
-            OwnerShip Transfer invoice
+            OwnerShip Transfer invoice #${invoiceId}
         </div>
     </div>
     <img style="height: 90px; width: 90px; margin-right:15px; border-radius: 10px" src="https://i.ibb.co/K9Fz2Xr/icon.png" />
@@ -26,30 +26,30 @@ const OwnerTransferInvoice = () => `
     </div>
     <div style="height: auto;width: 100%;display: flex;flex-direction: row; align-items: center; justify-content: space-between; gap: 10">
     <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 5;">
-        <img style="height: 140px; width: 90px; margin-right:15px;border-radius: 4px" src="https://i.ibb.co/9sm5Y9t/329413355-1127951397871370-7922564190006557504-n.jpg" />
+        <img style="height: 140px; width: 90px; margin-right:15px;border-radius: 4px; object-fit: cover;object-position: center;" src=${deviceOwnerData?.userProfilePic} />
         <div>
             <p style="font-size: 14px;">
                 আমি (বিক্রেতা) <br>
-                মো: ইয়াসিন সরকার,
-                পিতা মো: ইউনুছ আলি 
-                গ্রাম/ব্লক: ময়মনসিংহ, ইউনিয়ন/ওয়ার্ড : ৪ং<br>
-                থানা: সদর, জেলা: ময়মনসিংহ
-                ভোটার আইডি কার্ড নং: 453794852946<br>
-                মোবাইল নম্বর : 01800000000
+                মো: ${deviceOwnerData?.nameinBangla},
+                পিতা মো: ${deviceOwnerData?.niduserfathersname} <br>
+                মোবাইল নম্বর : ${deviceOwnerData?.userPhone}<br>
+                থানা: ${deviceOwnerData?.town}, জেলা: ${deviceOwnerData?.city}<br>
+                গ্রাম/ব্লক: ${deviceOwnerData?.villageBlock}, ইউনিয়ন/ওয়ার্ড : ${deviceOwnerData?.unionWard}<br>
+                ভোটার আইডি কার্ড নং: ${deviceOwnerData?.nidnumber}
             </p>
         </div>
     </div>
     <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 5;">
-        <img style="height: 140px; width: 90px; margin-right:15px; border-radius: 4px" src="https://i.ibb.co/MZjwcZx/355132375-947562279835069-1334785686561488687-n.jpg" />
+        <img style="height: 140px; width: 90px; margin-right:15px; border-radius: 4px; object-fit: cover;object-position: center;" src=${reciverOwnerData?.userProfilePic} />
         <div>
-            <p style="font-size: 14px;">
+                <p style="font-size: 14px;">
                 আমি (ক্রেতা) <br>
-                মো: ইয়াসিন সরকার,
-                পিতা মো: ইউনুছ আলি 
-                গ্রাম/ব্লক: ময়মনসিংহ, ইউনিয়ন/ওয়ার্ড : ৪ং<br>
-                থানা: সদর, জেলা: ময়মনসিংহ
-                ভোটার আইডি কার্ড নং: 453794852946<br>
-                মোবাইল নম্বর : 01800000000
+                মো: ${reciverOwnerData?.nameinBangla},
+                পিতা মো: ${reciverOwnerData?.niduserfathersname} <br>
+                মোবাইল নম্বর : ${reciverOwnerData?.userPhone}<br>
+                থানা: ${reciverOwnerData?.town}, জেলা: ${reciverOwnerData?.city}<br>
+                গ্রাম/ব্লক: ${reciverOwnerData?.villageBlock}, ইউনিয়ন/ওয়ার্ড : ${reciverOwnerData?.unionWard}<br>
+                ভোটার আইডি কার্ড নং: ${reciverOwnerData?.nidnumber}
             </p>
         </div>
     </div>
@@ -60,48 +60,43 @@ const OwnerTransferInvoice = () => `
     </div>
     <div style="height:auto;">
        <p>
-        আমি (বিক্রেতা : মো: ইয়াসিন সরকার) আমার এই মডেল এর মোবাইলটি <br>
+        আমি (বিক্রেতা : মো: ${deviceOwnerData?.nameinBangla}) আমার এই মডেল এর মোবাইলটি <br>
         ------------------------------------------------------------ <br>
-        Samsung Galaxy A20 <br>
-        IMEI 01: 83038393831930  <br>
-        IMEI 02: 949794964694854949  <br>
-        RAM: 4GB ROM: 128GB <br>
+        ${transDevcieInfo?.deviceModelName} <br>
+        Brand: ${transDevcieInfo?.brand}  <br>
+        IMEI 01: ${transDevcieInfo?.deviceImei}  <br>
+        RAM: ${transDevcieInfo?.ram} ROM: ${transDevcieInfo?.storage} <br>
         ------------------------------------------------------------ <br>
-        (ক্রেতা) মো: হুসাইন আহমেদ এর কাছে বিক্রি করলাম  <br>
+        (ক্রেতা) মো: ${reciverOwnerData?.nameinBangla} এর কাছে বিক্রি করলাম  <br>
         মোবাইল এ যদি কোনো প্রকার মামলা অথবা মোবাইল চুরির হয়ে থাকে তাহলে  <br>
-        আমি (বিক্রেতা : মো: ইয়াসিন সরকার) এর সকল প্রকার দায়বার গ্রহণ করিয়া নিব এবং <br>
+        আমি (বিক্রেতা : মো: ${deviceOwnerData?.nameinBangla}) এর সকল প্রকার দায়বার গ্রহণ করিয়া নিব এবং <br>
         মোবাইলের সম্পুর্ন টাকা ফেরত প্রদান করিব।
        </p>
     </div>
     <div style="height:auto;">
         <p>
-            সময় :Friday 11:00 PM <br>
-            তারিখ : 11/12/2023 <br>
-            এস্থান : Dhaka, Bangladesh <br>
+            সময় : ${transDevcieInfo?.formattedDayTime} <br>
+            তারিখ : ${transDevcieInfo?.formattedDate} <br>
+            এস্থান : ${transDevcieInfo?.address} <br>
         </p>
     </div>
-    <div style="height:auto; padding-top: 40px;">
+    <div style="height:auto; padding-top: 30px;">
         <div style="flex-direction: row; align-items: center; justify-content: space-between; display: flex;">
-            <div style="text-align: center;">
-                <p>-----------------------------</p>
-                <p>বিক্রেতার স্বাক্ষর</p>
-            </div>
-            <div style="text-align: center;">
-                <p>-----------------------------</p>
-                <p>বিক্রেতার স্বাক্ষর</p>
-            </div>
+            <div style="text-align: center; flex-direction: column; align-items: center; justify-content: center; gap:5px; display: flex">
+            <img style="height: 50px; width: 100px; border-radius: 4px; border-width: 1px solid black," src=${deviceOwnerSign} />
+            <span>-------------------------------</span>
+            <span>বিক্রেতার স্বাক্ষর</span>
         </div>
+        <div style="text-align: center; flex-direction: column; align-items: center; justify-content: center; gap:5px; display: flex">
+            <img style="height: 50px; width: 100px; border-radius: 4px" src=${reciverOwnerSign} />    
+            <span>-------------------------------</span>
+            <span>ক্রেতার স্বাক্ষর</span>
+        </div>
+    </div>
     </div>
     </div>
   </body>
 </html>
-`;
-
-const style = `
-    .container {
-      margin : 15px;
-      border : solid 2px #000
-    }
 `;
 
 export { OwnerTransferInvoice };

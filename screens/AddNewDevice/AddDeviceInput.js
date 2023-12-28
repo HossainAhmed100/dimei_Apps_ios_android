@@ -1,19 +1,18 @@
-import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'; 
-import { COLORS, SIZES } from '../../constants';
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { ActivityIndicator } from "react-native";
-import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthProvider';
-import { format } from 'date-fns';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from '../../FirebaseConfig';
-import { useQuery } from '@tanstack/react-query';
-import { Divider } from '@rneui/base';
-import { Controller, useForm } from 'react-hook-form';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { useFocusEffect } from '@react-navigation/native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native'; 
+import { Divider } from '@rneui/base';
+import { storage } from '../../FirebaseConfig';
+import { COLORS, SIZES } from '../../constants';
+import { ActivityIndicator } from "react-native";
+import { useQuery } from '@tanstack/react-query';
 import { MaterialIcons  } from '@expo/vector-icons';
+import { Controller, useForm } from 'react-hook-form';
+import { AuthContext } from '../../context/AuthProvider';
+import { useFocusEffect } from '@react-navigation/native';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 const AddDeviceInput = ({navigation, route}) => {
@@ -106,19 +105,21 @@ const AddDeviceInput = ({navigation, route}) => {
   const deviceOwnerList = [
     {
       ownarStatus: "",
-      ownerPhoto: ownerPhoto,
       ownerEmail: ownerEmail,
       deviceImei: deviceImei,
-      deviceNote: deviceInfo?.deviceNote,
+      ownerPhoto: ownerPhoto,
+      inVoiceDownloadURL: "",
+      ownerHaveAInvoice: false,
       thisIsCurrentOwner: true,
-      ownerName: user?.userName,
       deviceLostNoteMessage: "",
+      ownerName: user?.userName,
       thisIsPreviousOwner: false,
       deviceOrigin: dropDownValue,
       deviceListingDate: todyDate,
-      ownerId: user?.userAccountId,
       deviceTransferDate: todyDate,
+      ownerId: user?.userAccountId,
       thisIsUnAuthorizeOwner: false,
+      deviceNote: deviceInfo?.deviceNote,
       devcieOwnerSecretOTP: devcieOwnerSecretOTP,
     }
   ];   
@@ -194,8 +195,7 @@ const AddDeviceInput = ({navigation, route}) => {
           {devciePreview?.devicePicture ?
           <Image source={{uri: devciePreview?.devicePicture}} resizeMode="contain" style={{ borderRadius: 4, marginRight: 10, width: 100, height: 100}}/> :
           <ActivityIndicator />
-          }
-              
+          }  
           <View>
               <Text style={{fontSize: SIZES.medium, fontWeight: 500, color: COLORS.slate500}}>{devciePreview?.modelName}</Text>
               <Text style={{marginBottom: 3, color: COLORS.slate300, fontSize: SIZES.small}}>Ram : {devciePreview?.ram}</Text>
@@ -250,58 +250,27 @@ const AddDeviceInput = ({navigation, route}) => {
             {errors.deviceNote && <Text style={{color: COLORS.red500}}>Write Some Message Please</Text>}
             </View>
             }
-            
-            {/* <View>
-            <Text style={{color: COLORS.slate500}}>Reference</Text>
-            <View style={styles.referenceInputBox}>
-            <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 10}}>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%"}}>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10}}>
-            <Image source={{uri: "https://scontent.fdac24-3.fna.fbcdn.net/v/t39.30808-6/329413355_1127951397871370_7922564190006557504_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeF-UePABmkG1uQtAUJt3yEZpOGY48SGGvik4ZjjxIYa-Olrwqvc4ftFWpiMcK0D65YSo6ZG_uGEwwsjlMR4zWDK&_nc_ohc=TNbreiFkDnkAX-Qbw4S&_nc_ht=scontent.fdac24-3.fna&oh=00_AfC5hu5CX7Gcnl6dDWlyNs07qy8cG3RvTfS3kBOntsk8qA&oe=64C65E62"}} style={{borderRadius: 6, width: 35, height: 35}}/>
-            <Text>Din islam</Text>
-            </View>
-            <Ionicons name="close-outline" size={20} color={COLORS.slate300} />
-            </View>
-            <View style={{width: "100%"}}>
-            <Divider />
-            </View>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%"}}>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10}}>
-            <Image source={{uri: "https://scontent.fdac24-4.fna.fbcdn.net/v/t39.30808-6/355132375_947562279835069_1334785686561488687_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeHHtN1wxZ7Qoqh8vwhkbkCKhM1o-7zlIv6EzWj7vOUi_oWf04NR1LLxwF1Bz-DSWyezZDB1uQ_iKoULtJ9eLu6-&_nc_ohc=OaLd5JqEld8AX93-voz&_nc_ht=scontent.fdac24-4.fna&oh=00_AfAufPcPO0Go9QPCrrkmsZikzlYoXF0SjSqmT7uldEPaGw&oe=64C70281"}} style={{borderRadius: 6, width: 35, height: 35}}/>
-            <Text>Ahasan Habib</Text>
-            </View>
-            <Ionicons name="close-outline" size={20} color={COLORS.slate300} />
-            </View>
-            <View style={{width: "100%"}}>
-            <Divider />
-            </View>
-            <View style={{width: "100%"}}>
-            <Pressable style={{backgroundColor: COLORS.slate100, width: "100%", paddingVertical: SIZES.small, paddingHorizontal: SIZES.large, borderRadius: SIZES.small, alignItems: "center", justifyContent: "center", borderColor: COLORS.slate200, borderWidth: 1,}} >
-            <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500 }}>Add Reference +</Text>
-            </Pressable>
-            </View>
-            </View>
-            </View>
-            </View> */}
             {
-              (dropDownValue === "mynewDevice" || dropDownValue === null) &&
-              <View>
-              <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device Transfer Fee</Text>
-              <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
-              <View style={styles.tokenItem}>
-              <Text style={{color: COLORS.slate500}}>Total Token</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity} Token</Text>
-              </View>
-              <Divider />
-              <View style={styles.tokenItem}>
-              <Text style={{color: COLORS.slate500}}>Transfer Fee</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
-              </View>
-              <Divider />
-              <View style={styles.tokenItem}>
-              <Text style={{color: COLORS.slate500}}>Available Token</Text>
-              <Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity && itemQuantity?.tokenQuantity - 1} Token</Text>
-              </View>
-              </View>
-              </View>
+            (dropDownValue === "mynewDevice" || dropDownValue === null) &&
+            <View>
+            <Text style={{color: COLORS.slate500, marginBottom: 6}}>Device Transfer Fee</Text>
+            <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
+            <View style={styles.tokenItem}>
+            <Text style={{color: COLORS.slate500}}>Total Token</Text>
+            <Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity} Token</Text>
+            </View>
+            <Divider />
+            <View style={styles.tokenItem}>
+            <Text style={{color: COLORS.slate500}}>Transfer Fee</Text>
+            <Text style={{color: COLORS.slate500, fontWeight: 700}}>1 Token</Text>
+            </View>
+            <Divider />
+            <View style={styles.tokenItem}>
+            <Text style={{color: COLORS.slate500}}>Available Token</Text>
+            <Text style={{color: COLORS.slate500, fontWeight: 700}}>{itemQuantity?.tokenQuantity && itemQuantity?.tokenQuantity - 1} Token</Text>
+            </View>
+            </View>
+            </View>
             }
             
             <View style={{marginBottom: 30}}>
@@ -322,13 +291,13 @@ const AddDeviceInput = ({navigation, route}) => {
         </TouchableOpacity> :
         itemQuantity?.tokenQuantity === 0 ? 
         <TouchableOpacity onPress={() => showAlert()} style={[styles.loginBtn, {opacity: 0.5}]} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: "#fff"}}> Confirm to ADD</Text>
         </TouchableOpacity> : loading ?
         <TouchableOpacity style={styles.loginBtn}> 
         <ActivityIndicator color={COLORS.white500}/> 
         </TouchableOpacity> :
         <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.loginBtn} >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}> Confirm to ADD</Text>
+        <Text style={{fontSize: SIZES.medium, fontWeight: 600, color: "#fff"}}> Confirm to ADD</Text>
         </TouchableOpacity> 
         }
         <AwesomeAlert

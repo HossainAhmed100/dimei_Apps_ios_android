@@ -36,6 +36,7 @@ const TransferDevice =  ({navigation, route}) => {
     const toggleCheckbox = () => {setChecked(!checked)};
     const handUndo = () => {signatureRef.current.undo()};
     const handleRedo = () => {signatureRef.current.redo()};
+    
     const handleOK = (signature) => {
         setSignatureSign(signature); 
         if(signature){
@@ -241,8 +242,8 @@ const styles = StyleSheet.create({
         padding: 10
     },
     signCanvasContainer:{
+        gap: 10,
         flexDirection:"column",
-        gap: 10
     },
     searchContainer: {
         alignItems: "center",

@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
-import { Feather, Ionicons  } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { COLORS, SIZES, images } from '../../constants';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet, useWindowDimensions } from 'react-native';
 import 'react-native-get-random-values';
 import { storage } from '../../FirebaseConfig';
+import * as ImagePicker from 'expo-image-picker';
+import { Feather, Ionicons  } from '@expo/vector-icons';
+import { COLORS, SIZES, images } from '../../constants';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 
 const NIDPhotoUpload = ({navigation, route}) => {
-    const userInfo = route.params.userInfo ;
+    const userInfo = route.params.userInfo;
+    const {height, width} = useWindowDimensions();
     const [frontNidImage, setFrontNidImage] = useState(null);
     const [backsideNidPhoto, setBacksideNidPhoto] = useState(null);
     const [frontNidImageLoding, setFrontNidImageLoding] = useState(false);
     const [backNidImageLoding, setBackNidImageLoding] = useState(false);
     const [selectFrontSideNid, setselectFrontSideNid] = useState(null);
     const [selectBackSideNid, setselectBackSideNid] = useState(null);
-
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -94,7 +94,6 @@ const NIDPhotoUpload = ({navigation, route}) => {
       }
   
     }
-
     const nextStep = () => {
       const nidImageUrl = {frontNidImage, backsideNidPhoto};
       const userData = {...userInfo, nidImageUrl};
@@ -103,16 +102,16 @@ const NIDPhotoUpload = ({navigation, route}) => {
 
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-      <View style={{flex: 1, justifyContent: "center"}}>
-        <View style={{marginTop: SIZES.medium}}>
+      <View>
+        <View style={{paddingVertical: SIZES.medium}}>
           <Text style={styles.headerTitle}>Please Verify Your</Text>
           <Text style={styles.headerTitle}>National NID Card</Text>
         </View>
         <Text style={styles.nidCardTitle}>Scan the front side of NID card with camera</Text>
         <View style={styles.nidCardContainer}>
         {selectFrontSideNid ? 
-          <Image source={{uri: selectFrontSideNid }}  style={styles.nidCardImage}/> : 
-          <Image source={images.frontNid} style={styles.nidCardImage}/>
+          <Image source={{uri: selectFrontSideNid }}  style={styles.nidCardImage(height)}/> : 
+          <Image source={images.frontNid} style={styles.nidCardImage(height)}/>
         }
         {frontNidImage ? 
           <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={styles.nidRemoveBtn}>
@@ -125,11 +124,11 @@ const NIDPhotoUpload = ({navigation, route}) => {
           </TouchableOpacity>
         }
         </View>
-        <Text style={styles.nidCardTitle}>Scan the front side of NID card with camera</Text>
+        <Text style={styles.nidCardTitle}>Scan the Back side of NID card with camera</Text>
         <View  style={styles.nidCardContainer}>
           {selectBackSideNid ? 
-            <Image source={{ uri: selectBackSideNid }}  style={styles.nidCardImage}/> : 
-            <Image source={images.backnid} style={styles.nidCardImage}/>}
+            <Image source={{ uri: selectBackSideNid }}  style={styles.nidCardImage(height)}/> : 
+            <Image source={images.backnid} style={styles.nidCardImage(height)}/>}
             {backsideNidPhoto ? 
               <TouchableOpacity onPress={() =>  setBacksideNidPhoto(null)}  style={styles.nidRemoveBtn}>
                 <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300} />
@@ -139,7 +138,7 @@ const NIDPhotoUpload = ({navigation, route}) => {
                   <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
                   <Feather name="camera" size={24} color={COLORS.white500} />}
               </TouchableOpacity>
-          }
+            }
         </View>
       </View>
       <View style={{position: "absolute", bottom: 0, width: "100%"}}>
@@ -172,15 +171,15 @@ const styles = StyleSheet.create({
     fontSize: SIZES.large, 
     color: COLORS.slate600, 
   },
-  nidCardImage:{
-    height: 210, 
+  nidCardImage: (height) => ({
+    height: height / 3.5, 
     width: "100%", 
     borderRadius: 10,
-  },
+  }),
   nidCardTitle:{
     textAlign: "center", 
     color: COLORS.slate300, 
-    marginTop: SIZES.medium,
+    // marginTop: SIZES.medium,
   },
   bottomNavigationBtnText:{
     fontWeight: 500, 
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
     color: COLORS.white500, 
   },
   nidCardContainer:{
-    paddingVertical: SIZES.large,
+    paddingVertical: SIZES.medium,
     paddingHorizontal: SIZES.medium, 
   },
   bottomActionBtn:{

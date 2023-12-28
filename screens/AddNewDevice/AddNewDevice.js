@@ -44,7 +44,7 @@ const AddNewDevice = ({ navigation }) => {
       <View style={{flexDirection: "row", gap: 10, paddingVertical: 10}}>
       <Controller control={control} rules={{required: true,}}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput style={styles.inputBox} placeholder="Enter IMEI e.g 12345678912" onBlur={onBlur} onChangeText={onChange} value={value} />
+          <TextInput keyboardType="number-pad" style={styles.inputBox} placeholder="Enter IMEI e.g 12345678912" onBlur={onBlur} onChangeText={onChange} value={value} />
         )}
         name="inputdeviceimei"
       />

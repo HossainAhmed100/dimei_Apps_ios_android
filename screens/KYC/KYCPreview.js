@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
 import { Feather, Ionicons  } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS, SIZES } from '../../constants';
@@ -12,6 +12,7 @@ import { AuthContext } from '../../context/AuthProvider';
 
 const KYCPreview = () => {
     const { user } = useContext(AuthContext);
+    const {height, width} = useWindowDimensions();
     const [frontNidImage, setFrontNidImage] = useState(null);
     const [backsideNidPhoto, setBacksideNidPhoto] = useState(null);
     const [frontNidImageLoding, setFrontNidImageLoding] = useState(false);
@@ -97,57 +98,114 @@ const KYCPreview = () => {
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
     <View style={{justifyContent: "center",}}>
-      <View style={{marginTop: 15}}>
+      <View style={{marginTop: 5}}>
       <Text style={{fontSize: SIZES.large, color: COLORS.slate600, fontWeight: 500, textAlign: "center"}}>Submit your NID</Text>
       </View>
-      <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
-
-      <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      {
-        user?.nidImageUrl?.frontNidImage && 
-        <Image source={{ uri: user?.nidImageUrl?.frontNidImage }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/>
+      <Text style={styles.nidCardTitle}>Scan the front side of NID card with camera</Text>
+      <View  style={styles.nidCardContainer}>
+      {user?.nidImageUrl?.frontNidImage && 
+      <Image source={{ uri: user?.nidImageUrl?.frontNidImage }} style={styles.nidCardImage(height)}/>
       }
       {frontNidImage ? 
-      <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
-      <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300}/>
-      </TouchableOpacity>  : 
-      <TouchableOpacity onPress={pickImage}  style={{width: 50, height: 50, backgroundColor: COLORS.blue500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 20, right:SIZES.large}}>
-      {frontNidImageLoding ? 
-      <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
-      <Feather name="camera" size={24} color={COLORS.white500} />}
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() =>  setFrontNidImage(null)}  style={styles.nidRemoveBtn}>
+          <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300}/>
+        </TouchableOpacity> : 
+        <TouchableOpacity onPress={pickImage}  style={styles.nidCameraBtn}>
+          {frontNidImageLoding ? 
+            <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
+            <Feather name="camera" size={24} color={COLORS.white500} />}
+        </TouchableOpacity>
       }
-      
       </View>
 
-      <Text style={{textAlign: "center", color: COLORS.slate300, marginTop: SIZES.large}}>Scan the front side of NID card with camera</Text>
-
-      <View  style={{paddingHorizontal: SIZES.medium, paddingVertical: SIZES.xxLarge}}>
-      <Image source={{ uri: user?.nidImageUrl?.backsideNidPhoto }}  style={{width: "100%", height: 180, borderRadius: 10, resizeMode: "contain"}}/> 
-      {backsideNidPhoto ? <TouchableOpacity onPress={() =>  setBacksideNidPhoto(null)}  style={{width: 35, height: 35, backgroundColor: COLORS.slate100, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, top: 40, right:24}}>
-      <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300} />
-      </TouchableOpacity>  : <TouchableOpacity onPress={pickBackSideImage}  style={{width: 50, height: 50, backgroundColor: COLORS.blue500, alignItems: "center", justifyContent: "center", position: "absolute", borderRadius: 50, bottom: 20, right:SIZES.large}}>
-      {backNidImageLoding ? <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : <Feather name="camera" size={24} color={COLORS.white500} />}
-      </TouchableOpacity>
+      <Text style={styles.nidCardTitle}>Scan the Back side of NID card with camera</Text>
+      <View  style={styles.nidCardContainer}>
+      <Image source={{ uri: user?.nidImageUrl?.backsideNidPhoto }}  style={styles.nidCardImage(height)}/> 
+      {backsideNidPhoto ? 
+        <TouchableOpacity onPress={() =>  setBacksideNidPhoto(null)}  style={styles.nidRemoveBtn}>
+          <Ionicons name="ios-close-sharp" size={24} color={COLORS.slate300} />
+        </TouchableOpacity>  : 
+        <TouchableOpacity onPress={pickBackSideImage}  style={styles.nidCameraBtn}>
+          {backNidImageLoding ? 
+            <ActivityIndicator size={"large"} color={COLORS.white500} animating/> : 
+            <Feather name="camera" size={24} color={COLORS.white500} />}
+        </TouchableOpacity>
       }
       </View>
 
     </View>
     <View style={{position: "absolute", bottom: 0, width: "100%"}}>
-    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
-    <TouchableOpacity style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>BACK</Text>
-    </TouchableOpacity>
-    <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}> 
-    <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>1/3</Text>
-    </View>
-    <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
-        <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>NEXT</Text>
-    </TouchableOpacity>
-    </View>
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1}}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.bottomActionBtn}>
+          <Text style={styles.bottomNavigationBtnText}>BACK</Text>
+        </TouchableOpacity>
+        <View> 
+          <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>1/3</Text>
+        </View>
+        <TouchableOpacity activeOpacity={.7} style={styles.bottomActionBtn}>
+          <Text style={{color: COLORS.slate200, fontWeight: 500, fontSize: SIZES.medium}}>NEXT</Text>
+        </TouchableOpacity>
+      </View>
     </View>
     </View>
   )
 }
+
+
+const styles = StyleSheet.create({
+  headerTitle:{
+    fontWeight: 500, 
+    textAlign: "center",
+    fontSize: SIZES.large, 
+    color: COLORS.slate600, 
+  },
+  nidCardImage: (height) => ({
+    height: height / 3.5, 
+    width: "100%", 
+    borderRadius: 10,
+  }),
+  nidCardTitle:{
+    textAlign: "center", 
+    color: COLORS.slate300, 
+    // marginTop: SIZES.medium,
+  },
+  bottomNavigationBtnText:{
+    fontWeight: 500, 
+    fontSize: SIZES.medium,
+    color: COLORS.white500, 
+  },
+  nidCardContainer:{
+    paddingVertical: SIZES.medium,
+    paddingHorizontal: SIZES.medium, 
+  },
+  bottomActionBtn:{
+    alignItems: "center", 
+    justifyContent: "center", 
+    paddingVertical: SIZES.medium,
+    paddingHorizontal: SIZES.large, 
+  },
+  nidCameraBtn:{
+    width: 50, 
+    bottom: 30, 
+    height: 50, 
+    borderRadius: 50, 
+    right:SIZES.large,
+    alignItems: "center", 
+    position: "absolute", 
+    justifyContent: "center", 
+    backgroundColor: COLORS.blue500, 
+  },
+  nidRemoveBtn:{
+    top: 30, 
+    right:24,
+    width: 35, 
+    height: 35, 
+    borderRadius: 50, 
+    position: "absolute", 
+    alignItems: "center", 
+    justifyContent: "center", 
+    backgroundColor: COLORS.slate100, 
+  }
+})
 
 export default KYCPreview

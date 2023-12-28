@@ -9,7 +9,7 @@ const PhoneVerify = () => {
   const { user } = useContext(AuthContext);
   return (
     <View style={{flex: 1, paddingHorizontal: SIZES.medium, backgroundColor: COLORS.white500}}>
-      <View style={{paddingVertical: 20, gap: 20,}}>
+      <View style={{paddingVertical: 10, gap: 20,}}>
         <View style={{alignItems: "center", width: "100%"}}>
         <Image source={images.numberForms} style={{width: 200, height: 200, resizeMode: "cover", }}/>
         </View>
@@ -27,10 +27,10 @@ const PhoneVerify = () => {
           <Divider orientation="vertical" color={COLORS.slate500}/>
           <TextInput placeholder='Enter your number' value={user?.userPhone} style={{width: "100%", color: COLORS.slate300}}/>
         </View>
-        <TouchableOpacity style={{backgroundColor: COLORS.blue500, paddingVertical: 15, alignItems: "center", justifyContent: "center", marginVertical: 15, borderRadius: 10}}>
-          <Text style={{color: COLORS.white500, fontSize: 16, fontWeight: 500}}>Next Step</Text>
+        <TouchableOpacity style={{backgroundColor: COLORS.blue500, paddingVertical: 10, alignItems: "center", justifyContent: "center", marginVertical: 10, borderRadius: 10}}>
+          <Text style={{color: COLORS.white500, fontSize: 16, fontWeight: 500}}>Next</Text>
         </TouchableOpacity>
-        <View style={{flexDirection: "row", alignItems: "center", gap: 5, justifyContent: "center", paddingVertical: 6}}>
+        <View style={{flexDirection: "row", alignItems: "center", gap: 5, justifyContent: "center", paddingVertical: 2}}>
         <Text style={{fontSize: 14, color: COLORS.slate300}}>i accept the</Text>
         <Text style={{fontSize: 14, color: COLORS.blue500, fontWeight: 500}}>Term and Conditions</Text>
         </View>
@@ -42,7 +42,7 @@ const PhoneVerify = () => {
 
 const styles = StyleSheet.create({
   phoneNumberInput: {
-    borderRadius: 6,
+    borderRadius: 4,
     borderWidth: 1,
     borderColor: COLORS.slate200,
     paddingHorizontal: 15,
@@ -53,18 +53,18 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: COLORS.white500,
-    borderRadius: 10,
+    borderRadius: 4,
     borderWidth: 1,
     borderColor: COLORS.slate100,
     paddingHorizontal: 20,
     paddingVertical: 15,
     marginHorizontal: 10,
 
-    shadowColor: COLORS.slate200,
-    shadowOffset: {width: -4, height: 4},
+    shadowColor: COLORS.slate100,
+    shadowOffset: {width: -10, height: 10},
     shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 20,
+    shadowRadius: 20,
+    elevation: 5,
   }
 })
 

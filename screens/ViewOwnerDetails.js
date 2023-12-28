@@ -18,6 +18,7 @@ const ViewOwnerDetails =  ({navigation, route}) => {
       return res.data;
     } 
   })
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch(); // Refresh the data

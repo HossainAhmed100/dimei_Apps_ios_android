@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, Pressable, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { COLORS, SIZES, icons, images } from '../../constants';
 import { AuthContext } from '../../context/AuthProvider';
@@ -85,7 +85,7 @@ const BuyToken = ({navigation}) => {
 
   return (
       <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
-    <ScrollView style={{backgroundColor: COLORS.white500, marginBottom: 100}}>
+    <ScrollView style={{backgroundColor: COLORS.white500}}>
       <View style={{flexDirection: "row", flexWrap: "wrap", gap: 10, paddingVertical: 10, paddingHorizontal: 10, alignItems: "center", justifyContent: "center"}}>
         {
         tokenPriceList.map((token, i) => (
@@ -116,22 +116,25 @@ const BuyToken = ({navigation}) => {
       </View>
       </View>
       <View style={{paddingHorizontal: SIZES.small, paddingVertical: SIZES.small}}>
-        <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Select Payment Method</Text>
-        <View style={{backgroundColor:  COLORS.slate100,  borderRadius: SIZES.small}}>
-        <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-          <Text style={{color: COLORS.slate500}}>Token Price</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>৳{totalPrice} Taka</Text>
+        <Text style={{color: COLORS.slate500, marginBottom: SIZES.xSmall}}>Device Transfer Fee</Text>
+        <View style={{backgroundColor:  COLORS.slate100,  borderRadius: 6}}>
+        <View style={styles.tokenCardItem}>
+        <Text style={{color: COLORS.slate500}}>Token Price</Text>
+        <Text style={styles.tokenCardItemValue}>৳{totalPrice} Taka</Text>
         </View>
         <Divider />
-        <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-          <Text style={{color: COLORS.slate500}}>Vat</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>৳{0} Taka</Text>
+        <View style={styles.tokenCardItem}>
+        <Text style={{color: COLORS.slate500}}>Vat</Text>
+        <Text style={styles.tokenCardItemValue}>৳{0} Taka</Text>
         </View>
         <Divider />
-        <View style={{paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: SIZES.xSmall}}>
-          <Text style={{color: COLORS.slate500}}>Total Pay Price</Text><Text style={{color: COLORS.slate500, fontWeight: 700}}>৳{totalPrice} Taka</Text>
+        <View style={styles.tokenCardItem}>
+        <Text style={{color: COLORS.slate500}}>Total Pay Ammount</Text>
+        <Text style={styles.tokenCardItemValue}>৳{totalPrice} Taka</Text>
         </View>
         </View>
       </View>
-      <View style={{width: "100%", alignItems: 'center', justifyContent: "center"}}>
+      <View style={{width: "100%", alignItems: 'center', justifyContent: "center", paddingBottom: 80}}>
       <Image source={images.weaccept} style={{width:250,height: 50, resizeMode: 'contain'}}/>
       </View>
     </ScrollView>
@@ -142,13 +145,41 @@ const BuyToken = ({navigation}) => {
         <Text style={{color: COLORS.blue200, fontSize: SIZES.xSmall}}>Total Pay</Text>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 700}}>৳{totalPrice} Taka</Text>
         </View>
-        <TouchableOpacity onPress={() => buyTokenAction()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.small, paddingVertical: SIZES.medium}}>
-          <Text style={{color: COLORS.blue500, fontSize: SIZES.medium, backgroundColor: COLORS.white500, padding: SIZES.small, borderRadius: SIZES.small}}>Pay now ৳{totalPrice} Taka</Text>
+        <TouchableOpacity onPress={() => buyTokenAction()} style={styles.payBtn}>
+          <Text style={styles.payBtnText}>Pay now ৳{totalPrice} Taka</Text>
         </TouchableOpacity>
       </View>
       </View>
       </View>
   )
 };
+
+const styles = StyleSheet.create({
+  tokenCardItem:{
+    alignItems: "center",
+    flexDirection: "row", 
+    paddingVertical: SIZES.xSmall,
+    paddingHorizontal: SIZES.small, 
+    justifyContent: "space-between",  
+  },
+  tokenCardItemValue:{
+    fontWeight: 700,
+    color: COLORS.slate500, 
+  },
+  payBtn:{
+    alignItems: "center", 
+    justifyContent: "center", 
+    paddingVertical: SIZES.small,
+    paddingHorizontal: 10, 
+  },
+  payBtnText:{
+    paddingVertical: 6, 
+    paddingHorizontal: 10, 
+    fontSize: 16, 
+    borderRadius: 4,
+    color: COLORS.blue500, 
+    backgroundColor: COLORS.white500, 
+  }
+}) 
 
 export default BuyToken

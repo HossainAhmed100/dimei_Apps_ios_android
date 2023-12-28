@@ -1,4 +1,4 @@
-import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity} from "react-native";
+import {View,Text,StyleSheet,TextInput,Pressable,Image,TouchableOpacity, ScrollView} from "react-native";
 import React, { useState } from "react";
 import { icons, COLORS, SIZES } from '../../constants';
 import { ActivityIndicator } from "react-native";
@@ -6,19 +6,20 @@ import { useForm, Controller } from "react-hook-form";
 
 const Register = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
-  const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {fullName: "", userEmail: "", userPassword: "", userPhone: ""},})
+  const {control, handleSubmit, formState: { errors }} = useForm({defaultValues: {fullName: "", userEmail: "", userPassword: "", userPhone: "", nameinBangla:""},})
   const onSubmit = async (data) => {
     const userEmail = data.userEmail;
     const userName = data.fullName;
+    const nameinBangla = data.nameinBangla;
     const userPhone = data.userPhone;
     const userPassword = data.userPassword;
-    const userInfo = {userEmail, userName, userPhone, userPassword};
+    const userInfo = {userEmail, userName, userPhone, userPassword, nameinBangla};
     navigation.navigate('NidPhotoUpload', {userInfo})
   };
   
   return (
-    <View style={styles.container}>
-      <View>
+    <ScrollView style={styles.container}>
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
         <View style={{ textAlign: "center" }}>
           <Text style={{fontWeight: "bold",fontSize: SIZES.xxLarge,}}>Register now</Text>
           <Text style={{color: "gray",marginBottom: SIZES.medium}}>Create a new Account</Text>
@@ -33,6 +34,16 @@ const Register = ({ navigation }) => {
               name="fullName"
             />
           {errors.fullName && <Text style={{color: COLORS.red500}}>Full name is required.</Text>}
+          </View>
+          <View>
+            <Text>Name in Bangla *</Text>
+            <Controller control={control} rules={{required: true,}}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput style={styles.inputBox} placeholder="Enter your full name" onBlur={onBlur} onChangeText={onChange} value={value} />
+              )}
+              name="nameinBangla"
+            />
+          {errors.nameinBangla && <Text style={{color: COLORS.red500}}>Full name is required.</Text>}
           </View>
           <View>
             <Text>Email address *</Text>
@@ -82,23 +93,21 @@ const Register = ({ navigation }) => {
             <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500 }}> Sign up with Google </Text>
           </Pressable>
         </View>
-        <View style={{marginTop: SIZES.medium,flexDirection: "row",alignItems: "center",justifyContent: "center",gap: 4,}}>
+        <View style={{marginTop: SIZES.medium,flexDirection: "row",alignItems: "center",justifyContent: "center",gap: 4, paddingBottom: 20}}>
           <Text style={{ fontSize: SIZES.small, color: COLORS.slate300 }}>Alredy have an account?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text style={{color:  COLORS.slate500,fontWeight: 700,textDecorationLine: "underline",}}>Login now</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: COLORS.white500,
+    paddingBottom: 20,
   },
   inputBox: {
     paddingVertical: SIZES.xSmall,

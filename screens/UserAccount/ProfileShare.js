@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable,ImageBackground } from 'react-native';
+import { View, Text, Image, Pressable,ImageBackground, StyleSheet } from 'react-native';
 import React, { useContext } from 'react';
 import { COLORS, SIZES, images } from '../../constants';
 import { Feather } from '@expo/vector-icons';
@@ -10,15 +10,18 @@ const ProfileShare = () => {
   return (
     <View style={{backgroundColor: COLORS.white500, minHeight: "100%"}}>
       <ImageBackground source={images.patterns} style={{flex: 1, resizeMode: 'cover', justifyContent: "center"}}>
-      <View style={{paddingHorizontal: SIZES.xxLarge}}>
-      <View style={{backgroundColor: COLORS.white500, padding: SIZES.medium, borderRadius: SIZES.small, alignItems: "center", justifyContent: "center"}}>
-      { user?.userProfilePic && <View style={{position: "absolute", borderWidth: 4, borderColor: COLORS.white500, borderRadius: 100, overflow: "hidden", top: -60}}>
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+      <View>
+      <View style={styles.qrCodeContainer}>
+      { user?.userProfilePic && 
+      <View style={styles.userProfile}>
       <Image source={{uri: user?.userProfilePic}} style={{width: 80, height: 80, resizeMode: "cover"}}/>
-      </View>}
+      </View>
+      }
       <Text style={{marginTop: SIZES.medium, fontSize: SIZES.medium, fontWeight: 600, color: COLORS.slate500}}>{user?.userName}</Text>
-        <View style={{backgroundColor: COLORS.blue500, borderRadius: 12, flexDirection: "row", alignItems: "center", justifyContent: "center", marginVertical: SIZES.small}}>
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 400, paddingHorizontal: SIZES.small, }}>ID : {user?.userAccountId}</Text>
-        <Pressable style={{height: "100%", borderLeftColor: COLORS.white500, borderLeftWidth: 2, padding: SIZES.small}}>
+        <View style={styles.userIdCopyBtn}>
+        <Text style={styles.actionBtnText(COLORS.white500)}>ID : {user?.userAccountId}</Text>
+        <Pressable>
         <Feather name="copy" size={18} color={COLORS.white500} />
         </Pressable>
         </View>
@@ -27,19 +30,69 @@ const ProfileShare = () => {
         </View>}
       </View>
       <View style={{paddingVertical: SIZES.medium, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10}}>
-        <Pressable style={{backgroundColor: COLORS.white500, paddingVertical: SIZES.xSmall, paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "center", borderRadius: 10, flex: 1, borderColor: COLORS.white500, borderWidth: 1}}>
+        <Pressable style={styles.actionBtn(COLORS.white500)}>
         <Feather name="arrow-down-circle" size={18} color={COLORS.blue500} />
-        <Text style={{color: COLORS.blue500, fontSize: SIZES.medium, fontWeight: 400, marginLeft:6}}>Download</Text>
+        <Text style={styles.actionBtnText(COLORS.blue500)}>Download</Text>
         </Pressable>
-        <Pressable style={{backgroundColor: COLORS.blue500, paddingVertical: SIZES.xSmall, paddingHorizontal: SIZES.small, flexDirection: "row", alignItems: "center", justifyContent: "center", borderRadius: 10, flex: 1, borderColor: COLORS.white500, borderWidth: 1}}>
+        <Pressable style={styles.actionBtn(COLORS.blue500)}>
         <Feather name="share-2" size={18} color={COLORS.white500} />
-        <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 400, marginLeft:6}}>Share</Text>
+        <Text style={styles.actionBtnText(COLORS.white500)}>Share</Text>
         </Pressable>
+      </View>
       </View>
       </View>
       </ImageBackground>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  userProfile:{
+    top: -60,
+    borderWidth: 4, 
+    borderRadius: 100, 
+    overflow: "hidden", 
+    position: "absolute", 
+    borderColor: COLORS.white500, 
+  },
+  actionBtn: (bgColor) => ({
+    flex: 1, 
+    borderWidth: 1,
+    borderRadius: 10, 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "center", 
+    borderColor: COLORS.white500, 
+    paddingVertical: SIZES.xSmall, 
+    paddingHorizontal: SIZES.small, 
+    backgroundColor: bgColor,
+  }),
+  actionBtnText:(textColor) => ({
+    marginLeft:6,
+    fontWeight: 400, 
+    color: textColor, 
+    fontSize: SIZES.medium, 
+  }),
+  qrCodeContainer:{
+    marginTop: 50,
+    alignItems: "center", 
+    paddingHorizontal: 40, 
+    justifyContent: "center",
+    borderRadius: SIZES.small, 
+    paddingVertical: SIZES.medium, 
+    backgroundColor: COLORS.white500, 
+  },
+  userIdCopyBtn:{
+    borderRadius: 6, 
+    alignItems: "center", 
+    flexDirection: "row", 
+    justifyContent: "center", 
+    marginVertical: SIZES.small,
+    backgroundColor: COLORS.blue500, 
+    paddingHorizontal: 10,
+    gap: 10,
+    paddingVertical: 6
+  },
+})
 
 export default ProfileShare
