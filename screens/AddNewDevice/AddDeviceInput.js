@@ -35,7 +35,7 @@ const AddDeviceInput = ({navigation, route}) => {
   const toggleCheckbox = () => {setChecked(!checked);};
 
   const { data: devciePreview = []} = useQuery({ 
-    queryKey: ['devciePreview', user?.userEmail], 
+    queryKey: ['devciePreview', deviceImeiInput], 
     queryFn: async () => {
       const res = await axios.get(`http://192.168.0.163:5000/checkDeviceImeiNum/${deviceImeiInput}`);
       return res.data;
@@ -141,19 +141,59 @@ const AddDeviceInput = ({navigation, route}) => {
           alert('This Devcie is Alredy Added');
           navigation.navigate('Home');
       } else if (response.data.acknowledged) {
-          alert('Check your email');
-          navigation.navigate('Home');
+          updateDeviceActivity(ownerEmail, ownerPhoto, response.data?.insertedId)
+          // navigation.navigate('Home');
       } else {
+          setLoading(false)
           alert('Device Add Failed');
       }
-  } catch (err) {
+    } catch (err) {
+      setLoading(false)
       console.error('Error during Add Device To Database:', err);
       alert('Device Added Feild');
-  } finally {
+    } finally {
       setLoading(false);
-  }
+    }
 
   };
+
+  const updateDeviceActivity = async (ownerEmail, ownerPhoto, deviceId) => {
+    setLoading(true)
+    const deviceActivityInfo = {
+      deviceImei: devciePreview?.deviceImei,
+      ownerEmail,
+      ownerPhoto,
+      listingDate: todyDate,
+      activityList: [
+        {
+          userId: user?._id,
+          deviceId: deviceId,
+          activityTime: todyDate,
+          deviceModel: devciePreview?.modelName,
+          message: "New Device Addes Successfully",
+          devicePicture: devciePreview?.devicePicture,
+        }
+      ]
+    };
+    try{
+      setLoading(true)
+      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      .then((res) => {
+        if (res.data.modifiedCount === 1){
+          alert('Token Added Successfully!');
+          navigation.goBack();
+        }else if(res.data.insertedId){
+          alert('Token Added Successfully!');
+          navigation.goBack();
+        }else{
+          setLoading(false)
+          alert('Somthing is wrong!');
+        }
+      })
+    }catch{
+      setLoading(false)
+    }
+  }
 
   const uploadImageAsync = async (uri) => {
     const blob = await new Promise((resolve, reject) => {

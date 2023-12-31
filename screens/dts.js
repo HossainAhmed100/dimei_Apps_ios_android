@@ -1,126 +1,67 @@
-import React, { useState } from "react";
-import {View,Text,StyleSheet,TextInput,Pressable} from "react-native";
-import { auth } from "../../FirebaseConfig";
-import { COLORS, SIZES } from '../../constants';
-import { ActivityIndicator } from "react-native";
-import { KeyboardAvoidingView } from "react-native";
+import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { COLORS, SIZES } from '../constants';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { Divider } from '@rneui/themed';
+import { format, formatDistanceToNow } from 'date-fns';
+import { Entypo  } from '@expo/vector-icons';
 
-const ResetPassword = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const signIn = async () => {
-    setLoading(true);
-    try {
-        const response = await signInWithEmailAndPassword(auth, email, password);
-        
-    } catch (err) {
-            alert(err.code);
-    } finally {
-        setLoading(false);
-    }
-};
-
-    return (
-    <View style={styles.container}>
-        <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-        <View style={{paddingVertical: SIZES.xSmall, paddingHorizontal: SIZES.medium, width: "100%"}}>
-            <View style={{marginBottom: 20, flexDirection: "column", gap: SIZES.xSmall}}>
-                <Text style={{color: COLORS.slate500, fontSize: SIZES.xLarge, fontWeight: 600}}>Reset password</Text>
-                <Text style={{color: COLORS.slate300, fontSize: SIZES.medium}}>Please type password</Text>
-            </View>
-        </View>
-        <KeyboardAvoidingView behavior='padding'>
-        <View style={{ gap: SIZES.medium }}>
-            <View>
-            <Text style={{color: COLORS.slate500}}>Old Password *</Text>
-            <TextInput
-                style={styles.inputBox}
-                placeholder="Old Password"
-                autoCapitalize='none' 
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-            />
-            </View>
-            <View>
-            <Text style={{color: COLORS.slate500}}>New Password *</Text>
-            <TextInput
-                style={styles.inputBox}
-                placeholder="New Password"
-                autoCapitalize='none' 
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-            />
-            </View>
-            <View>
-            <Text style={{color: COLORS.slate500}}>Confirm Password *</Text>
-            <TextInput
-                style={styles.inputBox}
-                placeholder="Confirm Password"
-                onChangeText={(text) => setPassword(text)}
-                value={password}
-            />
-            </View>
-        </View>
-        </KeyboardAvoidingView>
-        <View style={{ flexDirection: "column", gap: SIZES.small, marginTop: 60 }}>
-        {
-        loading ? <ActivityIndicator size="large" color="#0000ff"/> : <Pressable
-        onPress={() => signIn()}
-        style={styles.loginBtn}
-        >
-        <Text style={{ fontSize: SIZES.medium, fontWeight: 600, color: "#fff" }}>
-            Reset Password
-        </Text>
-        </Pressable>
-    }
-            
-       
-        </View>
-        </View>
+const OwnerCard = ({item, viewMyDeviceDetails}) => {
+  const formattedDate = (date) => {
+    const distance = formatDistanceToNow(new Date(date));
+    const formatted = format(new Date(date), "MMMM d, yyyy h:mm a"); // Adjust the format as needed
+    return `${distance} - ${formatted}`;
+  };
+  return(
+    <View style={[styles.activityCard, {borderColor: item?.thisIsUnAuthorizeOwner ? COLORS.red200 : COLORS.slate100}]}>
+    <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
+    {item?.ownerPhoto && <Image source={{uri: item?.devicePicture}} style={{width: 50, height: 50, borderRadius: 6,  resizeMode: "cover"}}/>}
+    <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>{item?.deviceModel}</Text>
+      {item?.activityTime ? <Text style={styles.dateText}>{format(new Date(item?.activityTime), 'yyyy-MM-dd hh:mm a')}</Text>: <ActivityIndicator />}
     </View>
-    );
-};
+    {item?.activityTime ? 
+    <View style={[styles.activityTimeCard, {backgroundColor: COLORS.blue100}]}>
+     <Text style={[styles.activityTimeText, {color: COLORS.blue500}]}>{formatDistanceToNow(new Date(date))}</Text>
+    </View> : <ActivityIndicator />}
+    </View>
+    <View style={styles.activityMessageCard}>
+      <Entypo name="text" size={SIZES.medium} color={COLORS.slate300} />
+      <Text style={styles.activityMessageText}>
+      {item?.message}
+      </Text>
+    </View>
+    <Divider />
+    <View style={{flexDirection: "row", gap: 10}}>
+    <TouchableOpacity onPress={() => viewMyDeviceDetails(item?.deviceId)} style={{borderRadius: 6, alignItems: "flex-end", padding: 6, justifyContent: "center"}}>
+      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>View Details</Text>
+    </TouchableOpacity>
+    </View>
+  </View>
+  )
+}
+
 
 const styles = StyleSheet.create({
-    container: {
-       backgroundColor: COLORS.white500,
-       paddingBottom: 20,
-       minHeight: "100%"
-    },   
-    inputBox: {
-    paddingVertical: SIZES.xSmall,
-    paddingHorizontal: SIZES.medium,
-    borderRadius: SIZES.xSmall,
-    marginTop: 6,
-    width: 300,
-    borderWidth: 1,
-    borderColor: COLORS.slate200,
-    },
-    loginBtn: {
-    backgroundColor: COLORS.blue500,
-    width: 300,
-    paddingVertical: SIZES.small,
-    paddingHorizontal: SIZES.large,
-    borderRadius: SIZES.small,
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: COLORS.blue500,
-    borderWidth: 1,
-    },
-    googleLoginBtn: {
-    backgroundColor: COLORS.white500,
-    width: 300,
-    paddingVertical: SIZES.small,
-    borderRadius: SIZES.xSmall,
-    flexDirection: "row",
-    gap: SIZES.small,
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: COLORS.slate200,
-    borderWidth: 1,
-    }
-});
 
-export default ResetPassword;
+  activityCard:{
+    borderWidth: 1, 
+    padding: SIZES.xSmall, 
+    borderRadius: 6, 
+    overflow: "hidden", gap: 10
+  },
+  activityTimeCard:{paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6},
+  activityTimeText:{fontSize: 12, fontWeight: 500},
+  dateText:{fontSize: 14, color: "#808080", fontWeight: "400"},
+  activityMessageText: {color: COLORS.slate300, fontSize: 14},
+  activityMessageCard: {
+    backgroundColor: COLORS.slate100, 
+    padding: 10, borderRadius: 4, 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "flex-start",
+    gap: 6
+  },
+})

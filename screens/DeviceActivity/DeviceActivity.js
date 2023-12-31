@@ -1,12 +1,14 @@
 import React, { useContext, useState } from "react";
 import { View, Text, TouchableOpacity, Image, FlatList, ActivityIndicator, StyleSheet, RefreshControl, TextInput } from "react-native";
-import { COLORS, SIZES, icons, images } from '../../constants';
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { COLORS, SIZES, icons } from '../../constants';
+import { MaterialCommunityIcons, Feather, Entypo } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthProvider";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
+import { Divider } from '@rneui/themed';
+
 
 const DeviceActivity = ({navigation}) => {
   const {user} = useContext(AuthContext);
@@ -15,18 +17,17 @@ const DeviceActivity = ({navigation}) => {
   const {control, handleSubmit, formState: { errors }, reset, watch} = useForm({defaultValues: {inputdeviceimei: ""},});
   const [inputdeviceimei] = watch(['inputdeviceimei']);
 
-  const { isLoading, data: trsnData = [], refetch } = useQuery({ 
-    queryKey: ['trsnData'],
-    queryFn: async () => {
-      const res =  await axios.get(`http://192.168.0.163:5000/userTranstion/${user?.userEmail}`);
-      return res.data;
-    } 
-  })
+  const { isLoading, data: activityDataObj = [], refetch } = useQuery({ 
+      queryKey: ['activityDataObj'],
+      queryFn: async () => {
+          const res =  await axios.get(`http://192.168.0.163:5000/getUserDeviceActivity/${user?.userEmail}`);
+          return res.data;
+        } 
+    })
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch(); // Refresh the data
-    await fetchToken(); // Refresh the data
     setRefreshing(false);
   };
 
@@ -43,6 +44,10 @@ const DeviceActivity = ({navigation}) => {
       setLoading(false);
     }
   };
+
+  const viewMyDeviceDetails = (did) => {
+    navigation.navigate('MyDeviceDetails', {deviceId: did})
+  }
 
 
  return(
@@ -76,8 +81,8 @@ const DeviceActivity = ({navigation}) => {
       </View>
       
       <View style={{paddingHorizontal: SIZES.small, minHeight: "100%"}}>
-      <FlatList data={trsnData} keyExtractor={item => item.date}
-        renderItem={({item}) => (<ListBox item={item}/>)}
+      <FlatList data={activityDataObj} keyExtractor={item => item.activityTime}
+        renderItem={({item}) => (<ListBox item={item} viewMyDeviceDetails={viewMyDeviceDetails}/>)}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         contentContainerStyle={{ rowGap: 10 }}
       />
@@ -86,25 +91,55 @@ const DeviceActivity = ({navigation}) => {
  )
 };
 
-const ListBox = ({item}) => (
-  <View>
-    <View style={styles.activityListContainer}>
-    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-      <Image source={{uri: item.userProfilePic}} style={{width: 50, height: 50, borderRadius: 10, resizeMode: "contain"}}/>
-      <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "center", marginLeft: 10}}>
-        <Text style={{fontSize: SIZES.medium, color: COLORS.slate500, fontWeight: 500}}>{item.titleName}</Text>
-        <Text style={styles.deviceListText}>{item.status}</Text>
-      </View>
+const ListBox = ({item, viewMyDeviceDetails}) => (
+    <View style={[styles.activityCard, {borderColor: COLORS.slate200}]}>
+    <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 10}}>
+    <View style={{flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", gap: 10}}>
+    {item?.devicePicture && <Image source={{uri: item?.devicePicture}} style={{width: 50, height: 50, borderRadius: 6,  resizeMode: "cover"}}/>}
+    <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: 2}}>
+      <Text style={{fontSize: 16, fontWeight: 600, color: "#3B3C35"}}>{item?.deviceModel}</Text>
+      {item?.activityTime ? <Text style={styles.dateText}>{format(new Date(item?.activityTime), 'yyyy-MM-dd hh:mm a')}</Text>: <ActivityIndicator />}
     </View>
-    <View style={{flexDirection: "column", alignItems: "flex-end", justifyContent: "center"}}>
-      <Text style={{fontSize: SIZES.large, color: COLORS.slate500, fontWeight: 500}}>{item.transtionQuantity}</Text>
-      {item?.date && <Text style={styles.deviceListText}>{format(new Date(item?.date), 'yyyy-MM-dd hh:mm a')}</Text>}
     </View>
-  </View>
+    {item?.activityTime ? 
+    <View style={[styles.activityTimeCard]}>
+     <Text style={[styles.activityTimeText, {color: COLORS.blue500}]}>{formatDistanceToNow(new Date(item?.activityTime))}</Text>
+    </View> : <ActivityIndicator />}
+    </View>
+    <View style={styles.activityMessageCard}>
+      <Entypo name="text" size={SIZES.medium} color={COLORS.slate300} />
+      <Text style={styles.activityMessageText}>
+      {item?.message}
+      </Text>
+    </View>
+    <Divider />
+    <View style={{flexDirection: "row", gap: 10}}>
+    <TouchableOpacity onPress={() => viewMyDeviceDetails(item?.deviceId)} style={{borderRadius: 6, alignItems: "flex-end", padding: 6, justifyContent: "center"}}>
+      <Text style={{color: COLORS.blue500, fontSize: 12, fontWeight: 500}}>View Details</Text>
+    </TouchableOpacity>
+    </View>
   </View>
 )
 
 const styles = StyleSheet.create({
+activityCard:{
+    borderWidth: 0.5, 
+    padding: SIZES.xSmall, 
+    borderRadius: 6, 
+    overflow: "hidden", gap: 10
+    },
+    activityTimeCard:{paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6},
+    activityTimeText:{fontSize: 12, fontWeight: 500},
+    dateText:{fontSize: 14, color: "#808080", fontWeight: "400"},
+    activityMessageText: {color: COLORS.slate300, fontSize: 14},
+    activityMessageCard: {
+    backgroundColor: COLORS.slate100, 
+    padding: 10, borderRadius: 4, 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "flex-start",
+    gap: 6
+    },
   inputBoxBtn: {
     paddingVertical: SIZES.small,
     paddingHorizontal: SIZES.medium,
@@ -120,16 +155,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.slate200,
     flex: 1
   },
-  activityListContainer:{
-    backgroundColor: COLORS.white500, 
-    padding: SIZES.small, 
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "space-between", 
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.slate100
-  },
+
   actionBtnContainer:{
     flexDirection: "row", 
     alignItems: "center", 
@@ -156,11 +182,6 @@ const styles = StyleSheet.create({
     fontWeight: 700, 
     marginTop: 2
   },
-  deviceListText:{
-    marginBottom: 3, 
-    color: COLORS.slate300, 
-    fontSize: SIZES.small
-  }
 })
 
 export default DeviceActivity
