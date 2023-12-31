@@ -37,7 +37,7 @@ const AddDeviceInput = ({navigation, route}) => {
   const { data: devciePreview = []} = useQuery({ 
     queryKey: ['devciePreview', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.154:5000/checkDeviceImeiNum/${deviceImeiInput}`);
+      const res = await axios.get(`http://192.168.0.163:5000/checkDeviceImeiNum/${deviceImeiInput}`);
       return res.data;
     } 
   })
@@ -45,7 +45,7 @@ const AddDeviceInput = ({navigation, route}) => {
   const {isLoading, data: itemQuantity = [], refetch: fetchToken } = useQuery({ 
     queryKey: ['itemQuantity', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.154:5000/useritemQuantity/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.163:5000/useritemQuantity/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -136,7 +136,7 @@ const AddDeviceInput = ({navigation, route}) => {
   };
 
   try {
-      const response = await axios.post('http://192.168.0.154:5000/addNewDevice', {deviceInfos})
+      const response = await axios.post('http://192.168.0.163:5000/addNewDevice', {deviceInfos})
       if (response.data.isDeviceisExist) {
           alert('This Devcie is Alredy Added');
           navigation.navigate('Home');

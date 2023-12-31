@@ -59,8 +59,8 @@ const TabNavigator = () => {
       <Tab.Screen name="MyDevice" component={AllDevice2}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
-            focused ? <Image source={icons.chipActive} style={{width: size, height: size}}/> : 
-            <Image source={icons.chip} style={{width: size, height: size, tintColor: color}}/>
+            focused ? <Image source={icons.receiptSearchActive} style={{width: size, height: size}}/> : 
+            <Image source={icons.receiptSearch} style={{width: size, height: size, tintColor: color}}/>
           ),
         }}
       />

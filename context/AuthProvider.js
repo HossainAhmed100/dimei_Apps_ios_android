@@ -42,7 +42,7 @@ const AuthProvider = ({ children }) => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         const email = currentUser?.email; 
         const getUserDataFromMongo = async () => {
-           await axios.get(`http://192.168.0.154:5000/signleUser/${email}`)  
+           await axios.get(`http://192.168.0.163:5000/signleUser/${email}`)  
             .then((res) => {
               setUser(res.data)
               setUserLoding(false);

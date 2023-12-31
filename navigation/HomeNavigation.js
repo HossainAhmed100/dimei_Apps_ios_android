@@ -38,6 +38,7 @@ import NewDevcieAddTermsandCondition from '../screens/PrivicyPolicy/NewDevcieAdd
 import ViewDeviceDetails from '../screens/ViewDeviceDetails';
 import Claimownershipagain from '../screens/ClaimOwnerShipAgain/Claimownershipagain';
 import ViewDeviceOwnerInfo from '../screens/ViewDeviceOwnerInfo';
+import DeviceActivity from '../screens/DeviceActivity/DeviceActivity';
 
 const HomeNav = createNativeStackNavigator();
 
@@ -363,6 +364,17 @@ const HomeNavigation = () => {
             headerBackVisible: false,
             headerBackTitleVisible: false,
             title: 'Token History',
+            headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
+            headerTitleAlign: 'center',
+            headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}
+          }}
+        />
+
+        <HomeNav.Screen name="DeviceActivity" component={DeviceActivity} 
+          options={{ 
+            headerBackVisible: false,
+            headerBackTitleVisible: false,
+            title: 'All Devcie Activity',
             headerLeft: () => ( <ScreenHeaderBtn iconUrl={icons.arrowLeft} dimension="60%" />),
             headerTitleAlign: 'center',
             headerStyle: {headerStyle: { shadowColor: 'transparent', elevation: 0,}}

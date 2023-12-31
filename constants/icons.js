@@ -37,24 +37,30 @@ import alert from '../assets/icons/alert.png';
 import homeActive from '../assets/icons/homeActive.png';
 import profileActive from '../assets/icons/profileActive.png';
 import chipActive from '../assets/icons/chipActive.png';
+import deviceActivity from '../assets/icons/deviceActivity.png';
 import chat from '../assets/icons/chat.png';
 import chatActive from '../assets/icons/chatActive.png';
 import deviceChip from '../assets/icons/deviceChip.png';
 import supportChat from '../assets/icons/supportChat.png';
+import receiptSearch from '../assets/icons/receiptSearch.png';
+import receiptSearchActive from '../assets/icons/receiptSearchActive.png';
 
 
 export default {
-    chipActive,
-    supportChat,
-    deviceChip,
-    chat,
-    chatActive,
-    profileActive,
-    alert,
-    homeActive,
-    plus,
-    close,
-    filter,
+receiptSearchActive,
+receiptSearch,
+chipActive,
+deviceActivity,
+supportChat,
+deviceChip,
+chat,
+chatActive,
+profileActive,
+alert,
+homeActive,
+plus,
+close,
+filter,
  location,
  shop,
  downArrow,

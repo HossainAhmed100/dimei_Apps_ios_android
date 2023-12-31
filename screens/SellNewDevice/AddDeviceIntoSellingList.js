@@ -20,7 +20,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.154:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.163:5000/myDeviceDetails/${deviceId}`);
       return res.data;
     } 
   })

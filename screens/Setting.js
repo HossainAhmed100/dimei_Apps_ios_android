@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { View, Text, ScrollView, Image, Switch, StyleSheet } from "react-native";
-import { COLORS, SIZES, icons } from '../constants';
+import { COLORS, SIZES, icons, images } from '../constants';
 import { Feather } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { AuthContext } from "../context/AuthProvider";
@@ -23,108 +23,108 @@ const Setting = ({navigation}) => {
     });
   };
 
+  const navigateScreen = (uri) => {
+    if(uri){
+      navigation.navigate(uri)
+    }else{
+      console.log("No Uri")
+    }
+  }
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
         <TouchableOpacity onPress={() => navigation.navigate('MyProfile')} style={{backgroundColor: "white",borderRadius: 10,padding: 10,marginBottom: 10,}}>
           <View style={{flexDirection: "row",alignItems: "center",gap: 10,justifyContent: "center",}}>
             {user?.userProfilePic ? <Image source={{uri: user?.userProfilePic}} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/> : <Image
-            source={require("../assets/images/profile.jpg")} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/>}
+            source={images.profile} style={{resizeMode: "cover",width: 50,height: 50,borderRadius: 50,}}/>}
             <View style={{flex: 1,flexDirection: "column",alignItems: "flex-start",gap: 1,}}>
               <Text style={{ fontWeight: 500, fontSize: 16 }} numberOfLines={2}>{user?.userName}</Text>
               <Text style={{ fontSize: 12, color: "#6B7280" }}>{user?.userPhone}</Text>
             </View>
-            <Image source={require("../assets/icons/edit.png")} style={{ tintColor: "#B0B0B0", width: 24, height: 24 }}/>
+            <Image source={icons.edit} style={{ tintColor: "#B0B0B0", width: 24, height: 24 }}/>
           </View>
         </TouchableOpacity>
         <View style={styles.navigationBoxContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('Device')} style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.chip} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>All Devices</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+          iconName={icons.deviceActivity} 
+          btnText={"Device Activity"} 
+          navigateUri={"DeviceActivity"} 
+          navigateScreen={navigateScreen}
+          />
           <Divider />
-          <TouchableOpacity onPress={() => navigation.navigate('AddReference')} style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.Profile} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Reference</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+          iconName={icons.Profile} 
+          btnText={"Reference"} 
+          navigateUri={"AddReference"} 
+          navigateScreen={navigateScreen}
+          />
           <Divider />
-          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')} style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.reset} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Reset Password</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+          iconName={icons.reset} 
+          btnText={"Reset Password"} 
+          navigateUri={"ResetPassword"} 
+          navigateScreen={navigateScreen}
+          />
           <Divider />
-          <TouchableOpacity onPress={() => navigation.navigate('TokenPurchaseHistory')} style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.cart} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Token History</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+          iconName={icons.cart} 
+          btnText={"Token History"} 
+          navigateUri={"TokenPurchaseHistory"} 
+          navigateScreen={navigateScreen}
+          />
+          <Divider />
         </View>
         <View style={styles.navigationBoxContainer}>
-          <TouchableOpacity style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.share} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Share this app</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+            iconName={icons.share} 
+            btnText={"Share this app"} 
+            navigateUri={false} 
+            navigateScreen={navigateScreen}
+          />
           <Divider />
-          <TouchableOpacity style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.usersGroup} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Community</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+            iconName={icons.usersGroup} 
+            btnText={"Community"} 
+            navigateUri={false} 
+            navigateScreen={navigateScreen}
+          />
           <Divider />
           <TouchableOpacity onPress={toggleTheme} style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.moon} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Dark Mode</Text>
-              </View>
-              <Switch
-                style={{ height: 30 }}
-                trackColor={{ true: "#20E86C" }}
-                thumbColor={isDarkMode ? "#0F6831" : "#fff"}
-                onValueChange={toggleTheme}
-                value={isDarkMode}
-              />
+            <View style={styles.navigationItemTextandIcon}>
+              <Image source={isDarkMode ? icons.moon : icons.sun} style={styles.navigationItemIcon}/>
+              <Text style={styles.navigationItemText}>{isDarkMode ? "Dark Mode" : "Light Mode"}</Text>
+            </View>
+            <Switch
+              style={{ height: 30 }}
+              trackColor={{ true: COLORS.blue200 }}
+              thumbColor={isDarkMode ? COLORS.blue500 : "#fff"}
+              onValueChange={toggleTheme}
+              value={isDarkMode}
+            />
           </TouchableOpacity>
         </View>
         <View style={styles.navigationBoxContainer}>
-          <TouchableOpacity style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.reportFlag} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Help and Support</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+            iconName={icons.reportFlag} 
+            btnText={"Help and Support"} 
+            navigateUri={false} 
+            navigateScreen={navigateScreen}
+          />
           <Divider />
-          <TouchableOpacity style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.chart} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Report Problem</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+            iconName={icons.chart} 
+            btnText={"Report Problem"} 
+            navigateUri={false} 
+            navigateScreen={navigateScreen}
+          />
           <Divider />
-          <TouchableOpacity style={styles.navigationItem}>
-              <View style={styles.navigationItemTextandIcon}>
-                <Image source={icons.document} style={styles.navigationItemIcon}/>
-                <Text style={styles.navigationItemText}>Terms & Conditions</Text>
-              </View>
-              <Feather name="chevron-right" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
+          <SettingNavigateBtn 
+            iconName={icons.document} 
+            btnText={"Terms & Conditions"} 
+            navigateUri={false} 
+            navigateScreen={navigateScreen}
+          />
         </View>
       <View style={{backgroundColor: "white",borderRadius: 10,marginBottom: 80,padding: 10,}}>
         <TouchableOpacity onPress={() => sinOut()} style={{paddingVertical: 13,paddingHorizontal: 15,backgroundColor: COLORS.red200,borderRadius: SIZES.small}}>
@@ -139,6 +139,16 @@ const Setting = ({navigation}) => {
     </ScrollView>
   );
 };
+
+const SettingNavigateBtn = ({iconName, btnText, navigateUri, navigateScreen}) => (
+  <TouchableOpacity onPress={() => navigateScreen(navigateUri)} style={styles.navigationItem}>
+    <View style={styles.navigationItemTextandIcon}>
+      <Image source={iconName} style={styles.navigationItemIcon}/>
+      <Text style={styles.navigationItemText}>{btnText}</Text>
+    </View>
+    <Feather name="chevron-right" size={24} color="#B0B0B0" />
+  </TouchableOpacity>
+)
 
 const styles = StyleSheet.create({
   navigationItem: {

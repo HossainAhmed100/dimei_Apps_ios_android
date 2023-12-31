@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, StyleSheet, Image } from 'react-native'
 import React, { useState } from 'react';
-import { COLORS, SIZES, icons, images } from '../../constants';
-import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS, SIZES, icons } from '../../constants';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { Divider } from '@rneui/base';
@@ -24,7 +24,7 @@ const AddNewDevice = ({ navigation }) => {
     setLoading(true);
     const deviceimeiNum = data.inputdeviceimei;
     try{
-      const response = await axios.get(`http://192.168.0.154:5000/checkDeviceImeiNum/${deviceimeiNum}`);
+      const response = await axios.get(`http://192.168.0.163:5000/checkDeviceImeiNum/${deviceimeiNum}`);
       setsearchData(response.data);
       setLoading(false);
       setShowData(true)

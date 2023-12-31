@@ -24,7 +24,7 @@ const UpdateSellingPost = ({navigation, route}) => {
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.154:5000/getSellingDevcieDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.163:5000/getSellingDevcieDetails/${deviceId}`);
       return res.data;
     } 
   });
@@ -32,7 +32,7 @@ const UpdateSellingPost = ({navigation, route}) => {
   const { data: sellingDeviceImages = [] } = useQuery({ 
     queryKey: ['sellingDeviceImages', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.154:5000/getSellingDevcieImages/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.163:5000/getSellingDevcieImages/${deviceId}`);
       return res.data;
     } 
   });
@@ -73,7 +73,7 @@ const UpdateSellingPost = ({navigation, route}) => {
     newArray.deviceIamges = deviceIamges;
     try {
       const sellingDevInfo = newArray;
-      const response = await axios.post('http://192.168.0.154:5000/addDevcieSellingList', {sellingDevInfo});
+      const response = await axios.post('http://192.168.0.163:5000/addDevcieSellingList', {sellingDevInfo});
   
       if (response.data.acknowledged) {
         alert('Check your email');
@@ -126,7 +126,7 @@ const UpdateSellingPost = ({navigation, route}) => {
 
    const deleteThisPost = async (deviceId) => {
     try {
-      await axios.delete(`http://192.168.0.154:5000/deleteDevcieSellingPost/${deviceId}`)
+      await axios.delete(`http://192.168.0.163:5000/deleteDevcieSellingPost/${deviceId}`)
       .then((res) => {
         if(res.data.transferSuccess){
           navigation.navigate('Home')

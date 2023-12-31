@@ -1,14 +1,17 @@
-import { FlatList, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native'
+import { FlatList, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions, Alert } from 'react-native'
 import React, { useContext, useState } from 'react'
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Divider } from '@rneui/themed';
 import { COLORS, SIZES } from '../constants';
-import { Entypo,Feather  } from '@expo/vector-icons';
+import { Entypo,Feather, MaterialCommunityIcons   } from '@expo/vector-icons';
 import { format, formatDistanceToNow } from 'date-fns';
 import { AuthContext } from '../context/AuthProvider';
 import { ActivityIndicator } from 'react-native';
 import { useForm, Controller } from "react-hook-form";
+import * as FileSystem from 'expo-file-system';
+import * as IntentLauncherAndroid from 'expo-intent-launcher';
+
 
 const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   const {user} = useContext(AuthContext);
@@ -24,18 +27,17 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, ownerInfo?.ownerEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.154:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: ownerInfo?.ownerEmail}});
+      const res = await axios.get(`http://192.168.0.163:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: ownerInfo?.ownerEmail}});
       return res.data;
     } 
   })
-  
   const onSubmit = async (data) => {
     const {ownerEmail, deviceImei, thisIsUnAuthorizeOwner} = ownerInfo;
     const devcieOwnerSecretOTP = data.secretCodeForRemoveOwner;
     const ownerDetails = {ownerEmail, deviceImei, thisIsUnAuthorizeOwner, devcieOwnerSecretOTP};
     setRemoveOwnerBtnLoading(true)
     try {
-      const res = await axios.delete(`http://192.168.0.154:5000/deleteUnauthorizedOwner`, {params: { ownerDetails }});
+      const res = await axios.delete(`http://192.168.0.163:5000/deleteUnauthorizedOwner`, {params: { ownerDetails }});
       if(res.data.ownerDeletedSuccess){
         alert("Unauthorized Owner Remove Successfully")
         navigation.popToTop();
@@ -59,6 +61,48 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
 
   const viewProfile = (email) => {
     navigation.navigate('ViewUserProfile', {userEmail: email})
+  }
+
+  const downlaodOwnerinvoicePdf = async (pdfFileLink) => {
+    console.log("🚀 ~ file: ViewDeviceOwnerInfo.js:67 ~ downlaodOwnerinvoicePdf ~ pdfFileLink:", pdfFileLink)
+    try {
+      const fileInfo = await FileSystem.downloadAsync( pdfFileLink, FileSystem.documentDirectory + 'downloadedFile.pdf' );
+      console.log("🚀 ~ file: ViewDeviceOwnerInfo.js:69 ~ downlaodOwnerinvoicePdf ~ fileInfo:", fileInfo)
+      if (fileInfo.status === 200) {
+        // File downloaded successfully
+        const fileUri = fileInfo.uri;
+        // Alert.alert(
+        //   'File Downloaded',
+        //   'Do you want to open the file?',
+        //   [
+        //     {
+        //       text: 'Cancel',
+        //       style: 'cancel',
+        //     },
+        //     {
+        //       text: 'Open',
+        //       onPress: () => {
+        //         console.log(fileUri, "This is Fileuri inside")
+        //         IntentLauncherAndroid.startActivityAsync(
+        //           IntentLauncherAndroid.ACTION_VIEW,
+        //           {
+        //             data: "file:///data/user/0/host.exp.exponent/files/ExperienceData/%2540hossainahmed%252Fphonebik/downloadedFile.pdf",
+        //             flags: 1, // FLAG_ACTIVITY_NEW_TASK
+        //           }
+        //         );
+        //       },
+        //     },
+        //   ],
+        //   { cancelable: false }
+        // );
+        const asset = await MediaLibrary.createAssetAsync(fileUri);
+      } else {
+        // Handle download error
+        Alert.alert('Download Error', 'Failed to download the file.');
+      }
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
   }
 
   return (
@@ -123,6 +167,16 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
             </View> 
           </View>  :
           <View></View>
+          }
+          {
+            (ownerInfo?.ownerHaveAInvoice && user?.userEmail === ownerInfo?.ownerEmail) ? 
+            <View style={{flexDirection:"row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 10, borderWidth:1, borderColor: COLORS.slate100, borderRadius: 4, paddingVertical: 15}}>
+              <Text>Ownership invoice</Text>
+              <TouchableOpacity onPress={() => downlaodOwnerinvoicePdf(ownerInfo?.inVoiceDownloadURL)} style={{backgroundColor: COLORS.blue500, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 4, flexDirection: "row", alignItems: "center", gap: 5}}>
+                <MaterialCommunityIcons name="file-download-outline" size={20} color={COLORS.white500} />
+                <Text style={{color: COLORS.white500, fontWeight: 500}}>Downlaod now</Text>
+              </TouchableOpacity>
+            </View> : <View></View>
           }
         </View>   
     </ScrollView>
