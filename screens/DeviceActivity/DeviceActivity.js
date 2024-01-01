@@ -55,7 +55,7 @@ const DeviceActivity = ({navigation}) => {
       <View style={{flexDirection: "row", gap: 10, paddingTop: 10, paddingHorizontal: 10}}>
         <Controller control={control} rules={{required: true,}}
             render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput keyboardType="number-pad" style={styles.inputBox} placeholder="Enter IMEI e.g 12345678912" onBlur={onBlur} onChangeText={onChange} value={value} />
+            <TextInput keyboardType="number-pad" style={styles.inputBox} placeholder="Enter IMEI 12345678912" onBlur={onBlur} onChangeText={onChange} value={value} />
             )}
             name="inputdeviceimei"
         />
@@ -102,8 +102,8 @@ const ListBox = ({item, viewMyDeviceDetails}) => (
     </View>
     </View>
     {item?.activityTime ? 
-    <View style={[styles.activityTimeCard]}>
-     <Text style={[styles.activityTimeText, {color: COLORS.blue500}]}>{formatDistanceToNow(new Date(item?.activityTime))}</Text>
+    <View style={[styles.activityTimeCard, {backgroundColor: COLORS.slate100}]}>
+     <Text style={[styles.activityTimeText, {color: COLORS.slate300}]}>{formatDistanceToNow(new Date(item?.activityTime))}</Text>
     </View> : <ActivityIndicator />}
     </View>
     <View style={styles.activityMessageCard}>
@@ -129,7 +129,7 @@ activityCard:{
     overflow: "hidden", gap: 10
     },
     activityTimeCard:{paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6},
-    activityTimeText:{fontSize: 12, fontWeight: 500},
+    activityTimeText:{fontSize: 10, fontWeight: 500},
     dateText:{fontSize: 14, color: "#808080", fontWeight: "400"},
     activityMessageText: {color: COLORS.slate300, fontSize: 14},
     activityMessageCard: {

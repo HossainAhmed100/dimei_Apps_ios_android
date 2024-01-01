@@ -13,14 +13,14 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
   const deviceId = route.params.deviceId ;
   const [haveABox, sethaveABox] = useState(false);
   const [checked, setChecked] = useState(false);
-  const { user, userLoding } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const {control, handleSubmit, formState: { errors }} = useForm();
 
 
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.163:5000/getSingleDevice/${deviceId}`);
       return res.data;
     } 
   })
@@ -34,6 +34,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
     const colorVarient = sellingDevice?.colorVarient;
     const ram = sellingDevice?.ram;
     const storage = sellingDevice?.storage;
+    const deviceThumnailPhoto = sellingDevice?.devicePicture;
     const battery = sellingDevice?.battery;
     const batteryRemovable = sellingDevice?.batteryRemovable;
     const sim_slot = sellingDevice?.sim_slot;
@@ -42,6 +43,7 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
     const haveOriginalBox = haveABox;
     const daysUsed = sellingDevice?.daysUsed;
     const deviceId = sellingDevice?._id;
+    const deviceImei = sellingDevice?.deviceImei;
     const ownerEmail = user?.userEmail;
     const listingAddress = data?.deviceAddress;
     const devciePrice = data.devicesellingPrice;
@@ -49,8 +51,8 @@ const AddDeviceIntoSellingList = ({navigation, route}) => {
     const deviceDescription = data.deviceDescription;
     const ownerName = user?.userName;
     const deviceInfo =  { 
-      deviceBrand, deviceModelName, 
-      sellingTitle, colorVarient, ram, 
+      deviceBrand, deviceModelName, deviceThumnailPhoto,
+      sellingTitle, colorVarient, ram, deviceImei,
       storage, battery, battery, batteryRemovable, 
       sim_slot, gpu, Announced, listingAddress, 
       daysUsed, deviceId, ownerEmail, ownerName,

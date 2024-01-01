@@ -58,9 +58,7 @@ const TransferDevice =  ({navigation, route}) => {
                     axios.post(`http://192.168.0.163:5000/reciveTransferDevice/`, {transferDeviceInfo})
                     .then((res) => {
                     if (res.data.acknowledged){
-                    alert("Please Copy Your Device Transfer Security Code and Share Your Reciver");
-                    setLoading(false);
-                    navigation.navigate('Home')
+                    updateDeviceActivity()
                     }
                 })
                 }catch (err) {
@@ -129,6 +127,42 @@ const TransferDevice =  ({navigation, route}) => {
         alert(`Error 1 : ${error}`)
         console.log(error)
     }
+    }
+
+    const updateDeviceActivity = async () => {
+        setLoading(true)
+        const deviceActivityInfo = {
+          deviceImei: myDevice?.deviceImei,
+          ownerEmail: myDevice?.ownerEmail,
+          ownerPhoto: myDevice?.ownerPhoto,
+          listingDate: todyDate,
+          activityList: [
+            {
+              userId: user?._id,
+              deviceId: myDevice?._id,
+              activityTime: todyDate,
+              deviceModel: myDevice?.modelName,
+              message: "Device Transfer is Pending",
+              devicePicture: myDevice?.devicePicture,
+            }
+          ]
+        };
+        try{
+          setLoading(true)
+          await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+          .then((res) => {
+            if (res.data.modifiedCount === 1){
+                alert("Please Copy Your Device Transfer Security Code and Share Your Reciver");
+                navigation.navigate('Home');
+            }else{
+              setLoading(false)
+              alert('Somthing is wrong! 🚀 ~ file: TransferDevice.js');
+            }
+          })
+        }catch (error){
+          console.log("🚀 ~ file: TransferDevice.js:166 ~ updateDeviceActivity ~ error:", error)
+          setLoading(false)
+        }
     }
 
   return (

@@ -131,17 +131,13 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
           const month = today.getMonth() + 1; // Months are zero-based, so add 1
           const day = today.getDate();
           const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
-          
           const formatTime = (date) => {
             const hours = date.getHours();
             const minutes = date.getMinutes();
-
             const formattedHours = hours % 12 || 12; // Convert 24-hour time to 12-hour format
             const period = hours < 12 ? 'AM' : 'PM';
-
             return `${formattedHours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
           }
-
           const getDayName = (date) => {
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             return days[date.getDay()];
@@ -177,6 +173,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
 
   const uploadPdfFile = async (pdfUriBlob, pdfName, isPdfUploadCompleted) => {
     isAccepetDevcieProcesing(true)
+    setLoading(true)
     if (pdfUriBlob) {
       console.log('Uploading Pdf File....')
       const sotrageRef = ref(storage, `ownerShipTransferInvoice/${pdfName}`);
@@ -188,6 +185,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
           getDownloadURL(uploadTask.snapshot.ref)
           .then((inVoiceDownloadURL) => {
             if(inVoiceDownloadURL){
+                setLoading(false)
                 devcieAccepetRequist(inVoiceDownloadURL)
                 isPdfUploadCompleted(true)
               }
@@ -228,15 +226,18 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const newArray = {acceptDeviceInfo: acceptDeviceInfo, deviceIamges: firebaseIamge};
 
     try {
+      setLoading(true)
       const deviceInfo = newArray;
       const response = await axios.post('http://192.168.0.163:5000/verifydeviceAccept', {deviceInfo});
       if (response.data.acknowledged) {
-        alert('Check your email');
-        navigation.navigate('Home');
+        setLoading(true)
+        updateDeviceActivity()
       } else {
+        setLoading(false)
         alert('Device Add Failed');
       }
     } catch (error) {
+      setLoading(false)
       console.error('Error during DeviceAccept:', error);
       alert('Device Add Failed');
       isAccepetDevcieProcesing(false);
@@ -245,6 +246,76 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
       isAccepetDevcieProcesing(false);
     }
   };
+
+  const updateDeviceActivity = async () => {
+    setLoading(true)
+    const deviceActivityInfo = {
+      deviceImei: acceptDevice?.deviceImei,
+      ownerEmail: user?.userEmail,
+      ownerPhoto: user?.userProfilePic,
+      listingDate: todyDate,
+      activityList: [
+        {
+          userId: user?._id,
+          activityTime: todyDate,
+          deviceId: acceptDevice?.deviceId,
+          message: "New Device Addes Successfully",
+          deviceModel: acceptDevice?.deviceModelName,
+          devicePicture: acceptDevice?.devicePicture,
+        }
+      ]
+    };
+    try{
+      setLoading(true)
+      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      .then((res) => {
+        if (res.data.modifiedCount === 1){
+          updateDeviceOwnerActivity()
+        }else{
+          setLoading(false)
+          alert('Somthing is wrong! 🚀 ~ file: UpdateSellingPost.js');
+        }
+      })
+    }catch (error){
+      console.log("🚀 ~ file: UpdateSellingPost.js:170 ~ updateDeviceActivity ~ error:", error)
+      setLoading(false)
+    }
+  }
+
+  const updateDeviceOwnerActivity = async () => {
+    setLoading(true)
+    const deviceActivityInfo = {
+      deviceImei: acceptDevice?.deviceImei,
+      ownerEmail: acceptDevice?.ownerEmail,
+      ownerPhoto: acceptDevice?.ownerPicture,
+      listingDate: todyDate,
+      activityList: [
+        {
+          userId: "false",
+          activityTime: todyDate,
+          deviceId: acceptDevice?.deviceId,
+          message: "This Device Ownership Transfared Successfully!",
+          deviceModel: acceptDevice?.deviceModelName,
+          devicePicture: acceptDevice?.devicePicture,
+        }
+      ]
+    };
+    try{
+      setLoading(true)
+      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      .then((res) => {
+        if (res.data.modifiedCount === 1){
+          navigation.navigate('Home');
+        }else{
+          setLoading(false)
+          alert('Somthing is wrong! 🚀 ~ file: VerifyDeviceAcceft.js');
+        }
+      })
+    }catch (error){
+      console.log("🚀 ~ file: VerifyDeviceAcceft.js:309 ~ updateDeviceOwnerActivity ~ error:", error)
+      setLoading(false)
+    }
+  }
   
 
 

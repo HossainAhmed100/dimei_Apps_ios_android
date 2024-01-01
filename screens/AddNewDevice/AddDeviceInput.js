@@ -142,7 +142,6 @@ const AddDeviceInput = ({navigation, route}) => {
           navigation.navigate('Home');
       } else if (response.data.acknowledged) {
           updateDeviceActivity(ownerEmail, ownerPhoto, response.data?.insertedId)
-          // navigation.navigate('Home');
       } else {
           setLoading(false)
           alert('Device Add Failed');
@@ -181,10 +180,10 @@ const AddDeviceInput = ({navigation, route}) => {
       .then((res) => {
         if (res.data.modifiedCount === 1){
           alert('Token Added Successfully!');
-          navigation.goBack();
+          navigation.navigate('Home');
         }else if(res.data.insertedId){
           alert('Token Added Successfully!');
-          navigation.goBack();
+          navigation.navigate('Home');
         }else{
           setLoading(false)
           alert('Somthing is wrong!');

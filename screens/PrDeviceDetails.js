@@ -11,17 +11,19 @@ import { formatDistanceToNow } from 'date-fns';
 import { Tab, TabView } from '@rneui/themed';
 
 const PrDeviceDetails = ({navigation, route}) => {
-  const {user} = useContext(AuthContext);
-  const {width} = useWindowDimensions();
-  const queryClient = useQueryClient();
-  const deviceId = route.params.deviceId ;
   const firstTimeRef = useRef(true);
+  const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
+  const {width} = useWindowDimensions();
+  const {user} = useContext(AuthContext);
+  const deviceId = route.params.deviceId;
+  const [loading, setLoading] = useState(false);
+  const todyDate = new Date().toISOString();
 
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/myDeviceDetails/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.163:5000/getSingleDevice/${deviceId}`);
       return res.data;
     } 
   })
@@ -50,6 +52,7 @@ const PrDeviceDetails = ({navigation, route}) => {
         await axios.put(`http://192.168.0.163:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
+            updateDeviceActivity()
             queryClient.invalidateQueries({ queryKey: ['myDevice'] })
         }})
     } catch (err) {
@@ -57,6 +60,42 @@ const PrDeviceDetails = ({navigation, route}) => {
     } finally {
     }
   }
+
+  const updateDeviceActivity = async () => {
+    setLoading(true)
+    const deviceActivityInfo = {
+      deviceImei: myDevice?.deviceImei,
+      ownerEmail: myDevice?.ownerEmail,
+      ownerPhoto: myDevice?.ownerPhoto,
+      listingDate: todyDate,
+      activityList: [
+        {
+          userId: user?._id,
+          deviceId: myDevice?._id,
+          activityTime: todyDate,
+          deviceModel: myDevice?.modelName,
+          message: "Device Added in to The Selling List",
+          devicePicture: myDevice?.devicePicture,
+        }
+      ]
+    };
+    try{
+      setLoading(true)
+      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      .then((res) => {
+        if (res.data.modifiedCount === 1){
+          queryClient.invalidateQueries({ queryKey: ['myDevice'] })
+        }else{
+          setLoading(false)
+          alert('Somthing is wrong! 🚀 ~ file: TransferDevice.js');
+        }
+      })
+    }catch (error){
+      console.log("🚀 ~ file: TransferDevice.js:166 ~ updateDeviceActivity ~ error:", error)
+      setLoading(false)
+    }
+  }
+
   const updateSellingPost = async (did) => {
     navigation.navigate('UpdateSellingPost', {deviceId: did})
   }
@@ -271,11 +310,6 @@ const PhoneDetailsList = ({item}) => (
     <View style={styles.listItem}>
       <Text>Battery Type:</Text>
       <Text>{item?.batteryRemovable ? "(removable)" : "(non-removable)"}</Text>
-    </View>
-    <Divider />
-    <View style={styles.listItem}>
-      <Text>Days Used :</Text>
-      {item?.daysUsed ? <Text>{formatDistanceToNow(new Date(item?.daysUsed))}</Text> : <ActivityIndicator />}
     </View>
     <Divider />
   </View>

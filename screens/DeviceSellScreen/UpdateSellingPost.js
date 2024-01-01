@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, useWindowDimensions, FlatList} from 'react-native';
 import 'react-native-get-random-values';
 import axios from 'axios';
@@ -10,17 +10,19 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useQuery } from "@tanstack/react-query";
 import { Divider } from '@rneui/themed';
 import { useForm, Controller } from "react-hook-form";
+import { AuthContext } from '../../context/AuthProvider';
 
 
 const UpdateSellingPost = ({navigation, route}) => {
   const {width} = useWindowDimensions();
   const deviceId = route.params.deviceId;
-  const [selectedImages, setSelectedImages] = useState([]);
+  const { user } = useContext(AuthContext);
+  const todyDate = new Date().toISOString();
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const toggleCheckbox = () => {setChecked(!checked)};
+  const [selectedImages, setSelectedImages] = useState([]);
 
-  const toggleCheckbox = () => {setChecked(!checked);};
-  
   const { isLoading, data: sellingDevice = [], refetch } = useQuery({ 
     queryKey: ['sellingDevice', deviceId], 
     queryFn: async () => {
@@ -28,7 +30,6 @@ const UpdateSellingPost = ({navigation, route}) => {
       return res.data;
     } 
   });
-
   const { data: sellingDeviceImages = [] } = useQuery({ 
     queryKey: ['sellingDeviceImages', deviceId], 
     queryFn: async () => {
@@ -129,13 +130,48 @@ const UpdateSellingPost = ({navigation, route}) => {
       await axios.delete(`http://192.168.0.163:5000/deleteDevcieSellingPost/${deviceId}`)
       .then((res) => {
         if(res.data.transferSuccess){
-          navigation.navigate('Home')
+          updateDeviceActivity()
         }
       })
     }catch (err) {
         console.log(err);
     }
    }
+
+  const updateDeviceActivity = async () => {
+    setLoading(true)
+    const deviceActivityInfo = {
+      deviceImei: sellingDevice?.deviceImei,
+      ownerEmail: sellingDevice?.ownerEmail,
+      ownerPhoto: user?.userProfilePic,
+      listingDate: todyDate,
+      activityList: [
+        {
+          userId: user?._id,
+          deviceId: sellingDevice?.deviceId,
+          activityTime: todyDate,
+          deviceModel: sellingDevice?.deviceModelName,
+          message: "Device Selling Post is Deleted!",
+          devicePicture: sellingDevice?.deviceThumnailPhoto,
+        }
+      ]
+    };
+    try{
+      setLoading(true)
+      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      .then((res) => {
+        if (res.data.modifiedCount === 1){
+          navigation.navigate('Home');
+        }else{
+          setLoading(false)
+          alert('Somthing is wrong! 🚀 ~ file: UpdateSellingPost.js');
+        }
+      })
+    }catch (error){
+      console.log("🚀 ~ file: UpdateSellingPost.js:170 ~ updateDeviceActivity ~ error:", error)
+      setLoading(false)
+    }
+  }
 
 
 
@@ -210,7 +246,7 @@ const UpdateSellingPost = ({navigation, route}) => {
           {checked ?  <MaterialIcons name="check-box" size={24} color={COLORS.blue500} /> : 
           <MaterialIcons name="check-box-outline-blank" size={24} color={COLORS.slate400} />}
           <Text style={{marginLeft: 4}}>I aggre with <Text style={{color: COLORS.blue500, fontWeight: 500}}>terms</Text> and  
-          <Text style={{color: COLORS.blue500, fontWeight: 500}}>condition</Text></Text>
+          <Text style={{color: COLORS.blue500, fontWeight: 500}}> condition</Text></Text>
         </View>
       </TouchableOpacity>
     </View>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";  
+import React, { useContext, useState } from "react";  
 import { Image, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import 'react-native-get-random-values';
 import axios from 'axios';
@@ -7,108 +7,145 @@ import * as ImagePicker from 'expo-image-picker';
 import { storage } from '../../FirebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { AntDesign } from '@expo/vector-icons';
+import { AuthContext } from "../../context/AuthProvider";
 
 const SellingDeviceAction = ({navigation, route}) => {
-    const deviceInfo = route.params.deviceInfo;
-    const [firebaseIamge, setFirebaseIamge] = useState([]);
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [loading, setLoading] = useState(false)
-    
-    const onSubmit = async () => {
-      setLoading(true);
-        try {
-          const uploadPromises = selectedImages.map(async (uri) => {
-            return await uploadImageAsync(uri);
-          });
-      
-          const newFirebaseImages = await Promise.all(uploadPromises);
-          setFirebaseIamge([...newFirebaseImages]);
-      
-          // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
-          await transferToDeviceDattaBase([...newFirebaseImages]);
-          
-        } catch (error) {
-          console.error('Error during onSubmit:', error);
-        } finally {
-          
-          setLoading(false);
-        }
-      };
-      
-    const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setSelectedImages([...selectedImages, result.assets[0].uri]);
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-     };
-  
-    const transferToDeviceDattaBase = async (deviceIamges) => {
-      setLoading(true);
-      const createdAt = new Date().toISOString();
-      const newArray = deviceInfo;
-      newArray.createdAt = createdAt;
-      newArray.deviceIamges = deviceIamges;
-      try {
-        const sellingDevInfo = newArray;
-        const response = await axios.post('http://192.168.0.163:5000/addDevcieSellingList', {sellingDevInfo});
-    
-        if (response.data.acknowledged) {
-          alert('Check your email');
-          navigation.navigate('Home');
-        } else {
-          alert('Device Add Failed');
-        }
-    
-      } catch (error) {
-        console.error('Error during transferToDeviceDattaBase:', error);
-        alert('Device Add Failed');
-      } finally {
-        setLoading(false);
-      }
-     };
-  
-    const uploadImageAsync = async (uri) => {
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function (e) {
-          console.log(e);
-          reject(new TypeError("Network request failed"));
-        };
-        xhr.responseType = "blob";
-        xhr.open("GET", uri, true);
-        xhr.send(null);
+  const { user } = useContext(AuthContext);
+  const deviceInfo = route.params.deviceInfo;
+  const [loading, setLoading] = useState(false)
+  const [firebaseIamge, setFirebaseIamge] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const todyDate = new Date().toISOString();
+
+  const onSubmit = async () => {
+    setLoading(true);
+    try {
+      const uploadPromises = selectedImages.map(async (uri) => {
+        return await uploadImageAsync(uri);
       });
   
-      try{
-        const fileRef = ref(storage, `image/image-${Date.now()}`);
-        const result = await uploadBytes(fileRef, blob);
-      
-        // We're done with the blob, close and release it
-        blob.close();
-      
-        return await getDownloadURL(fileRef);
-      }catch(error) {
-        console.log(error)
-      }
-     };
-    
+      const newFirebaseImages = await Promise.all(uploadPromises);
+      setFirebaseIamge([...newFirebaseImages]);
   
-    const handleImageRemove = (index) => {
-      const newImages = [...selectedImages];
-      newImages.splice(index, 1);
-      setSelectedImages(newImages);
-     };
+      // Now that all images are uploaded to Firebase, proceed to transferToDeviceDattaBase
+      await transferToDeviceDattaBase([...newFirebaseImages]);
+      
+    } catch (error) {
+      console.error('Error during onSubmit:', error);
+    } finally {
+      
+      setLoading(false);
+    }
+  };
+      
+  const pickImage = async () => {
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsMultipleSelection: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+  if (!result.canceled) {
+    setSelectedImages([...selectedImages, result.assets[0].uri]);
+    setLoading(false);
+  } else {
+    setLoading(false);
+  }
+  };
+  
+  const transferToDeviceDattaBase = async (deviceIamges) => {
+    setLoading(true);
+    const createdAt = new Date().toISOString();
+    const newArray = deviceInfo;
+    newArray.createdAt = createdAt;
+    newArray.deviceIamges = deviceIamges;
+    try {
+      const sellingDevInfo = newArray;
+      const response = await axios.post('http://192.168.0.163:5000/addDevcieSellingList', {sellingDevInfo});
+      if (response.data.acknowledged) {
+        updateDeviceActivity()
+      } else {
+        setLoading(false);
+        alert('Selling Device Add Failed');
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error('Error during transferToDeviceDattaBase:', error);
+      alert('Device Add Failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateDeviceActivity = async () => {
+    setLoading(true)
+    const deviceActivityInfo = {
+      deviceImei: deviceInfo?.deviceImei,
+      ownerEmail: deviceInfo?.ownerEmail,
+      ownerPhoto: user?.userProfilePic,
+      listingDate: todyDate,
+      activityList: [
+        {
+          userId: user?._id,
+          deviceId: deviceInfo?.deviceId,
+          activityTime: todyDate,
+          deviceModel: deviceInfo?.deviceModelName,
+          message: "Device Transfer is Canceled!",
+          devicePicture: deviceInfo?.deviceThumnailPhoto,
+        }
+      ]
+    };
+    try{
+      setLoading(true)
+      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      .then((res) => {
+        if (res.data.modifiedCount === 1){
+          alert('Check your email');
+          navigation.navigate('Home');
+        }else{
+          setLoading(false)
+          alert('Somthing is wrong! 🚀 ~ file: SellingDeviceAction.js');
+        }
+      })
+    }catch (error){
+      console.log("🚀 ~ file: SellingDeviceAction.js:110 ~ updateDeviceActivity ~ error:", error)
+      setLoading(false)
+    }
+  }
+  
+  const uploadImageAsync = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    try{
+      const fileRef = ref(storage, `image/image-${Date.now()}`);
+      const result = await uploadBytes(fileRef, blob);
+    
+      // We're done with the blob, close and release it
+      blob.close();
+    
+      return await getDownloadURL(fileRef);
+    }catch(error) {
+      console.log(error)
+    }
+  };
+  
+  const handleImageRemove = (index) => {
+    const newImages = [...selectedImages];
+    newImages.splice(index, 1);
+    setSelectedImages(newImages);
+  };
     
   return (
     <View style={{minHeight: "100%", backgroundColor: COLORS.white500}}>
