@@ -80,11 +80,12 @@ const DeviceActivity = ({navigation}) => {
         </View>
       </View>
       
-      <View style={{paddingHorizontal: SIZES.small, minHeight: "100%"}}>
+      <View style={{paddingHorizontal: SIZES.small, flex: 1}}>
       <FlatList data={activityDataObj} keyExtractor={item => item.activityTime}
         renderItem={({item}) => (<ListBox item={item} viewMyDeviceDetails={viewMyDeviceDetails}/>)}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         contentContainerStyle={{ rowGap: 10 }}
+        showsVerticalScrollIndicator={false}
       />
       </View>
   </View>
