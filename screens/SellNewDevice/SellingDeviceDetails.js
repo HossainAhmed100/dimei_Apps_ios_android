@@ -100,7 +100,7 @@ const SellingDeviceDetails = ({navigation, route}) => {
 
     </ScrollView>
 
-      <View style={{position: "absolute", bottom: 0, width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: COLORS.blue500, flex: 1, padding: 10}}>
+      <View style={styles.bottomBtnContainer}>
         <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}>
         <Text style={{color: COLORS.blue200, fontSize: SIZES.xSmall}}>Price</Text>
         <Text style={{color: COLORS.white500, fontSize: SIZES.medium, fontWeight: 700}}>৳{formattedPrice} Taka</Text>
@@ -168,6 +168,14 @@ const ImageSilderShow = ({myDevice, width}) => (
 )
   
   const styles = StyleSheet.create({
+    bottomBtnContainer: {
+      position: "absolute", bottom: 0, 
+      width: "100%", flexDirection: "row", 
+      alignItems: "center", 
+      justifyContent: "space-between", 
+      backgroundColor: COLORS.blue500, 
+      flex: 1, padding: 10
+    },
     listItem: {
       flexDirection: "row", 
       alignItems: "center", 
