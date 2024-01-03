@@ -127,7 +127,7 @@ const Setting = ({navigation}) => {
           />
         </View>
       <View style={{backgroundColor: "white",borderRadius: 10,marginBottom: 80,padding: 10,}}>
-        <TouchableOpacity onPress={() => sinOut()} style={{paddingVertical: 13,paddingHorizontal: 15,backgroundColor: COLORS.red200,borderRadius: SIZES.small}}>
+        <TouchableOpacity onPress={() => sinOut()} style={styles.logOutBtn}>
           <View style={{flexDirection: "row",alignItems: "center",gap: 10,justifyContent: "center",}}>
           <Text style={{ fontSize: SIZES.medium, color:COLORS.red500, fontWeight: 600 }}>Log out</Text>
           <Feather name="log-in" size={SIZES.large} color={COLORS.red500} />
@@ -151,6 +151,9 @@ const SettingNavigateBtn = ({iconName, btnText, navigateUri, navigateScreen}) =>
 )
 
 const styles = StyleSheet.create({
+  logOutBtn: {
+    paddingVertical: 13,paddingHorizontal: 15,backgroundColor: COLORS.red200,borderRadius: SIZES.small
+  },
   navigationItem: {
     gap: 10,
     paddingVertical: 13,
