@@ -84,7 +84,7 @@ const AditionalEnfoSelection = ({navigation, route}) => {
     <View style={{flexDirection: "column", alignItems: "flex-start", paddingHorizontal: SIZES.xSmall}}> 
     <Text style={{color: COLORS.blue200, fontSize: SIZES.medium}}>3/3</Text>
     </View>
-    <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={{alignItems: "center", justifyContent: "center", paddingHorizontal: SIZES.large, paddingVertical: SIZES.medium}}>
+    <TouchableOpacity activeOpacity={.7} onPress={() => nextStep()} style={styles.nextBtnContainer}>
         <Text style={{color: COLORS.white500, fontWeight: 500, fontSize: SIZES.medium,borderRadius: SIZES.small}}>NEXT</Text>
     </TouchableOpacity>
     </View>
@@ -94,6 +94,12 @@ const AditionalEnfoSelection = ({navigation, route}) => {
 }
 
 const styles = StyleSheet.create({
+    nextBtnContainer: {
+        alignItems: "center", 
+        justifyContent: "center", 
+        paddingHorizontal: SIZES.large, 
+        paddingVertical: SIZES.medium
+    },
     checkBoxCard: {borderWidth: 1, borderRadius: 6, borderColor: COLORS.slate100, overflow: "hidden"},
     checkboxTitle: {color: COLORS.slate500, fontSize: 14, fontWeight: 400},
     inputTextLabel: {
