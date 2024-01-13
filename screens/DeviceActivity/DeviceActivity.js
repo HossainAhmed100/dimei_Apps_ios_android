@@ -20,7 +20,7 @@ const DeviceActivity = ({navigation}) => {
   const { isLoading, data: activityDataObj = [], refetch } = useQuery({ 
       queryKey: ['activityDataObj'],
       queryFn: async () => {
-          const res =  await axios.get(`http://192.168.0.163:5000/getUserDeviceActivity/${user?.userEmail}`);
+          const res =  await axios.get(`http://192.168.0.181:5000/getUserDeviceActivity/${user?.userEmail}`);
           return res.data;
         } 
     })
@@ -35,7 +35,7 @@ const DeviceActivity = ({navigation}) => {
     setLoading(true);
     const deviceimeiNum = data.inputdeviceimei;
     try{
-      const response = await axios.get(`http://192.168.0.163:5000/checkDeviceImeiNum/${deviceimeiNum}`);
+      const response = await axios.get(`http://192.168.0.181:5000/checkDeviceImeiNum/${deviceimeiNum}`);
       setsearchData(response.data);
       setLoading(false);
       setShowData(true)

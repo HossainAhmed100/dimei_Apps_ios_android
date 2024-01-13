@@ -101,7 +101,7 @@ const ProfilePhotoSelection = ({navigation, route}) => {
           const users = userCredential.user;
           if (users.uid){
             const newuser = async () => {
-              await axios.post('http://192.168.0.163:5000/addNewUser', {userInfo})
+              await axios.post('http://192.168.0.181:5000/addNewUser', {userInfo})
               .then((res) => {
                 if (res.data.acknowledged){
                   navigation.navigate('Login')

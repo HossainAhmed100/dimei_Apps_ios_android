@@ -61,7 +61,7 @@ const SellingDeviceAction = ({navigation, route}) => {
     newArray.deviceIamges = deviceIamges;
     try {
       const sellingDevInfo = newArray;
-      const response = await axios.post('http://192.168.0.163:5000/addDevcieSellingList', {sellingDevInfo});
+      const response = await axios.post('http://192.168.0.181:5000/addDevcieSellingList', {sellingDevInfo});
       if (response.data.acknowledged) {
         updateDeviceActivity()
       } else {
@@ -97,7 +97,7 @@ const SellingDeviceAction = ({navigation, route}) => {
     };
     try{
       setLoading(true)
-      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      await axios.put("http://192.168.0.181:5000/insertDevcieActivity/", {deviceActivityInfo})
       .then((res) => {
         if (res.data.modifiedCount === 1){
           alert('Check your email');

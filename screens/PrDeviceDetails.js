@@ -23,7 +23,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading, data: myDevice = [], refetch } = useQuery({ 
     queryKey: ['myDevice', deviceId], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/getSingleDevice/${deviceId}`);
+      const res = await axios.get(`http://192.168.0.181:5000/getSingleDevice/${deviceId}`);
       return res.data;
     } 
   })
@@ -31,7 +31,7 @@ const PrDeviceDetails = ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
+      const res = await axios.get(`http://192.168.0.181:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: user?.userEmail}});
       return res.data;
     } 
   })
@@ -49,7 +49,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     const secretCode = "";
     const infoData = {deviceId, secretCode}
     try {
-        await axios.put(`http://192.168.0.163:5000/cancelDeviceTransferStatus/`, {infoData})
+        await axios.put(`http://192.168.0.181:5000/cancelDeviceTransferStatus/`, {infoData})
         .then((res) => {
           if(res.data.transferSuccess){
             updateDeviceActivity()
@@ -81,7 +81,7 @@ const PrDeviceDetails = ({navigation, route}) => {
     };
     try{
       setLoading(true)
-      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      await axios.put("http://192.168.0.181:5000/insertDevcieActivity/", {deviceActivityInfo})
       .then((res) => {
         if (res.data.modifiedCount === 1){
           queryClient.invalidateQueries({ queryKey: ['myDevice'] })

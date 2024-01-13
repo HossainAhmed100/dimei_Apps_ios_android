@@ -27,7 +27,7 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
   const { isLoading: devciePhotoLoading , data: devciePhotos = [] } = useQuery({ 
     queryKey: ['devciePhotos', deviceId, ownerInfo?.ownerEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: ownerInfo?.ownerEmail}});
+      const res = await axios.get(`http://192.168.0.181:5000/getDevicePhotoList/`,{params: {deviceId: deviceId, userEmail: ownerInfo?.ownerEmail}});
       return res.data;
     } 
   })
@@ -37,7 +37,7 @@ const ViewDeviceOwnerInfo =  ({navigation, route}) => {
     const ownerDetails = {ownerEmail, deviceImei, thisIsUnAuthorizeOwner, devcieOwnerSecretOTP};
     setRemoveOwnerBtnLoading(true)
     try {
-      const res = await axios.delete(`http://192.168.0.163:5000/deleteUnauthorizedOwner`, {params: { ownerDetails }});
+      const res = await axios.delete(`http://192.168.0.181:5000/deleteUnauthorizedOwner`, {params: { ownerDetails }});
       if(res.data.ownerDeletedSuccess){
         alert("Unauthorized Owner Remove Successfully")
         navigation.popToTop();

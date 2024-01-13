@@ -45,7 +45,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
   const { data: itemQuantity = [], refetch } = useQuery({ 
     queryKey: ['itemQuantity', user?.userEmail], 
     queryFn: async () => {
-    const res = await axios.get(`http://192.168.0.163:5000/useritemQuantity/${user?.userEmail}`);
+    const res = await axios.get(`http://192.168.0.181:5000/useritemQuantity/${user?.userEmail}`);
     return res.data;
     } 
   })
@@ -53,7 +53,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
   const { isLoading, data: acceptDevice = [], refetch: refetchAcceptDevice } = useQuery({ 
     queryKey: ['acceptDevice', transferDeviceId], 
     queryFn: async () => {
-    const res = await axios.get(`http://192.168.0.163:5000/getTransferDeviceDetails/${transferDeviceId}`);
+    const res = await axios.get(`http://192.168.0.181:5000/getTransferDeviceDetails/${transferDeviceId}`);
     return res.data;
     } 
   })
@@ -61,7 +61,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
   const {data: reciverOwnerData = [], refetchReciverOwnerData } = useQuery({ 
     queryKey: ['reciverOwnerData', user?.userEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/getUserNidInfo/${user?.userEmail}`);
+      const res = await axios.get(`http://192.168.0.181:5000/getUserNidInfo/${user?.userEmail}`);
       return res.data;
     } 
   })
@@ -69,7 +69,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
   const {data: deviceOwnerData = [], refetchDeviceOwner } = useQuery({ 
     queryKey: ['deviceOwnerData', acceptDevice?.ownerEmail], 
     queryFn: async () => {
-      const res = await axios.get(`http://192.168.0.163:5000/getUserNidInfo/${acceptDevice?.ownerEmail}`);
+      const res = await axios.get(`http://192.168.0.181:5000/getUserNidInfo/${acceptDevice?.ownerEmail}`);
       return res.data;
     } 
   })
@@ -79,7 +79,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     const secretCode = data.deviceSecrentCode;
     const secretCodetCheckInfo = {secretCode, transferDeviceId};
     try{
-      const response = await axios.put(`http://192.168.0.163:5000/verifydevicesecretCode/`, {secretCodetCheckInfo})
+      const response = await axios.put(`http://192.168.0.181:5000/verifydevicesecretCode/`, {secretCodetCheckInfo})
       if(response.data.secretCodeStatus){
         setLoading(true)
         const uploadPromises = selectedImages.map(async (uri) => {
@@ -228,7 +228,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     try {
       setLoading(true)
       const deviceInfo = newArray;
-      const response = await axios.post('http://192.168.0.163:5000/verifydeviceAccept', {deviceInfo});
+      const response = await axios.post('http://192.168.0.181:5000/verifydeviceAccept', {deviceInfo});
       if (response.data.acknowledged) {
         setLoading(true)
         updateDeviceActivity()
@@ -267,7 +267,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     };
     try{
       setLoading(true)
-      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      await axios.put("http://192.168.0.181:5000/insertDevcieActivity/", {deviceActivityInfo})
       .then((res) => {
         if (res.data.modifiedCount === 1){
           updateDeviceOwnerActivity()
@@ -302,7 +302,7 @@ const VerifyDeviceAcceft = ({navigation, route})  => {
     };
     try{
       setLoading(true)
-      await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+      await axios.put("http://192.168.0.181:5000/insertDevcieActivity/", {deviceActivityInfo})
       .then((res) => {
         if (res.data.modifiedCount === 1){
           navigation.navigate('Home');

@@ -29,7 +29,7 @@ const TransferDevice =  ({navigation, route}) => {
     const { isLoading, isError, data: myDevice = [], error } = useQuery({ 
         queryKey: ['myDevice', user?.userEmail, deviceId], 
         queryFn: async () => {
-        const res = await axios.get(`http://192.168.0.163:5000/getSingleDevice/${deviceId}`);
+        const res = await axios.get(`http://192.168.0.181:5000/getSingleDevice/${deviceId}`);
         return res.data;
         } 
     })
@@ -51,11 +51,11 @@ const TransferDevice =  ({navigation, route}) => {
             const transferDeviceObj = transferDataObj?.transferDeviceObj;
             const infoData = transferDataObj?.infoData;
             const transferDeviceInfo = {...transferDeviceObj, ownerSignUrl};
-            await axios.put(`http://192.168.0.163:5000/devicetransferStatusUpdate/`,{infoData})
+            await axios.put(`http://192.168.0.181:5000/devicetransferStatusUpdate/`,{infoData})
             .then((res) => {
             if (res.data.modifiedCount === 1){
                 try{
-                    axios.post(`http://192.168.0.163:5000/reciveTransferDevice/`, {transferDeviceInfo})
+                    axios.post(`http://192.168.0.181:5000/reciveTransferDevice/`, {transferDeviceInfo})
                     .then((res) => {
                     if (res.data.acknowledged){
                     updateDeviceActivity()
@@ -149,7 +149,7 @@ const TransferDevice =  ({navigation, route}) => {
         };
         try{
           setLoading(true)
-          await axios.put("http://192.168.0.163:5000/insertDevcieActivity/", {deviceActivityInfo})
+          await axios.put("http://192.168.0.181:5000/insertDevcieActivity/", {deviceActivityInfo})
           .then((res) => {
             if (res.data.modifiedCount === 1){
                 alert("Please Copy Your Device Transfer Security Code and Share Your Reciver");
